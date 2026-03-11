@@ -1,0 +1,268 @@
+name: CI/CD Multi-Stage Pipeline
+
+on:
+  pull_request:
+    branches:
+      - dev
+      - test
+      - main
+
+env:
+  NODE_VERSION: "20"
+  S3_ARTIFACT_PREFIX: "ci-artifacts/${{ github.repository }}/${{ github.sha }}"
+
+jobs:
+
+# ============================================================
+# STAGE 1 — PRETTIER (feature → dev)
+# Stores formatted code artifact to S3
+# ============================================================
+  prettier-check:
+    name: "Stage 1 · Prettier Check & Format"
+    if: github.base_ref == 'dev'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          persist-credentials: true
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Prettier
+        run: npx prettier --write "**/*.{js,jsx,ts,tsx,css,scss,json,md}"
+
+      - name: Commit formatted code
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          if ! git diff --quiet; then
+            git add .
+            git commit -m "style: auto-format with Prettier"
+            git push origin HEAD:${{ github.head_ref }}
+          else
+            echo "No changes to commit"
+          fi
+
+      - name: Configure AWS
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Package & upload artifact to S3
+        run: |
+          ARTIFACT_NAME="prettier-${{ github.run_number }}.tar.gz"
+          echo "📦 Packaging formatted code as $ARTIFACT_NAME..."
+
+          tar --exclude='.git' \
+              --exclude='node_modules' \
+              --exclude='coverage' \
+              -czf /tmp/$ARTIFACT_NAME .
+
+          echo "⬆️  Uploading to S3..."
+          aws s3 cp /tmp/$ARTIFACT_NAME \
+            s3://${{ vars.S3_ARTIFACT_BUCKET }}/${{ env.S3_ARTIFACT_PREFIX }}/$ARTIFACT_NAME
+
+          echo "✅ Artifact stored at:"
+          echo "   s3://${{ vars.S3_ARTIFACT_BUCKET }}/${{ env.S3_ARTIFACT_PREFIX }}/$ARTIFACT_NAME"
+
+# ============================================================
+# STAGE 2 — ESLINT & COVERAGE (dev → test)
+# Pulls artifact from S3, runs checks, uploads new artifact
+# ============================================================
+  eslint-and-coverage:
+    name: "Stage 2 · ESLint & Code Coverage"
+    needs: prettier-check
+    if: |
+      always() &&
+      github.base_ref == 'test' &&
+      (needs.prettier-check.result == 'success' || needs.prettier-check.result == 'skipped')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Configure AWS
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Download artifact from S3
+        run: |
+          ARTIFACT_NAME="prettier-${{ github.run_number }}.tar.gz"
+          echo "⬇️  Downloading $ARTIFACT_NAME from S3..."
+
+          if aws s3 ls s3://${{ vars.S3_ARTIFACT_BUCKET }}/${{ env.S3_ARTIFACT_PREFIX }}/$ARTIFACT_NAME 2>/dev/null; then
+            aws s3 cp \
+              s3://${{ vars.S3_ARTIFACT_BUCKET }}/${{ env.S3_ARTIFACT_PREFIX }}/$ARTIFACT_NAME \
+              /tmp/$ARTIFACT_NAME
+            tar -xzf /tmp/$ARTIFACT_NAME -C .
+            echo "✅ Artifact restored: $ARTIFACT_NAME"
+          else
+            echo "⚠️  No Stage 1 artifact found — falling back to checkout"
+            exit 1
+          fi
+
+      - name: Fallback — checkout if no S3 artifact
+        if: failure()
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run ESLint
+        id: eslint
+        continue-on-error: true
+        run: |
+          echo "Running ESLint..."
+
+          npx eslint "**/*.{ts,tsx}" \
+            --format json \
+            --output-file eslint-report.json || true
+
+          if grep -q '"errorCount":[^0]' eslint-report.json; then
+            echo "⚠️ ESLint errors detected"
+            echo "eslint_passed=false" >> $GITHUB_OUTPUT
+          else
+            echo "✅ ESLint passed"
+            echo "eslint_passed=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Run tests with coverage
+        id: coverage
+        continue-on-error: true
+        run: npx vitest run --coverage
+
+      # ── SUCCESS — upload eslint-coverage artifact ──────────
+      - name: Package & upload validated artifact to S3
+        if: steps.eslint.outputs.eslint_passed == 'true'
+        run: |
+          ARTIFACT_NAME="eslint-coverage-${{ github.run_number }}.tar.gz"
+          echo "📦 Packaging validated code as $ARTIFACT_NAME..."
+
+          tar --exclude='.git' \
+              --exclude='node_modules' \
+              --exclude='coverage' \
+              -czf /tmp/$ARTIFACT_NAME .
+
+          echo "⬆️  Uploading to S3..."
+          aws s3 cp /tmp/$ARTIFACT_NAME \
+            s3://${{ vars.S3_ARTIFACT_BUCKET }}/${{ env.S3_ARTIFACT_PREFIX }}/$ARTIFACT_NAME
+
+          echo "✅ Validated artifact stored at:"
+          echo "   s3://${{ vars.S3_ARTIFACT_BUCKET }}/${{ env.S3_ARTIFACT_PREFIX }}/$ARTIFACT_NAME"
+
+      # ── FAILURE — upload failure-report artifact ───────────
+      - name: Upload failure report to S3
+        if: steps.eslint.outputs.eslint_passed == 'false'
+        run: |
+          ARTIFACT_NAME="failure-report-${{ github.run_number }}.tar.gz"
+          echo "📦 Packaging failure report as $ARTIFACT_NAME..."
+
+          tar -czf /tmp/$ARTIFACT_NAME \
+            eslint-report.json \
+            coverage/ || true
+
+          echo "⬆️  Uploading failure report to S3..."
+          aws s3 cp /tmp/$ARTIFACT_NAME \
+            s3://${{ vars.S3_ARTIFACT_BUCKET }}/${{ env.S3_ARTIFACT_PREFIX }}/$ARTIFACT_NAME
+
+          echo "❌ Failure report stored at:"
+          echo "   s3://${{ vars.S3_ARTIFACT_BUCKET }}/${{ env.S3_ARTIFACT_PREFIX }}/$ARTIFACT_NAME"
+
+      - name: Fail if ESLint failed
+        if: steps.eslint.outputs.eslint_passed == 'false'
+        run: exit 1
+
+# ============================================================
+# STAGE 3 — DEPLOY TO S3 (test → main)
+# Pulls eslint-coverage artifact from S3, builds, deploys
+# ============================================================
+  deploy-to-s3:
+    name: "Stage 3 · Deploy to AWS S3"
+    needs: eslint-and-coverage
+    if: |
+      always() &&
+      github.base_ref == 'main' &&
+      (needs.eslint-and-coverage.result == 'success' || needs.eslint-and-coverage.result == 'skipped')
+    runs-on: ubuntu-latest
+    environment:
+      name: prod
+    steps:
+      - name: Configure AWS
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Download validated artifact from S3
+        run: |
+          ARTIFACT_NAME="eslint-coverage-${{ github.run_number }}.tar.gz"
+          echo "⬇️  Downloading $ARTIFACT_NAME from S3..."
+
+          if aws s3 ls s3://${{ vars.S3_ARTIFACT_BUCKET }}/${{ env.S3_ARTIFACT_PREFIX }}/$ARTIFACT_NAME 2>/dev/null; then
+            aws s3 cp \
+              s3://${{ vars.S3_ARTIFACT_BUCKET }}/${{ env.S3_ARTIFACT_PREFIX }}/$ARTIFACT_NAME \
+              /tmp/$ARTIFACT_NAME
+            tar -xzf /tmp/$ARTIFACT_NAME -C .
+            echo "✅ Artifact restored: $ARTIFACT_NAME"
+          else
+            echo "⚠️  No Stage 2 artifact found — falling back to checkout"
+            exit 1
+          fi
+
+      - name: Fallback — checkout if no S3 artifact
+        if: failure()
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build project
+        run: npm run build
+
+      - name: Deploy to S3
+        run: |
+          echo "🚀 Deploying to S3..."
+          aws s3 sync ./dist s3://${{ vars.S3_BUCKET_NAME }} --delete
+          echo "✅ Deployment complete!"
+          echo "   Bucket : s3://${{ vars.S3_BUCKET_NAME }}"
+          echo "   Region : ${{ vars.AWS_REGION }}"
+          echo "   Commit : ${{ github.sha }}"
+
+      - name: Upload production build artifact to S3
+        run: |
+          ARTIFACT_NAME="production-build-${{ github.run_number }}.tar.gz"
+          echo "📦 Archiving production build as $ARTIFACT_NAME..."
+
+          tar -czf /tmp/$ARTIFACT_NAME ./dist
+
+          aws s3 cp /tmp/$ARTIFACT_NAME \
+            s3://${{ vars.S3_ARTIFACT_BUCKET }}/${{ env.S3_ARTIFACT_PREFIX }}/$ARTIFACT_NAME
+
+          echo "✅ Production build archived at:"
+          echo "   s3://${{ vars.S3_ARTIFACT_BUCKET }}/${{ env.S3_ARTIFACT_PREFIX }}/$ARTIFACT_NAME"

@@ -1,0 +1,74 @@
+<svg width="300" height="200" viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="messyGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#EF4444;stop-opacity:0.3" />
+      <stop offset="100%" style="stop-color:#F97316;stop-opacity:0.3" />
+    </linearGradient>
+    <filter id="blur">
+      <feGaussianBlur stdDeviation="1"/>
+    </filter>
+  </defs>
+  
+  <!-- Messy Desk Background -->
+  <rect width="300" height="200" fill="url(#messyGradient)"/>
+  
+  <!-- Scattered Paper Bills -->
+  <g transform="translate(20, 30)">
+    <!-- Bill 1 (Crumpled) -->
+    <path d="M0 0 L50 5 L55 60 L5 65 Z" fill="white" stroke="#D1D5DB" stroke-width="1" opacity="0.8"/>
+    <line x1="8" y1="15" x2="42" y2="18" stroke="#6B7280" stroke-width="0.5"/>
+    <line x1="8" y1="25" x2="38" y2="27" stroke="#6B7280" stroke-width="0.5"/>
+    <line x1="8" y1="35" x2="45" y2="38" stroke="#6B7280" stroke-width="0.5"/>
+    <text x="27" y="55" text-anchor="middle" fill="#EF4444" font-size="8">LOST</text>
+    
+    <!-- Bill 2 (Torn) -->
+    <path d="M80 10 L130 8 L135 50 L132 55 L85 58 Z" fill="white" stroke="#D1D5DB" stroke-width="1" opacity="0.7"/>
+    <line x1="85" y1="20" x2="125" y2="18" stroke="#6B7280" stroke-width="0.5"/>
+    <line x1="85" y1="30" x2="120" y2="28" stroke="#6B7280" stroke-width="0.5"/>
+    <path d="M130 8 L135 15 L132 20 L128 18" fill="none" stroke="#EF4444" stroke-width="1"/>
+    
+    <!-- Bill 3 (Faded) -->
+    <rect x="160" y="20" width="50" height="70" rx="3" fill="white" opacity="0.5" stroke="#D1D5DB"/>
+    <line x1="165" y1="35" x2="205" y2="35" stroke="#9CA3AF" stroke-width="0.5" opacity="0.6"/>
+    <line x1="165" y1="45" x2="200" y2="45" stroke="#9CA3AF" stroke-width="0.5" opacity="0.6"/>
+    <line x1="165" y1="55" x2="195" y2="55" stroke="#9CA3AF" stroke-width="0.5" opacity="0.6"/>
+    <text x="185" y="75" text-anchor="middle" fill="#9CA3AF" font-size="8">FADED</text>
+  </g>
+  
+  <!-- Scattered Bills Bottom -->
+  <g transform="translate(40, 120)">
+    <!-- Bill 4 (Overlapping) -->
+    <rect x="0" y="0" width="45" height="60" rx="3" fill="white" opacity="0.6" stroke="#D1D5DB"/>
+    <rect x="20" y="10" width="45" height="60" rx="3" fill="white" opacity="0.7" stroke="#D1D5DB"/>
+    <line x1="25" y1="25" x2="55" y2="25" stroke="#6B7280" stroke-width="0.5"/>
+    <line x1="25" y1="35" x2="50" y2="35" stroke="#6B7280" stroke-width="0.5"/>
+    
+    <!-- Bill 5 (Coffee Stained) -->
+    <rect x="100" y="5" width="50" height="65" rx="3" fill="white" stroke="#D1D5DB"/>
+    <circle cx="125" cy="35" r="8" fill="#92400E" opacity="0.4"/>
+    <circle cx="130" cy="45" r="5" fill="#92400E" opacity="0.3"/>
+    <line x1="105" y1="20" x2="145" y2="20" stroke="#6B7280" stroke-width="0.5"/>
+    <line x1="105" y1="30" x2="140" y2="30" stroke="#6B7280" stroke-width="0.5"/>
+    <text x="125" y="60" text-anchor="middle" fill="#92400E" font-size="7">STAINED</text>
+  </g>
+  
+  <!-- Frustrated Elements -->
+  <g transform="translate(220, 40)">
+    <!-- Exclamation Mark -->
+    <circle cx="20" cy="20" r="15" fill="#EF4444" opacity="0.8"/>
+    <rect x="18" y="10" width="4" height="12" fill="white"/>
+    <circle cx="20" cy="26" r="2" fill="white"/>
+    
+    <!-- Question Mark -->
+    <circle cx="20" cy="60" r="15" fill="#F59E0B" opacity="0.8"/>
+    <path d="M15 55 Q20 50 25 55 Q20 60 20 65" stroke="white" stroke-width="2" fill="none"/>
+    <circle cx="20" cy="70" r="1" fill="white"/>
+  </g>
+  
+  <!-- Chaos Lines -->
+  <g stroke="#EF4444" stroke-width="1" opacity="0.3" fill="none">
+    <path d="M50 80 Q100 60 150 90"/>
+    <path d="M80 120 Q130 100 180 130"/>
+    <path d="M120 50 Q170 70 220 40"/>
+  </g>
+</svg>
