@@ -1,0 +1,93 @@
+<svg width="300" height="200" viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="emptyStoreGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#DC2626;stop-opacity:0.2" />
+      <stop offset="100%" style="stop-color:#7C2D12;stop-opacity:0.2" />
+    </linearGradient>
+    <filter id="dusty">
+      <feGaussianBlur stdDeviation="1" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Empty Store Background -->
+  <rect width="300" height="200" fill="url(#emptyStoreGradient)"/>
+  
+  <!-- Store Interior -->
+  <g transform="translate(20, 30)">
+    <!-- Floor -->
+    <rect x="0" y="120" width="260" height="50" fill="#8B5A2B" opacity="0.6"/>
+    
+    <!-- Empty Shelves -->
+    <rect x="20" y="80" width="60" height="40" fill="#6B7280" opacity="0.7"/>
+    <rect x="20" y="90" width="60" height="2" fill="#374151"/>
+    <rect x="20" y="100" width="60" height="2" fill="#374151"/>
+    <rect x="20" y="110" width="60" height="2" fill="#374151"/>
+    
+    <rect x="100" y="80" width="60" height="40" fill="#6B7280" opacity="0.7"/>
+    <rect x="100" y="90" width="60" height="2" fill="#374151"/>
+    <rect x="100" y="100" width="60" height="2" fill="#374151"/>
+    <rect x="100" y="110" width="60" height="2" fill="#374151"/>
+    
+    <rect x="180" y="80" width="60" height="40" fill="#6B7280" opacity="0.7"/>
+    <rect x="180" y="90" width="60" height="2" fill="#374151"/>
+    <rect x="180" y="100" width="60" height="2" fill="#374151"/>
+    <rect x="180" y="110" width="60" height="2" fill="#374151"/>
+    
+    <!-- Empty Cash Counter -->
+    <rect x="200" y="40" width="50" height="30" fill="#4B5563" opacity="0.8"/>
+    <rect x="205" y="35" width="40" height="5" fill="#374151"/>
+    
+    <!-- Cobwebs -->
+    <path d="M15 75 Q25 70 35 75 Q30 65 25 70 Q20 65 15 75" fill="#9CA3AF" opacity="0.4"/>
+    <path d="M175 75 Q185 70 195 75 Q190 65 185 70 Q180 65 175 75" fill="#9CA3AF" opacity="0.4"/>
+  </g>
+  
+  <!-- Sad Store Owner -->
+  <g transform="translate(120, 100)">
+    <!-- Body -->
+    <ellipse cx="20" cy="50" rx="15" ry="30" fill="#374151"/>
+    <!-- Head -->
+    <circle cx="20" cy="25" r="12" fill="#F3F4F6"/>
+    <!-- Hair -->
+    <path d="M8 20 Q20 10 32 20 Q28 15 20 15 Q12 15 8 20" fill="#1F2937"/>
+    <!-- Sad Eyes -->
+    <path d="M14 22 Q16 20 18 22" stroke="#374151" stroke-width="1.5" fill="none"/>
+    <path d="M22 22 Q24 20 26 22" stroke="#374151" stroke-width="1.5" fill="none"/>
+    <!-- Sad Mouth -->
+    <path d="M14 28 Q20 32 26 28" stroke="#374151" stroke-width="1.5" fill="none"/>
+    <!-- Drooping Arms -->
+    <ellipse cx="8" cy="40" rx="5" ry="15" fill="#F3F4F6" transform="rotate(-10 8 40)"/>
+    <ellipse cx="32" cy="40" rx="5" ry="15" fill="#F3F4F6" transform="rotate(10 32 40)"/>
+  </g>
+  
+  <!-- "CLOSED" Sign -->
+  <g transform="translate(80, 50)">
+    <rect x="0" y="0" width="40" height="20" rx="3" fill="#DC2626" stroke="#991B1B" stroke-width="1"/>
+    <text x="20" y="12" text-anchor="middle" fill="white" font-size="8" font-weight="bold">CLOSED</text>
+    <!-- Chain -->
+    <ellipse cx="5" cy="-5" rx="3" ry="2" fill="none" stroke="#6B7280" stroke-width="1"/>
+    <ellipse cx="35" cy="-5" rx="3" ry="2" fill="none" stroke="#6B7280" stroke-width="1"/>
+  </g>
+  
+  <!-- Tumbleweeds -->
+  <g transform="translate(50, 140)" opacity="0.6">
+    <circle cx="0" cy="0" r="8" fill="none" stroke="#8B5A2B" stroke-width="1"/>
+    <circle cx="0" cy="0" r="5" fill="none" stroke="#8B5A2B" stroke-width="0.5"/>
+    <line x1="-6" y1="0" x2="6" y2="0" stroke="#8B5A2B" stroke-width="0.5"/>
+    <line x1="0" y1="-6" x2="0" y2="6" stroke="#8B5A2B" stroke-width="0.5"/>
+  </g>
+  
+  <g transform="translate(200, 150)" opacity="0.4">
+    <circle cx="0" cy="0" r="6" fill="none" stroke="#8B5A2B" stroke-width="0.8"/>
+    <circle cx="0" cy="0" r="3" fill="none" stroke="#8B5A2B" stroke-width="0.4"/>
+    <line x1="-4" y1="0" x2="4" y2="0" stroke="#8B5A2B" stroke-width="0.4"/>
+    <line x1="0" y1="-4" x2="0" y2="4" stroke="#8B5A2B" stroke-width="0.4"/>
+  </g>
+  
+  <!-- No Customers Text -->
+  <text x="150" y="180" text-anchor="middle" fill="#DC2626" font-size="12" font-weight="bold" opacity="0.8">NO CUSTOMERS</text>
+</svg>

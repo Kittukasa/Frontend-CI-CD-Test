@@ -1,0 +1,117 @@
+import { Toaster } from "@/components/ui/toaster";
+import { Toaster as Sonner } from "@/components/ui/sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { FEATURE_FLAGS } from "@/config/featureFlags";
+import ComingSoon from "@/pages/ComingSoon";
+import type { ReactElement } from "react";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Navigate,
+  useLocation,
+} from "react-router-dom";
+import Index from "./pages/Index";
+import Analytics from "./pages/Analytics";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
+import NotFound from "./pages/NotFound";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsAndConditions from "./pages/TermsAndConditions";
+import DataDeletionPolicy from "./pages/DataDeletionPolicy";
+import EBillProduct from "./pages/EBillProduct";
+import CustomerAnalyticsProduct from "./pages/CustomerAnalyticsProduct";
+import MultiStoreProduct from "./pages/MultiStoreProduct";
+import CampaignsProduct from "./pages/CampaignsProduct";
+import TemplatesProduct from "./pages/TemplatesProduct";
+import FeedbacksProduct from "./pages/FeedbacksProduct";
+import AdminPanelPlaceholder from "./pages/AdminPanelPlaceholder";
+
+const RequireAuth = ({ children }: { children: ReactElement }) => {
+  const location = useLocation();
+  const token = typeof window !== "undefined" ? localStorage.getItem("bb_token") : null;
+
+  if (!token) {
+    const redirectFrom = `${location.pathname}${location.search}`;
+    return <Navigate to="/login" replace state={{ from: redirectFrom }} />;
+  }
+
+  return children;
+};
+
+const App = () => (
+  <TooltipProvider>
+    <Toaster />
+    <Sonner />
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Index />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route
+          path="/analytics"
+          element={
+            <RequireAuth>
+              <Analytics />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/loyalty"
+          element={
+            <RequireAuth>
+              {FEATURE_FLAGS.analytics.loyalty ? (
+                <Navigate to="/analytics?tab=loyalty" replace />
+              ) : (
+                <ComingSoon featureName="Loyalty" />
+              )}
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/stores"
+          element={
+            <RequireAuth>
+              {FEATURE_FLAGS.analytics.stores ? (
+                <Navigate to="/analytics?tab=stores" replace />
+              ) : (
+                <ComingSoon featureName="Stores" />
+              )}
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/cdp"
+          element={
+            <RequireAuth>
+              {FEATURE_FLAGS.analytics.cdp ? (
+                <Navigate to="/analytics?tab=cdp" replace />
+              ) : (
+                <ComingSoon featureName="CDP" />
+              )}
+            </RequireAuth>
+          }
+        />
+        {/* Product Pages */}
+        <Route path="/products/ebill" element={<EBillProduct />} />
+        <Route path="/products/analytics" element={<CustomerAnalyticsProduct />} />
+        <Route path="/products/multi-store" element={<MultiStoreProduct />} />
+        <Route path="/products/campaigns" element={<CampaignsProduct />} />
+        <Route path="/products/templates" element={<TemplatesProduct />} />
+        <Route path="/products/feedbacks" element={<FeedbacksProduct />} />
+
+        {/* Admin placeholder */}
+        <Route path="/admin-panel" element={<AdminPanelPlaceholder />} />
+        
+        {/* Legal Pages */}
+        <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="/data-deletion-policy" element={<DataDeletionPolicy />} />
+        {/* Catch-all route */}
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </BrowserRouter>
+  </TooltipProvider>
+);
+
+export default App;
