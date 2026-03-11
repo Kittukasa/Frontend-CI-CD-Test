@@ -8,9 +8,11 @@ import ModernCTA from '@/components/modern/ModernCTA';
 import Footer from '@/components/Footer';
 
 const Index = () => {
-  const whatsappNumber = "918008407999";
-  const whatsappMessage = "Hi! I am interested in Billbox. Please share more details.";
-  const whatsappHref = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(whatsappMessage)}`;
+  const whatsappNumber = '918008407999';
+  const whatsappMessage = 'Hi! I am interested in Billbox. Please share more details.';
+  const whatsappHref = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(
+    whatsappMessage
+  )}`;
 
   return (
     <div className="min-h-screen">

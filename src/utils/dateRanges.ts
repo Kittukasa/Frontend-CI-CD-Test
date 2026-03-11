@@ -1,7 +1,7 @@
-import dayjs from "dayjs";
-import type { DateRangeFilter } from "@/pages/analyticsTypes";
+import dayjs from 'dayjs';
+import type { DateRangeFilter } from '@/pages/analyticsTypes';
 
-export const formatLocalDateKey = (date: Date): string => dayjs(date).format("YYYY-MM-DD");
+export const formatLocalDateKey = (date: Date): string => dayjs(date).format('YYYY-MM-DD');
 
 export interface ResolvedDateRange {
   startDate: string;
@@ -18,18 +18,18 @@ export const getDateRange = (
   let endDate = new Date(now);
 
   switch (filter as string) {
-    case "all":
-    case "alltime": {
-      startDate = new Date("1970-01-01T00:00:00.000Z");
+    case 'all':
+    case 'alltime': {
+      startDate = new Date('1970-01-01T00:00:00.000Z');
       endDate = new Date(now);
       break;
     }
-    case "today": {
+    case 'today': {
       startDate = new Date(now);
       endDate = new Date(now);
       break;
     }
-    case "thisWeek": {
+    case 'thisWeek': {
       const weekStart = new Date(now);
       const day = weekStart.getDay(); // 0 (Sun) - 6 (Sat)
       const diff = day === 0 ? 6 : day - 1; // start week on Monday
@@ -42,19 +42,19 @@ export const getDateRange = (
       endDate = weekEnd;
       break;
     }
-    case "thisMonth": {
+    case 'thisMonth': {
       const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
       const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
       startDate = startOfMonth;
       endDate = endOfMonth;
       break;
     }
-    case "thisYear": {
+    case 'thisYear': {
       startDate = new Date(now.getFullYear(), 0, 1);
       endDate = new Date(now.getFullYear(), 11, 31);
       break;
     }
-    case "custom": {
+    case 'custom': {
       const parsedStart = customStart ? new Date(customStart) : null;
       const parsedEnd = customEnd ? new Date(customEnd) : null;
 
@@ -72,7 +72,7 @@ export const getDateRange = (
       }
       break;
     }
-    case "last7d": {
+    case 'last7d': {
       const trailingStart = new Date(now);
       trailingStart.setDate(trailingStart.getDate() - 6);
       trailingStart.setHours(0, 0, 0, 0);
@@ -107,24 +107,24 @@ export const getDateRangeLabel = (
   startKey: string,
   endKey: string
 ): string => {
-  if (filter === "custom") {
+  if (filter === 'custom') {
     return `Custom (${startKey} - ${endKey})`;
   }
   switch (filter) {
-    case "today":
-      return "Today";
-    case "thisWeek":
-      return "This Week";
-    case "last7d":
-      return "Last 7 Days";
-    case "thisMonth":
-      return "This Month";
-    case "thisYear":
-      return "This Year";
-    case "all":
-    case "alltime":
-      return "All Time";
+    case 'today':
+      return 'Today';
+    case 'thisWeek':
+      return 'This Week';
+    case 'last7d':
+      return 'Last 7 Days';
+    case 'thisMonth':
+      return 'This Month';
+    case 'thisYear':
+      return 'This Year';
+    case 'all':
+    case 'alltime':
+      return 'All Time';
     default:
-      return "Custom";
+      return 'Custom';
   }
 };

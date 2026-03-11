@@ -22,7 +22,7 @@ import {
   Calendar,
   Wallet,
   User,
-  UploadCloud
+  UploadCloud,
 } from 'lucide-react';
 import {
   Chart as ChartJS,
@@ -32,7 +32,7 @@ import {
   LineElement,
   BarElement,
   Tooltip as ChartTooltip,
-  Legend
+  Legend,
 } from 'chart.js';
 import type { Plugin } from 'chart.js';
 import { Line, Bar } from 'react-chartjs-2';
@@ -42,13 +42,21 @@ import { maskPhoneNumber } from '@/lib/maskPhone';
 import {
   DEFAULT_CUSTOMER_TYPE_CONFIG,
   persistCustomerTypeConfig,
-  CustomerTypeConfig
+  CustomerTypeConfig,
 } from '@/lib/customerTypes';
 import type { DateRangeFilter } from './analyticsTypes';
 import { getDateRange, getDateRangeLabel } from '@/utils/dateRanges';
 import { formatINR } from '@/utils/formatCurrency';
 
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, ChartTooltip, Legend);
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  BarElement,
+  ChartTooltip,
+  Legend
+);
 
 const parseCalendarDate = (value: string | null | undefined) => {
   if (!value) return null;
@@ -194,10 +202,20 @@ const TABS = [
   { id: 'wallet', label: 'Payments', icon: DollarSign },
   { id: 'smart-ebill', label: 'Smart E-bill', icon: UploadCloud },
   { id: 'profile', label: 'Profile', icon: User },
-  { id: 'admin', label: 'Admin panel', icon: Shield }
+  { id: 'admin', label: 'Admin panel', icon: Shield },
 ];
 
-const comparisonColors = ['#a855f7', '#22d3ee', '#fb923c', '#34d399', '#f472b6', '#38bdf8', '#facc15', '#94a3b8', '#f87171'];
+const comparisonColors = [
+  '#a855f7',
+  '#22d3ee',
+  '#fb923c',
+  '#34d399',
+  '#f472b6',
+  '#38bdf8',
+  '#facc15',
+  '#94a3b8',
+  '#f87171',
+];
 const ANONYMOUS_KEY_PREFIX = 'anonymous:';
 const SMART_EBILL_MAX_IMAGES = 10;
 const MAX_SMART_HEADER_IMAGES = 7;
@@ -260,7 +278,7 @@ const ebillAnonymousValueLabelPlugin: Plugin<'bar'> = {
       });
     });
     ctx.restore();
-  }
+  },
 };
 
 const FranchisePortal: React.FC = () => {
@@ -276,13 +294,15 @@ const FranchisePortal: React.FC = () => {
   const [storeAccessMap, setStoreAccessMap] = useState<Record<string, boolean>>({});
   const [accessLoading, setAccessLoading] = useState<string | null>(null);
   const [accessError, setAccessError] = useState('');
-  const [selectedStoreConfig, setSelectedStoreConfig] = useState<FranchiseStoreSummary | null>(null);
+  const [selectedStoreConfig, setSelectedStoreConfig] = useState<FranchiseStoreSummary | null>(
+    null
+  );
   const [configStoreId, setConfigStoreId] = useState<string | null>(null);
   const [customerTypeForm, setCustomerTypeForm] = useState<CustomerTypeFormState>({
     premiumMin: 10000,
     standardMin: 5000,
     standardMax: 9999,
-    basicMax: 4999
+    basicMax: 4999,
   });
   const [customerConfigLoading, setCustomerConfigLoading] = useState(false);
   const [customerConfigStatus, setCustomerConfigStatus] = useState('');
@@ -302,16 +322,18 @@ const FranchisePortal: React.FC = () => {
   } | null>(null);
   const [walletLoading, setWalletLoading] = useState(false);
   const [walletError, setWalletError] = useState('');
-  const [walletEvents, setWalletEvents] = useState<Array<{
-    event_key?: string | null;
-    type?: string | null;
-    usage_type?: string | null;
-    amount?: number;
-    balance_after?: number | null;
-    store_id?: string | null;
-    currency?: string | null;
-    timestamp?: string | null;
-  }>>([]);
+  const [walletEvents, setWalletEvents] = useState<
+    Array<{
+      event_key?: string | null;
+      type?: string | null;
+      usage_type?: string | null;
+      amount?: number;
+      balance_after?: number | null;
+      store_id?: string | null;
+      currency?: string | null;
+      timestamp?: string | null;
+    }>
+  >([]);
   const [walletEventsLoading, setWalletEventsLoading] = useState(false);
   const [walletEventsError, setWalletEventsError] = useState('');
   const [walletEventTypeFilter, setWalletEventTypeFilter] = useState('all');
@@ -332,7 +354,12 @@ const FranchisePortal: React.FC = () => {
   const [walletUsageError, setWalletUsageError] = useState('');
   const [walletActiveDetailsTab, setWalletActiveDetailsTab] = useState('overview');
   const [paymentsActiveTab, setPaymentsActiveTab] = useState<
-    'wallet' | 'track_expenses' | 'paid_messages' | 'billing_details' | 'manage_subscriptions' | 'invoices'
+    | 'wallet'
+    | 'track_expenses'
+    | 'paid_messages'
+    | 'billing_details'
+    | 'manage_subscriptions'
+    | 'invoices'
   >('wallet');
   const [trackExpenseTab, setTrackExpenseTab] = useState<'wallet' | 'subscription'>('wallet');
   const [walletRangeEvents, setWalletRangeEvents] = useState<
@@ -380,21 +407,23 @@ const FranchisePortal: React.FC = () => {
     city: '',
     state: '',
     zip: '',
-    gstNumber: ''
+    gstNumber: '',
   });
   const [paymentsHistory, setPaymentsHistory] = useState<any[]>([]);
   const [paymentsHistoryLoading, setPaymentsHistoryLoading] = useState(false);
   const [paymentsHistoryError, setPaymentsHistoryError] = useState('');
-  const [walletStoreUsage, setWalletStoreUsage] = useState<Array<{
-    store_id: string;
-    ebillCount: number;
-    ebillSpend: number;
-    smartEbillCount: number;
-    smartEbillSpend: number;
-    campaignCount: number;
-    campaignSpend: number;
-    totalSpend: number;
-  }>>([]);
+  const [walletStoreUsage, setWalletStoreUsage] = useState<
+    Array<{
+      store_id: string;
+      ebillCount: number;
+      ebillSpend: number;
+      smartEbillCount: number;
+      smartEbillSpend: number;
+      campaignCount: number;
+      campaignSpend: number;
+      totalSpend: number;
+    }>
+  >([]);
   const [walletStoreUsageLoading, setWalletStoreUsageLoading] = useState(false);
   const [walletStoreUsageError, setWalletStoreUsageError] = useState('');
   const [walletStoreSearch, setWalletStoreSearch] = useState('');
@@ -424,7 +453,7 @@ const FranchisePortal: React.FC = () => {
     gstNumber: '',
     panNumber: '',
     gstCertificateUrl: '',
-    gstCertificateKey: ''
+    gstCertificateKey: '',
   });
   const [profileInitial, setProfileInitial] = useState<typeof profileForm | null>(null);
   const [gstUploadStatus, setGstUploadStatus] = useState('');
@@ -439,11 +468,11 @@ const FranchisePortal: React.FC = () => {
   const [smartLoading, setSmartLoading] = useState(false);
   const [smartSaving, setSmartSaving] = useState(false);
   const [smartUploading, setSmartUploading] = useState(false);
-  const [smartStatus, setSmartStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(
-    null
-  );
+  const [smartStatus, setSmartStatus] = useState<{
+    type: 'success' | 'error';
+    message: string;
+  } | null>(null);
   const smartFileInputRef = useRef<HTMLInputElement | null>(null);
-
 
   const getTrialInfo = (trialStartIso?: string | null, trialEndIso?: string | null) => {
     if (!trialStartIso || !trialEndIso) {
@@ -464,8 +493,8 @@ const FranchisePortal: React.FC = () => {
       endLabel: end.toLocaleDateString('en-US', {
         month: 'short',
         day: '2-digit',
-        year: 'numeric'
-      })
+        year: 'numeric',
+      }),
     };
   };
   const [auditClearing, setAuditClearing] = useState(false);
@@ -477,7 +506,9 @@ const FranchisePortal: React.FC = () => {
   const [logoutAllLoading, setLogoutAllLoading] = useState(false);
   const [logoutAllStatus, setLogoutAllStatus] = useState('');
   const [logoutAllError, setLogoutAllError] = useState('');
-  const [ebillAnonymousSeriesMap, setEbillAnonymousSeriesMap] = useState<Record<string, CapturePoint[]>>({});
+  const [ebillAnonymousSeriesMap, setEbillAnonymousSeriesMap] = useState<
+    Record<string, CapturePoint[]>
+  >({});
   const [ebillAnonymousLoading, setEbillAnonymousLoading] = useState(false);
   const [ebillAnonymousError, setEbillAnonymousError] = useState('');
   const [overviewDateFilter, setOverviewDateFilter] = useState<DateRangeFilter>('today');
@@ -486,7 +517,11 @@ const FranchisePortal: React.FC = () => {
   const overviewCustomStartRef = useRef<HTMLInputElement | null>(null);
   const overviewCustomEndRef = useRef<HTMLInputElement | null>(null);
   const overviewDateRange = useMemo(() => {
-    const { startDate, endDate } = getDateRange(overviewDateFilter, overviewCustomStart, overviewCustomEnd);
+    const { startDate, endDate } = getDateRange(
+      overviewDateFilter,
+      overviewCustomStart,
+      overviewCustomEnd
+    );
     const start = new Date(`${startDate}T00:00:00`);
     const end = new Date(`${endDate}T23:59:59.999`);
     return {
@@ -496,7 +531,7 @@ const FranchisePortal: React.FC = () => {
       endKey: endDate,
       startMs: start.getTime(),
       endMs: end.getTime(),
-      label: getDateRangeLabel(overviewDateFilter, startDate, endDate)
+      label: getDateRangeLabel(overviewDateFilter, startDate, endDate),
     };
   }, [overviewDateFilter, overviewCustomStart, overviewCustomEnd]);
 
@@ -542,7 +577,7 @@ const FranchisePortal: React.FC = () => {
         const parsed = JSON.parse(raw) as FranchiseResponse & { token?: string | null };
         const normalized = {
           ...parsed,
-          session_token: parsed.session_token || (parsed as any).token || null
+          session_token: parsed.session_token || (parsed as any).token || null,
         };
         setFranchiseData(normalized);
       } catch {
@@ -573,8 +608,8 @@ const FranchisePortal: React.FC = () => {
       try {
         const response = await fetch('/api/franchise/session/overview', {
           headers: {
-            Authorization: `Bearer ${token}`
-          }
+            Authorization: `Bearer ${token}`,
+          },
         });
         const data = await response.json().catch(() => ({}));
         if (!response.ok) {
@@ -587,7 +622,7 @@ const FranchisePortal: React.FC = () => {
           const next = {
             ...(prev || {}),
             ...data,
-            session_token: token
+            session_token: token,
           };
           sessionStorage.setItem(STORAGE_KEY, JSON.stringify(next));
           return next;
@@ -610,7 +645,10 @@ const FranchisePortal: React.FC = () => {
       }
       return;
     }
-    if (storeFilter !== 'all' && !franchiseData.stores.some(store => store.store_id === storeFilter)) {
+    if (
+      storeFilter !== 'all' &&
+      !franchiseData.stores.some(store => store.store_id === storeFilter)
+    ) {
       setStoreFilter('all');
     }
   }, [franchiseData, storeFilter]);
@@ -626,8 +664,8 @@ const FranchisePortal: React.FC = () => {
       try {
         const response = await fetch('/api/franchise/wallet', {
           headers: {
-            Authorization: `Bearer ${franchiseData.session_token}`
-          }
+            Authorization: `Bearer ${franchiseData.session_token}`,
+          },
         });
         const data = await response.json().catch(() => ({}));
         if (!response.ok) {
@@ -642,7 +680,7 @@ const FranchisePortal: React.FC = () => {
             reserved_balance: Number(wallet.reserved_balance ?? 0),
             pricing_ebill_invoice: Number(wallet.pricing_ebill_invoice ?? 0),
             pricing_smart_ebill: Number(wallet.pricing_smart_ebill ?? 0),
-            pricing_campaign_message: Number(wallet.pricing_campaign_message ?? 0)
+            pricing_campaign_message: Number(wallet.pricing_campaign_message ?? 0),
           });
         }
       } catch (error) {
@@ -670,8 +708,8 @@ const FranchisePortal: React.FC = () => {
     try {
       const response = await fetch('/api/franchise/wallet-events?limit=50', {
         headers: {
-          Authorization: `Bearer ${franchiseData.session_token}`
-        }
+          Authorization: `Bearer ${franchiseData.session_token}`,
+        },
       });
       const data = await response.json().catch(() => ({}));
       if (!response.ok) {
@@ -679,7 +717,9 @@ const FranchisePortal: React.FC = () => {
       }
       setWalletEvents(Array.isArray(data.events) ? data.events : []);
     } catch (error) {
-      setWalletEventsError(error instanceof Error ? error.message : 'Unable to load wallet events.');
+      setWalletEventsError(
+        error instanceof Error ? error.message : 'Unable to load wallet events.'
+      );
     } finally {
       setWalletEventsLoading(false);
     }
@@ -697,8 +737,8 @@ const FranchisePortal: React.FC = () => {
       if (end) params.set('end', end);
       const response = await fetch(`/api/franchise/wallet-events/summary?${params.toString()}`, {
         headers: {
-          Authorization: `Bearer ${franchiseData.session_token}`
-        }
+          Authorization: `Bearer ${franchiseData.session_token}`,
+        },
       });
       const data = await response.json().catch(() => ({}));
       if (!response.ok) {
@@ -710,10 +750,12 @@ const FranchisePortal: React.FC = () => {
         smartEbillCount: Number(data.smartEbillCount ?? 0),
         smartEbillSpend: Number(data.smartEbillSpend ?? 0),
         campaignCount: Number(data.campaignCount ?? 0),
-        campaignSpend: Number(data.campaignSpend ?? 0)
+        campaignSpend: Number(data.campaignSpend ?? 0),
       });
     } catch (error) {
-      setWalletUsageError(error instanceof Error ? error.message : 'Unable to load wallet usage summary.');
+      setWalletUsageError(
+        error instanceof Error ? error.message : 'Unable to load wallet usage summary.'
+      );
     } finally {
       setWalletUsageLoading(false);
     }
@@ -731,8 +773,8 @@ const FranchisePortal: React.FC = () => {
       if (end) params.set('end', end);
       const response = await fetch(`/api/franchise/wallet-events/by-store?${params.toString()}`, {
         headers: {
-          Authorization: `Bearer ${franchiseData.session_token}`
-        }
+          Authorization: `Bearer ${franchiseData.session_token}`,
+        },
       });
       const data = await response.json().catch(() => ({}));
       if (!response.ok) {
@@ -740,7 +782,9 @@ const FranchisePortal: React.FC = () => {
       }
       setWalletStoreUsage(Array.isArray(data.stores) ? data.stores : []);
     } catch (error) {
-      setWalletStoreUsageError(error instanceof Error ? error.message : 'Unable to load store usage.');
+      setWalletStoreUsageError(
+        error instanceof Error ? error.message : 'Unable to load store usage.'
+      );
     } finally {
       setWalletStoreUsageLoading(false);
     }
@@ -758,8 +802,8 @@ const FranchisePortal: React.FC = () => {
       if (end) params.set('end', end);
       const response = await fetch(`/api/franchise/wallet-events/range?${params.toString()}`, {
         headers: {
-          Authorization: `Bearer ${franchiseData.session_token}`
-        }
+          Authorization: `Bearer ${franchiseData.session_token}`,
+        },
       });
       const data = await response.json().catch(() => ({}));
       if (!response.ok) {
@@ -782,8 +826,8 @@ const FranchisePortal: React.FC = () => {
     try {
       const response = await fetch('/api/franchise/billing-profile', {
         headers: {
-          Authorization: `Bearer ${franchiseData.session_token}`
-        }
+          Authorization: `Bearer ${franchiseData.session_token}`,
+        },
       });
       const data = await response.json().catch(() => ({}));
       if (!response.ok) {
@@ -791,7 +835,9 @@ const FranchisePortal: React.FC = () => {
       }
       setBillingProfile(data.profile || null);
     } catch (error) {
-      setBillingProfileError(error instanceof Error ? error.message : 'Unable to load billing profile.');
+      setBillingProfileError(
+        error instanceof Error ? error.message : 'Unable to load billing profile.'
+      );
     } finally {
       setBillingProfileLoading(false);
     }
@@ -806,8 +852,8 @@ const FranchisePortal: React.FC = () => {
     try {
       const response = await fetch('/api/franchise/payments/history?limit=50', {
         headers: {
-          Authorization: `Bearer ${franchiseData.session_token}`
-        }
+          Authorization: `Bearer ${franchiseData.session_token}`,
+        },
       });
       const data = await response.json().catch(() => ({}));
       if (!response.ok) {
@@ -815,7 +861,9 @@ const FranchisePortal: React.FC = () => {
       }
       setPaymentsHistory(Array.isArray(data.payments) ? data.payments : []);
     } catch (error) {
-      setPaymentsHistoryError(error instanceof Error ? error.message : 'Unable to load payment history.');
+      setPaymentsHistoryError(
+        error instanceof Error ? error.message : 'Unable to load payment history.'
+      );
     } finally {
       setPaymentsHistoryLoading(false);
     }
@@ -830,8 +878,8 @@ const FranchisePortal: React.FC = () => {
     try {
       const response = await fetch('/api/franchise/profile', {
         headers: {
-          Authorization: `Bearer ${franchiseData.session_token}`
-        }
+          Authorization: `Bearer ${franchiseData.session_token}`,
+        },
       });
       const data = await response.json().catch(() => ({}));
       if (!response.ok) {
@@ -855,7 +903,7 @@ const FranchisePortal: React.FC = () => {
         gstNumber: profile.gst_number || '',
         panNumber: profile.pan_number || '',
         gstCertificateUrl: profile.gst_certificate_url || '',
-        gstCertificateKey: profile.gst_certificate_key || ''
+        gstCertificateKey: profile.gst_certificate_key || '',
       });
       setProfileInitial({
         legalBusinessName: profile.legal_business_name || '',
@@ -874,7 +922,7 @@ const FranchisePortal: React.FC = () => {
         gstNumber: profile.gst_number || '',
         panNumber: profile.pan_number || '',
         gstCertificateUrl: profile.gst_certificate_url || '',
-        gstCertificateKey: profile.gst_certificate_key || ''
+        gstCertificateKey: profile.gst_certificate_key || '',
       });
       setProfileSaveStatus('');
     } catch (error) {
@@ -895,7 +943,7 @@ const FranchisePortal: React.FC = () => {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${franchiseData.session_token}`
+          Authorization: `Bearer ${franchiseData.session_token}`,
         },
         body: JSON.stringify({
           legal_business_name: profileForm.legalBusinessName,
@@ -914,8 +962,8 @@ const FranchisePortal: React.FC = () => {
           gst_number: profileForm.gstNumber,
           pan_number: profileForm.panNumber,
           gst_certificate_url: profileForm.gstCertificateUrl,
-          gst_certificate_key: profileForm.gstCertificateKey
-        })
+          gst_certificate_key: profileForm.gstCertificateKey,
+        }),
       });
       const data = await response.json().catch(() => ({}));
       if (!response.ok) {
@@ -948,12 +996,12 @@ const FranchisePortal: React.FC = () => {
       const params = new URLSearchParams({
         filename: file.name,
         contentType: file.type,
-        size: String(file.size)
+        size: String(file.size),
       });
       const response = await fetch(`/api/franchise/profile/gst-upload-url?${params.toString()}`, {
         headers: {
-          Authorization: `Bearer ${franchiseData.session_token}`
-        }
+          Authorization: `Bearer ${franchiseData.session_token}`,
+        },
       });
       const data = await response.json().catch(() => ({}));
       if (!response.ok) {
@@ -968,9 +1016,9 @@ const FranchisePortal: React.FC = () => {
       const putResponse = await fetch(uploadUrl, {
         method: 'PUT',
         headers: {
-          'Content-Type': file.type
+          'Content-Type': file.type,
         },
-        body: file
+        body: file,
       });
       if (!putResponse.ok) {
         throw new Error('Upload failed.');
@@ -979,7 +1027,7 @@ const FranchisePortal: React.FC = () => {
       setProfileForm(prev => ({
         ...prev,
         gstCertificateUrl: publicUrl,
-        gstCertificateKey: key
+        gstCertificateKey: key,
       }));
       setGstUploadStatus('Uploaded');
     } catch (error) {
@@ -996,8 +1044,8 @@ const FranchisePortal: React.FC = () => {
     try {
       const response = await fetch('/api/franchise/smart-ebill', {
         headers: {
-          Authorization: `Bearer ${franchiseData.session_token}`
-        }
+          Authorization: `Bearer ${franchiseData.session_token}`,
+        },
       });
       const data = (await response.json().catch(() => ({}))) as FranchiseSmartEbillResponse & {
         error?: string;
@@ -1015,7 +1063,9 @@ const FranchisePortal: React.FC = () => {
       setSmartImages(imgs);
       setSmartHeaderText(typeof data.smart_header_text === 'string' ? data.smart_header_text : '');
       setSmartFooterText(typeof data.smart_footer_text === 'string' ? data.smart_footer_text : '');
-      setSmartAddressText(typeof data.smart_address_text === 'string' ? data.smart_address_text : '');
+      setSmartAddressText(
+        typeof data.smart_address_text === 'string' ? data.smart_address_text : ''
+      );
       setHeaderImages(
         selectedHeaders.length
           ? selectedHeaders
@@ -1025,7 +1075,7 @@ const FranchisePortal: React.FC = () => {
     } catch (error) {
       setSmartStatus({
         type: 'error',
-        message: error instanceof Error ? error.message : 'Unable to load Smart E-bill settings.'
+        message: error instanceof Error ? error.message : 'Unable to load Smart E-bill settings.',
       });
     } finally {
       setSmartLoading(false);
@@ -1051,7 +1101,7 @@ const FranchisePortal: React.FC = () => {
     if (remainingSlots <= 0) {
       setSmartStatus({
         type: 'error',
-        message: `You can upload up to ${SMART_EBILL_MAX_IMAGES} images.`
+        message: `You can upload up to ${SMART_EBILL_MAX_IMAGES} images.`,
       });
       return;
     }
@@ -1069,9 +1119,9 @@ const FranchisePortal: React.FC = () => {
       const response = await fetch('/api/franchise/smart-ebill/upload', {
         method: 'POST',
         headers: {
-          Authorization: `Bearer ${franchiseData.session_token}`
+          Authorization: `Bearer ${franchiseData.session_token}`,
         },
-        body: formData
+        body: formData,
       });
       const result = (await response.json().catch(() => ({}))) as FranchiseSmartEbillResponse & {
         error?: string;
@@ -1091,12 +1141,12 @@ const FranchisePortal: React.FC = () => {
       }
       setSmartStatus({
         type: 'success',
-        message: `Images uploaded and synced to ${result.updated_store_count ?? 0} stores.`
+        message: `Images uploaded and synced to ${result.updated_store_count ?? 0} stores.`,
       });
     } catch (error) {
       setSmartStatus({
         type: 'error',
-        message: error instanceof Error ? error.message : 'Unable to upload Smart E-bill images.'
+        message: error instanceof Error ? error.message : 'Unable to upload Smart E-bill images.',
       });
     } finally {
       setSmartUploading(false);
@@ -1151,7 +1201,7 @@ const FranchisePortal: React.FC = () => {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${franchiseData.session_token}`
+          Authorization: `Bearer ${franchiseData.session_token}`,
         },
         body: JSON.stringify({
           headerText: smartHeaderText,
@@ -1159,8 +1209,8 @@ const FranchisePortal: React.FC = () => {
           addressText: smartAddressText,
           images: smartImages,
           headerImages,
-          bottomBanner
-        })
+          bottomBanner,
+        }),
       });
       const result = (await response.json().catch(() => ({}))) as FranchiseSmartEbillResponse & {
         error?: string;
@@ -1170,8 +1220,12 @@ const FranchisePortal: React.FC = () => {
       }
       const nextImages = Array.isArray(result.smart_img_urls) ? result.smart_img_urls : smartImages;
       setSmartImages(nextImages);
-      setSmartHeaderText(typeof result.smart_header_text === 'string' ? result.smart_header_text : smartHeaderText);
-      setSmartFooterText(typeof result.smart_footer_text === 'string' ? result.smart_footer_text : smartFooterText);
+      setSmartHeaderText(
+        typeof result.smart_header_text === 'string' ? result.smart_header_text : smartHeaderText
+      );
+      setSmartFooterText(
+        typeof result.smart_footer_text === 'string' ? result.smart_footer_text : smartFooterText
+      );
       setSmartAddressText(
         typeof result.smart_address_text === 'string' ? result.smart_address_text : smartAddressText
       );
@@ -1183,12 +1237,14 @@ const FranchisePortal: React.FC = () => {
       );
       setSmartStatus({
         type: 'success',
-        message: `Smart E-bill settings saved and synced to ${result.updated_store_count ?? 0} stores.`
+        message: `Smart E-bill settings saved and synced to ${
+          result.updated_store_count ?? 0
+        } stores.`,
       });
     } catch (error) {
       setSmartStatus({
         type: 'error',
-        message: error instanceof Error ? error.message : 'Unable to save Smart E-bill settings.'
+        message: error instanceof Error ? error.message : 'Unable to save Smart E-bill settings.',
       });
     } finally {
       setSmartSaving(false);
@@ -1231,9 +1287,9 @@ const FranchisePortal: React.FC = () => {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${franchiseData.session_token}`,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ amount })
+        body: JSON.stringify({ amount }),
       });
       const data = await response.json().catch(() => ({}));
       if (!response.ok) {
@@ -1253,9 +1309,9 @@ const FranchisePortal: React.FC = () => {
               method: 'POST',
               headers: {
                 Authorization: `Bearer ${franchiseData.session_token}`,
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
               },
-              body: JSON.stringify(payload)
+              body: JSON.stringify(payload),
             });
             const verifyData = await verifyResponse.json().catch(() => ({}));
             if (!verifyResponse.ok) {
@@ -1264,11 +1320,15 @@ const FranchisePortal: React.FC = () => {
             setWalletTopupSuccess('Payment successful. Wallet credited.');
             setWalletTopupOpen(false);
             await loadWalletEvents();
-            await loadWalletUsageSummary(walletUsageRange, walletUsageCustomStart, walletUsageCustomEnd);
+            await loadWalletUsageSummary(
+              walletUsageRange,
+              walletUsageCustomStart,
+              walletUsageCustomEnd
+            );
             const refreshResponse = await fetch('/api/franchise/wallet', {
               headers: {
-                Authorization: `Bearer ${franchiseData.session_token}`
-              }
+                Authorization: `Bearer ${franchiseData.session_token}`,
+              },
             });
             if (refreshResponse.ok) {
               const refreshData = await refreshResponse.json().catch(() => ({}));
@@ -1280,17 +1340,19 @@ const FranchisePortal: React.FC = () => {
                 reserved_balance: Number(wallet.reserved_balance ?? 0),
                 pricing_ebill_invoice: Number(wallet.pricing_ebill_invoice ?? 0),
                 pricing_smart_ebill: Number(wallet.pricing_smart_ebill ?? 0),
-                pricing_campaign_message: Number(wallet.pricing_campaign_message ?? 0)
+                pricing_campaign_message: Number(wallet.pricing_campaign_message ?? 0),
               });
             }
           } catch (error) {
-            setWalletTopupError(error instanceof Error ? error.message : 'Payment verification failed.');
+            setWalletTopupError(
+              error instanceof Error ? error.message : 'Payment verification failed.'
+            );
           }
         },
         prefill: {},
         theme: {
-          color: '#4F46E5'
-        }
+          color: '#4F46E5',
+        },
       };
 
       // @ts-ignore
@@ -1328,7 +1390,7 @@ const FranchisePortal: React.FC = () => {
     ? franchiseTrialEndDate!.toLocaleDateString('en-US', {
         month: 'short',
         day: '2-digit',
-        year: 'numeric'
+        year: 'numeric',
       })
     : null;
   const franchiseWalletReadOnly = false;
@@ -1350,8 +1412,16 @@ const FranchisePortal: React.FC = () => {
     endOfToday.setHours(23, 59, 59, 999);
     const endDay = new Date(end);
     endDay.setHours(23, 59, 59, 999);
-    const daysLeft = Math.max(0, Math.ceil((endDay.getTime() - endOfToday.getTime()) / (1000 * 60 * 60 * 24)));
-    const status = endDay.getTime() < todayStart.getTime() ? 'ended' : endDay.getTime() <= endOfToday.getTime() ? 'ends_today' : 'active';
+    const daysLeft = Math.max(
+      0,
+      Math.ceil((endDay.getTime() - endOfToday.getTime()) / (1000 * 60 * 60 * 24))
+    );
+    const status =
+      endDay.getTime() < todayStart.getTime()
+        ? 'ended'
+        : endDay.getTime() <= endOfToday.getTime()
+        ? 'ends_today'
+        : 'active';
     const isAlert = status === 'ended' || status === 'ends_today' || daysLeft <= 5;
     const statusLabel =
       status === 'ended'
@@ -1361,12 +1431,20 @@ const FranchisePortal: React.FC = () => {
         : `Trial ends in ${daysLeft} ${daysLeft === 1 ? 'day' : 'days'}`;
 
     return {
-      startLabel: start.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }),
-      endLabel: end.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }),
+      startLabel: start.toLocaleDateString('en-US', {
+        month: 'short',
+        day: '2-digit',
+        year: 'numeric',
+      }),
+      endLabel: end.toLocaleDateString('en-US', {
+        month: 'short',
+        day: '2-digit',
+        year: 'numeric',
+      }),
       daysLeft,
       status,
       isAlert,
-      statusLabel
+      statusLabel,
     };
   })();
 
@@ -1381,14 +1459,27 @@ const FranchisePortal: React.FC = () => {
       return;
     }
     loadWalletUsageSummary(walletUsageRange, walletUsageCustomStart, walletUsageCustomEnd);
-  }, [activeTab, walletAccessAllowed, walletUsageRange, walletUsageCustomStart, walletUsageCustomEnd]);
+  }, [
+    activeTab,
+    walletAccessAllowed,
+    walletUsageRange,
+    walletUsageCustomStart,
+    walletUsageCustomEnd,
+  ]);
 
   useEffect(() => {
     if (activeTab !== 'wallet' || !walletAccessAllowed || walletActiveDetailsTab !== 'stores') {
       return;
     }
     loadWalletStoreUsage(walletUsageRange, walletUsageCustomStart, walletUsageCustomEnd);
-  }, [activeTab, walletAccessAllowed, walletActiveDetailsTab, walletUsageRange, walletUsageCustomStart, walletUsageCustomEnd]);
+  }, [
+    activeTab,
+    walletAccessAllowed,
+    walletActiveDetailsTab,
+    walletUsageRange,
+    walletUsageCustomStart,
+    walletUsageCustomEnd,
+  ]);
 
   useEffect(() => {
     if (activeTab !== 'wallet' || !walletAccessAllowed) {
@@ -1397,7 +1488,14 @@ const FranchisePortal: React.FC = () => {
     if (paymentsActiveTab === 'track_expenses' || paymentsActiveTab === 'paid_messages') {
       loadWalletRangeEvents(walletUsageRange, walletUsageCustomStart, walletUsageCustomEnd);
     }
-  }, [activeTab, walletAccessAllowed, paymentsActiveTab, walletUsageRange, walletUsageCustomStart, walletUsageCustomEnd]);
+  }, [
+    activeTab,
+    walletAccessAllowed,
+    paymentsActiveTab,
+    walletUsageRange,
+    walletUsageCustomStart,
+    walletUsageCustomEnd,
+  ]);
 
   useEffect(() => {
     if (!franchiseData?.session_token) {
@@ -1496,7 +1594,7 @@ const FranchisePortal: React.FC = () => {
       city: billingProfile.billing_city || '',
       state: billingProfile.billing_state || '',
       zip: billingProfile.billing_zip || '',
-      gstNumber: billingProfile.gst_number || ''
+      gstNumber: billingProfile.gst_number || '',
     }));
   }, [billingProfile]);
 
@@ -1571,7 +1669,7 @@ const FranchisePortal: React.FC = () => {
           premiumMin: Number(config.premium?.min ?? DEFAULT_CUSTOMER_TYPE_CONFIG.premium.min),
           standardMin: Number(config.standard?.min ?? DEFAULT_CUSTOMER_TYPE_CONFIG.standard.min),
           standardMax: Number(config.standard?.max ?? DEFAULT_CUSTOMER_TYPE_CONFIG.standard.max),
-          basicMax: Number(config.basic?.max ?? DEFAULT_CUSTOMER_TYPE_CONFIG.basic.max)
+          basicMax: Number(config.basic?.max ?? DEFAULT_CUSTOMER_TYPE_CONFIG.basic.max),
         });
         setCustomerConfigStatus(
           data.updated_at
@@ -1665,9 +1763,9 @@ const FranchisePortal: React.FC = () => {
               label: store.store_name || store.brand_name || `Store ${store.store_id}`,
               points: stats.map(point => ({
                 date: point.date,
-                revenue: Number(point.revenue ?? 0)
+                revenue: Number(point.revenue ?? 0),
               })),
-              stats
+              stats,
             };
           })
         );
@@ -1733,7 +1831,7 @@ const FranchisePortal: React.FC = () => {
         .map(([date, values]) => ({
           date,
           ebill: values.ebill,
-          anonymous: values.anonymous
+          anonymous: values.anonymous,
         }))
         .sort((a, b) => dayjs(a.date).valueOf() - dayjs(b.date).valueOf());
     };
@@ -1746,7 +1844,7 @@ const FranchisePortal: React.FC = () => {
       const series = stats.map(point => ({
         date: point.date,
         ebill: Number(point.customers ?? point.ebill_customers ?? 0) || 0,
-        anonymous: Number(point.anonymous_customers ?? 0) || 0
+        anonymous: Number(point.anonymous_customers ?? 0) || 0,
       }));
       const normalized = normalizeSeries(series);
       perStore[storeId] = normalized;
@@ -1762,7 +1860,7 @@ const FranchisePortal: React.FC = () => {
       .map(([date, values]) => ({
         date,
         ebill: values.ebill,
-        anonymous: values.anonymous
+        anonymous: values.anonymous,
       }))
       .sort((a, b) => dayjs(a.date).valueOf() - dayjs(b.date).valueOf());
 
@@ -1778,7 +1876,7 @@ const FranchisePortal: React.FC = () => {
       ebillCustomers: 0,
       anonymous: 0,
       campaigns: 0,
-      messages: 0
+      messages: 0,
     };
     if (!franchiseData || !filteredStores.length) {
       return emptyTotals;
@@ -1789,9 +1887,7 @@ const FranchisePortal: React.FC = () => {
       const invoices = Number(store.total_invoices ?? 0);
       const anonymous = Number(store.total_anonymous_customers ?? 0);
       const ebillCustomers = Number(store.total_ebill_customers ?? 0);
-      const totalCustomers = Number(
-        store.total_customers ?? ebillCustomers + anonymous
-      );
+      const totalCustomers = Number(store.total_customers ?? ebillCustomers + anonymous);
       const campaigns = Number(store.total_campaigns ?? 0);
       const messages = Number(store.total_campaign_messages ?? 0);
       return {
@@ -1806,7 +1902,7 @@ const FranchisePortal: React.FC = () => {
           : acc.ebillCustomers,
         anonymous: Number.isFinite(anonymous) ? acc.anonymous + anonymous : acc.anonymous,
         campaigns: Number.isFinite(campaigns) ? acc.campaigns + campaigns : acc.campaigns,
-        messages: Number.isFinite(messages) ? acc.messages + messages : acc.messages
+        messages: Number.isFinite(messages) ? acc.messages + messages : acc.messages,
       };
     }, emptyTotals);
 
@@ -1824,11 +1920,13 @@ const FranchisePortal: React.FC = () => {
           ebillCustomers: withMetrics(metrics.totalEbillCustomers, aggregated.ebillCustomers),
           anonymous: withMetrics(metrics.totalAnonymousCustomers, aggregated.anonymous),
           campaigns: withMetrics(metrics.totalCampaigns, aggregated.campaigns),
-          messages: withMetrics(metrics.totalMessages, aggregated.messages)
+          messages: withMetrics(metrics.totalMessages, aggregated.messages),
         }
       : aggregated;
 
-    const statsCovered = filteredStores.every(store => Array.isArray(storeStatsMap[store.store_id]));
+    const statsCovered = filteredStores.every(store =>
+      Array.isArray(storeStatsMap[store.store_id])
+    );
     if (!statsCovered) {
       return fallbackTotals;
     }
@@ -1841,10 +1939,7 @@ const FranchisePortal: React.FC = () => {
           if (Number.isNaN(parsedTime)) {
             return;
           }
-          if (
-            parsedTime < overviewDateRange.startMs ||
-            parsedTime > overviewDateRange.endMs
-          ) {
+          if (parsedTime < overviewDateRange.startMs || parsedTime > overviewDateRange.endMs) {
             return;
           }
           const revenue = Number(point.revenue ?? 0);
@@ -1877,7 +1972,7 @@ const FranchisePortal: React.FC = () => {
         anonymous: 0,
         customerKeys: new Set(),
         campaigns: fallbackTotals.campaigns,
-        messages: fallbackTotals.messages
+        messages: fallbackTotals.messages,
       }
     );
 
@@ -1889,7 +1984,7 @@ const FranchisePortal: React.FC = () => {
       ebillCustomers: statsTotals.customerKeys.size,
       anonymous: statsTotals.anonymous,
       campaigns: statsTotals.campaigns,
-      messages: statsTotals.messages
+      messages: statsTotals.messages,
     };
   }, [
     franchiseData,
@@ -1897,7 +1992,7 @@ const FranchisePortal: React.FC = () => {
     storeFilter,
     storeStatsMap,
     overviewDateRange.startMs,
-    overviewDateRange.endMs
+    overviewDateRange.endMs,
   ]);
 
   const campaignQuota = useMemo(() => {
@@ -1917,7 +2012,7 @@ const FranchisePortal: React.FC = () => {
     return {
       limit: hasLimit ? limit : null,
       remaining: hasLimit ? remaining : null,
-      used: Number.isFinite(used) ? used : 0
+      used: Number.isFinite(used) ? used : 0,
     };
   }, [franchiseData]);
 
@@ -1969,7 +2064,7 @@ const FranchisePortal: React.FC = () => {
           ebillInvoices,
           ebillCustomers: customerKeys.size,
           anonymousCustomers: anonymous,
-          totalCustomers: customerKeys.size + anonymous
+          totalCustomers: customerKeys.size + anonymous,
         };
         return acc;
       },
@@ -2002,7 +2097,6 @@ const FranchisePortal: React.FC = () => {
       ? selectedCaptureSeries.slice(selectedCaptureSeries.length - 14)
       : selectedCaptureSeries;
   }, [selectedCaptureSeries]);
-
 
   const deriveEbillReason = (ebill: number, anonymous: number) => {
     if (ebill === 0) {
@@ -2052,8 +2146,8 @@ const FranchisePortal: React.FC = () => {
         borderWidth: 2,
         tension: 0.35,
         pointRadius: 2,
-        fill: false
-      }))
+        fill: false,
+      })),
     };
   }, [comparisonSeriesForChart]);
 
@@ -2070,20 +2164,23 @@ const FranchisePortal: React.FC = () => {
             boxWidth: 8,
             boxHeight: 8,
             padding: 12,
-            font: { size: 10 }
-          }
-        }
+            font: { size: 10 },
+          },
+        },
       },
       scales: {
         x: {
           ticks: { color: 'rgba(248,250,252,0.6)' },
-          grid: { color: 'rgba(255,255,255,0.04)' }
+          grid: { color: 'rgba(255,255,255,0.04)' },
         },
         y: {
-          ticks: { color: 'rgba(248,250,252,0.6)', callback: (value: number | string) => `₹${value}` },
-          grid: { color: 'rgba(255,255,255,0.04)' }
-        }
-      }
+          ticks: {
+            color: 'rgba(248,250,252,0.6)',
+            callback: (value: number | string) => `₹${value}`,
+          },
+          grid: { color: 'rgba(255,255,255,0.04)' },
+        },
+      },
     }),
     []
   );
@@ -2103,30 +2200,30 @@ const FranchisePortal: React.FC = () => {
           data: ebillData,
           backgroundColor: 'rgba(52,211,153,0.8)',
           borderRadius: 6,
-          maxBarThickness: 32
+          maxBarThickness: 32,
         },
         {
           label: 'Anonymous bills',
           data: anonymousData,
           backgroundColor: 'rgba(248,113,113,0.8)',
           borderRadius: 6,
-          maxBarThickness: 32
-        }
-      ]
+          maxBarThickness: 32,
+        },
+      ],
     };
   }, [recentCaptureSeries]);
 
   const ebillMaxValue = useMemo(() => {
-  let max = 0;
-  recentCaptureSeries.forEach(entry => {
-    const ebill = Number(entry?.ebillCount || entry?.eBillCount || entry?.ebill || 0);
-    const anon = Number(entry?.anonymousCount || entry?.anonymous || 0);
-    max = Math.max(max, ebill, anon);
-  });
-  return max;
-}, [recentCaptureSeries]);
+    let max = 0;
+    recentCaptureSeries.forEach(entry => {
+      const ebill = Number(entry?.ebillCount || entry?.eBillCount || entry?.ebill || 0);
+      const anon = Number(entry?.anonymousCount || entry?.anonymous || 0);
+      max = Math.max(max, ebill, anon);
+    });
+    return max;
+  }, [recentCaptureSeries]);
 
-const ebillAnonymousOptions = useMemo(
+  const ebillAnonymousOptions = useMemo(
     () => ({
       responsive: true,
       maintainAspectRatio: false,
@@ -2135,21 +2232,21 @@ const ebillAnonymousOptions = useMemo(
           position: 'bottom' as const,
           labels: {
             color: 'rgba(248,250,252,0.8)',
-            usePointStyle: true
-          }
+            usePointStyle: true,
+          },
         },
         tooltip: {
           callbacks: {
             label: context => {
               const value = Number(context.parsed.y ?? context.parsed) || 0;
               return `${context.dataset.label}: ${value.toLocaleString()}`;
-            }
-          }
-        }
+            },
+          },
+        },
       },
       interaction: {
         mode: 'index' as const,
-        intersect: false
+        intersect: false,
       },
       scales: {
         x: {
@@ -2160,20 +2257,19 @@ const ebillAnonymousOptions = useMemo(
             display: true,
             text: 'Date',
             color: 'rgba(248,250,252,0.7)',
-            font: { size: 12 }
-          }
+            font: { size: 12 },
+          },
         },
         y: {
           beginAtZero: true,
           suggestedMax: ebillMaxValue > 0 ? ebillMaxValue + 3 : undefined,
           ticks: { color: 'rgba(248,250,252,0.6)' },
-          grid: { color: 'rgba(255,255,255,0.04)' }
-        }
-      }
+          grid: { color: 'rgba(255,255,255,0.04)' },
+        },
+      },
     }),
     []
   );
-
 
   const attentionAlerts = useMemo(() => {
     if (!franchiseData || !filteredStores.length) {
@@ -2188,7 +2284,7 @@ const ebillAnonymousOptions = useMemo(
           label: store.store_name || store.brand_name || `Store ${store.store_id}`,
           ebill,
           anonymous,
-          reason: deriveEbillReason(ebill, anonymous)
+          reason: deriveEbillReason(ebill, anonymous),
         };
       })
       .filter(entry => entry.anonymous > entry.ebill);
@@ -2207,7 +2303,7 @@ const ebillAnonymousOptions = useMemo(
       const response = await fetch(`/api/franchise/stores/${storeId}/access`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ franchise_id: franchiseData.franchise_id, allowed: nextAllowed })
+        body: JSON.stringify({ franchise_id: franchiseData.franchise_id, allowed: nextAllowed }),
       });
       const data = await response.json().catch(() => ({}));
       if (!response.ok) {
@@ -2220,7 +2316,7 @@ const ebillAnonymousOptions = useMemo(
               ...prev,
               stores: prev.stores.map(store =>
                 store.store_id === storeId ? { ...store, franchise_access: nextAllowed } : store
-              )
+              ),
             }
           : prev
       );
@@ -2256,9 +2352,9 @@ const ebillAnonymousOptions = useMemo(
         method: 'POST',
         headers: {
           Authorization: `Bearer ${franchiseData.session_token}`,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify({})
+        body: JSON.stringify({}),
       });
       const data: Partial<StoreSsoResponse> & { error?: string } = await response
         .json()
@@ -2288,7 +2384,7 @@ const ebillAnonymousOptions = useMemo(
     const numeric = Number(value);
     setCustomerTypeForm(prev => ({
       ...prev,
-      [field]: Number.isFinite(numeric) ? numeric : prev[field]
+      [field]: Number.isFinite(numeric) ? numeric : prev[field],
     }));
   };
 
@@ -2305,13 +2401,13 @@ const ebillAnonymousOptions = useMemo(
         config: {
           premium: { min: customerTypeForm.premiumMin },
           standard: { min: customerTypeForm.standardMin, max: customerTypeForm.standardMax },
-          basic: { max: customerTypeForm.basicMax }
-        }
+          basic: { max: customerTypeForm.basicMax },
+        },
       };
       const response = await fetch(`/api/franchise/stores/${configStoreId}/customer-types`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
       });
       const data = await response.json().catch(() => ({}));
       if (!response.ok) {
@@ -2339,7 +2435,10 @@ const ebillAnonymousOptions = useMemo(
       if (!response.ok) {
         throw new Error(data?.error || 'Unable to fetch store stats');
       }
-      setStoreStatsMap(prev => ({ ...prev, [storeId]: Array.isArray(data.stats) ? data.stats : [] }));
+      setStoreStatsMap(prev => ({
+        ...prev,
+        [storeId]: Array.isArray(data.stats) ? data.stats : [],
+      }));
       setActiveStoreId(storeId);
     } catch (error) {
       setStatsError(error instanceof Error ? error.message : 'Unable to fetch store stats');
@@ -2369,7 +2468,7 @@ const ebillAnonymousOptions = useMemo(
       const response = await fetch(`/api/franchise/stores/${configStoreId}/audit-history`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ franchise_id: franchiseData.franchise_id })
+        body: JSON.stringify({ franchise_id: franchiseData.franchise_id }),
       });
       const data = await response.json().catch(() => ({}));
       if (!response.ok) {
@@ -2395,7 +2494,7 @@ const ebillAnonymousOptions = useMemo(
       const response = await fetch(`/api/franchise/stores/${configStoreId}/logout-all`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ franchise_id: franchiseData.franchise_id })
+        body: JSON.stringify({ franchise_id: franchiseData.franchise_id }),
       });
       const data = await response.json().catch(() => ({}));
       if (!response.ok) {
@@ -2432,12 +2531,8 @@ const ebillAnonymousOptions = useMemo(
       <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
         {franchiseData.stores.map(store => {
           const rangeMetrics = storeRangeMetrics[store.store_id];
-          const revenue = Math.round(
-            rangeMetrics?.revenue ?? Number(store.total_revenue ?? 0)
-          );
-          const invoices = Math.round(
-            rangeMetrics?.invoices ?? Number(store.total_invoices ?? 0)
-          );
+          const revenue = Math.round(rangeMetrics?.revenue ?? Number(store.total_revenue ?? 0));
+          const invoices = Math.round(rangeMetrics?.invoices ?? Number(store.total_invoices ?? 0));
           const ebillCustomers = Math.max(
             0,
             Number(
@@ -2499,14 +2594,18 @@ const ebillAnonymousOptions = useMemo(
                     <span>Revenue</span>
                     <DollarSign className="h-4 w-4 text-emerald-300" />
                   </div>
-                  <p className="mt-1 text-lg font-semibold text-white">₹{revenue.toLocaleString()}</p>
+                  <p className="mt-1 text-lg font-semibold text-white">
+                    ₹{revenue.toLocaleString()}
+                  </p>
                 </div>
                 <div className="rounded-xl border border-white/10 bg-white/5 p-3">
                   <div className="flex items-center justify-between text-xs text-white/60">
                     <span>Invoices</span>
                     <ShoppingCart className="h-4 w-4 text-cyan-300" />
                   </div>
-                  <p className="mt-1 text-lg font-semibold text-white">{invoices.toLocaleString()}</p>
+                  <p className="mt-1 text-lg font-semibold text-white">
+                    {invoices.toLocaleString()}
+                  </p>
                 </div>
               </div>
 
@@ -2516,29 +2615,33 @@ const ebillAnonymousOptions = useMemo(
                     <span>E-bill</span>
                     <Users className="h-4 w-4 text-amber-300" />
                   </div>
-                  <p className="mt-1 text-lg font-semibold text-white">{ebillCustomers.toLocaleString()}</p>
+                  <p className="mt-1 text-lg font-semibold text-white">
+                    {ebillCustomers.toLocaleString()}
+                  </p>
                 </div>
                 <div className="rounded-xl border border-white/5 bg-white/5 p-3">
                   <div className="flex items-center justify-between text-xs text-white/60">
                     <span>Anonymous</span>
                     <EyeOff className="h-4 w-4 text-rose-300" />
                   </div>
-                  <p className="mt-1 text-lg font-semibold text-white">{anonymousCustomers.toLocaleString()}</p>
+                  <p className="mt-1 text-lg font-semibold text-white">
+                    {anonymousCustomers.toLocaleString()}
+                  </p>
                 </div>
                 <div className="rounded-xl border border-white/5 bg-white/5 p-3">
                   <div className="flex items-center justify-between text-xs text-white/60">
                     <span>Customers</span>
                     <Users className="h-4 w-4 text-sky-300" />
                   </div>
-                  <p className="mt-1 text-lg font-semibold text-white">{totalCustomers.toLocaleString()}</p>
+                  <p className="mt-1 text-lg font-semibold text-white">
+                    {totalCustomers.toLocaleString()}
+                  </p>
                 </div>
               </div>
 
               {trialInfo && (
                 <div className="mt-4 rounded-xl border border-white/10 bg-white/5 px-4 py-3">
-                  <p className="text-xs uppercase tracking-[0.3em] text-white/60">
-                    Free trial
-                  </p>
+                  <p className="text-xs uppercase tracking-[0.3em] text-white/60">Free trial</p>
                   <div className="mt-1 flex items-center justify-between text-sm font-semibold text-white">
                     <span>{String(trialInfo.daysLeft).padStart(2, '0')} days left</span>
                     <span className="text-white/70">Ends {trialInfo.endLabel}</span>
@@ -2564,286 +2667,317 @@ const ebillAnonymousOptions = useMemo(
                   )}
                 </Button>
               )}
-              </div>
-            );
-          })}
+            </div>
+          );
+        })}
       </div>
     );
   };
 
   const renderOverview = () => {
     if (!franchiseData) {
-      return renderPlaceholderTab('Session expired', 'Please log in again to view your franchise stores.');
+      return renderPlaceholderTab(
+        'Session expired',
+        'Please log in again to view your franchise stores.'
+      );
     }
-    const visibleStoreCount = storeFilter === 'all' ? franchiseData.store_count : filteredStores.length;
+    const visibleStoreCount =
+      storeFilter === 'all' ? franchiseData.store_count : filteredStores.length;
     return (
       <main className="flex-1 w-full px-4 py-12">
-          <div className="max-w-6xl mx-auto space-y-8">
-            <div className="flex justify-end">{renderWalletBalancePill()}</div>
-            <div className="rounded-2xl border border-white/10 bg-white/5 px-6 py-4">
-              <p className="text-sm uppercase tracking-[0.4em] text-indigo-300">Franchise Overview</p>
-              <div className="mt-2 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                  <h1 className="text-3xl font-semibold">
-                    {franchiseData.stores.find(store => store.brand_name)?.brand_name ||
-                      franchiseData.franchise_id}
-                  </h1>
-                  <p className="text-white/70 text-sm mt-1 whitespace-nowrap">
-                    Managing {franchiseData.store_count} {franchiseData.store_count === 1 ? 'store' : 'stores'}
+        <div className="max-w-6xl mx-auto space-y-8">
+          <div className="flex justify-end">{renderWalletBalancePill()}</div>
+          <div className="rounded-2xl border border-white/10 bg-white/5 px-6 py-4">
+            <p className="text-sm uppercase tracking-[0.4em] text-indigo-300">Franchise Overview</p>
+            <div className="mt-2 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <h1 className="text-3xl font-semibold">
+                  {franchiseData.stores.find(store => store.brand_name)?.brand_name ||
+                    franchiseData.franchise_id}
+                </h1>
+                <p className="text-white/70 text-sm mt-1 whitespace-nowrap">
+                  Managing {franchiseData.store_count}{' '}
+                  {franchiseData.store_count === 1 ? 'store' : 'stores'}
+                </p>
+              </div>
+              <div className="flex w-full flex-col gap-4 sm:flex-row sm:items-end sm:justify-end">
+                <div className="w-full sm:w-56">
+                  <p className="text-xs uppercase tracking-[0.3em] text-white/60 mb-1">
+                    Store filter
                   </p>
-                </div>
-                <div className="flex w-full flex-col gap-4 sm:flex-row sm:items-end sm:justify-end">
-                  <div className="w-full sm:w-56">
-                    <p className="text-xs uppercase tracking-[0.3em] text-white/60 mb-1">Store filter</p>
-                    <div className="relative">
-                      <select
-                        value={storeFilter}
-                        onChange={event => setStoreFilter(event.target.value)}
-                        className="w-full appearance-none rounded-xl border border-white/20 bg-black/30 px-4 py-2 pr-10 text-sm text-white focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-400/40"
-                      >
-                        <option value="all">All stores</option>
-                        {franchiseData.stores.map(store => (
-                          <option key={store.store_id} value={store.store_id}>
-                            {store.store_name || store.brand_name || `Store ${store.store_id}`}
-                          </option>
-                        ))}
-                      </select>
-                      <svg
-                        className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/60"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                      </svg>
-                    </div>
-                  </div>
-                  <div className="w-full sm:w-56">
-                    <p className="text-xs uppercase tracking-[0.3em] text-white/60 mb-1">Date range</p>
-                    <div className="relative">
-                      <select
-                        value={overviewDateFilter}
-                        onChange={event =>
-                          handleOverviewDateFilterChange(event.target.value as DateRangeFilter)
-                        }
-                        className="w-full appearance-none rounded-xl border border-white/20 bg-black/30 px-4 py-2 pr-10 text-sm text-white focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-400/40"
-                      >
-                        <option value="today">Today</option>
-                        <option value="thisWeek">This Week</option>
-                        <option value="thisMonth">This Month</option>
-                        <option value="thisYear">This Year</option>
-                        <option value="all">All Time</option>
-                        <option value="custom">Custom</option>
-                      </select>
-                      <svg
-                        className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/60"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                      </svg>
-                    </div>
-                    {overviewDateFilter === 'custom' && (
-                      <div className="mt-2 grid grid-cols-1 gap-2">
-                        <div className="relative">
-                          <input
-                            ref={overviewCustomStartRef}
-                            type="date"
-                            value={overviewCustomStart}
-                            onChange={event => handleOverviewCustomChange('start', event.target.value)}
-                            className="w-full appearance-none rounded-xl border border-white/20 bg-black/30 px-3 py-2 pr-10 text-sm text-white focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-400/40"
-                          />
-                          <button
-                            type="button"
-                            className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full p-1 text-white/70 hover:text-white"
-                            onClick={() => {
-                              if (overviewCustomStartRef.current?.showPicker) {
-                                overviewCustomStartRef.current.showPicker();
-                              } else {
-                                overviewCustomStartRef.current?.focus();
-                              }
-                            }}
-                          >
-                            <Calendar className="h-4 w-4" />
-                          </button>
-                        </div>
-                        <div className="relative">
-                          <input
-                            ref={overviewCustomEndRef}
-                            type="date"
-                            value={overviewCustomEnd}
-                            onChange={event => handleOverviewCustomChange('end', event.target.value)}
-                            className="w-full appearance-none rounded-xl border border-white/20 bg-black/30 px-3 py-2 pr-10 text-sm text-white focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-400/40"
-                          />
-                          <button
-                            type="button"
-                            className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full p-1 text-white/70 hover:text-white"
-                            onClick={() => {
-                              if (overviewCustomEndRef.current?.showPicker) {
-                                overviewCustomEndRef.current.showPicker();
-                              } else {
-                                overviewCustomEndRef.current?.focus();
-                              }
-                            }}
-                          >
-                            <Calendar className="h-4 w-4" />
-                          </button>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex justify-end text-xs text-white/60">Data for {overviewDateRange.label}</div>
-
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
-              <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
-                <p className="text-sm text-white/60">Stores under this franchise</p>
-                <p className="text-3xl font-semibold mt-2">{visibleStoreCount}</p>
-              </div>
-              <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
-                <p className="text-sm text-white/60">Total reported revenue</p>
-                <p className="text-3xl font-semibold mt-2">₹{Math.round(totals.revenue).toLocaleString()}</p>
-              </div>
-              <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
-                <p className="text-sm text-white/60">Total invoices</p>
-                <p className="text-3xl font-semibold mt-2">{totals.invoices.toLocaleString()}</p>
-              </div>
-              <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
-                <p className="text-sm text-white/60">E-bill invoices</p>
-                <p className="text-3xl font-semibold mt-2">{totals.ebillInvoices.toLocaleString()}</p>
-              </div>
-            </div>
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-5">
-              <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
-                <p className="text-sm text-white/60">Total customers</p>
-                <p className="text-3xl font-semibold mt-2">{totals.customers.toLocaleString()}</p>
-              </div>
-              <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
-                <p className="text-sm text-white/60">E-bill customers</p>
-                <p className="text-3xl font-semibold mt-2">{totals.ebillCustomers.toLocaleString()}</p>
-              </div>
-              <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
-                <p className="text-sm text-white/60">Anonymous customers</p>
-                <p className="text-3xl font-semibold mt-2">{totals.anonymous.toLocaleString()}</p>
-              </div>
-              <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
-                <p className="text-sm text-white/60">Campaigns launched</p>
-                <p className="text-3xl font-semibold mt-2">{totals.campaigns.toLocaleString()}</p>
-              </div>
-              <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
-                <p className="text-sm text-white/60">Messages sent</p>
-                <p className="text-3xl font-semibold mt-2">{totals.messages.toLocaleString()}</p>
-              </div>
-            </div>
-
-            <div className="grid gap-6 lg:grid-cols-2">
-              <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
-                <div className="flex flex-col gap-1">
-                  <p className="text-sm uppercase tracking-[0.3em] text-indigo-300">Sales velocity</p>
-                  <h3 className="text-2xl font-semibold text-white">Revenue trend by store</h3>
-                  <p className="text-sm text-white/60">
-                    Compares the latest invoice revenue captured for your busiest stores.
-                  </p>
-                </div>
-                <div className="mt-4 h-64">
-                  {comparisonLoading ? (
-                    <div className="flex h-full items-center justify-center text-white/70">
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Loading chart…
-                    </div>
-                  ) : comparisonError ? (
-                    <div className="rounded-lg border border-rose-500/40 bg-rose-500/10 px-3 py-2 text-sm text-rose-200">
-                      {comparisonError}
-                    </div>
-                  ) : comparisonChartData ? (
-                    <Line data={comparisonChartData} options={comparisonChartOptions} />
-                  ) : (
-                    <p className="text-sm text-white/60">
-                      We need a few days of data before rendering this comparison.
-                    </p>
-                  )}
-                </div>
-              </div>
-              <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
-                <div className="flex flex-col gap-1">
-                  <p className="text-sm uppercase tracking-[0.3em] text-indigo-300">E-bill vs anonymous</p>
-                  <h3 className="text-2xl font-semibold text-white">Customer capture health</h3>
-                  <p className="text-sm text-white/60">
-                    Highlights whether teams are capturing phone numbers or letting receipts go anonymous.
-                  </p>
-                </div>
-                <div className="mt-4 h-64">
-                  {ebillAnonymousLoading ? (
-                    <div className="flex h-full items-center justify-center text-white/70">
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Loading trend…
-                    </div>
-                  ) : ebillAnonymousError ? (
-                    <div className="rounded-lg border border-rose-500/40 bg-rose-500/10 px-3 py-2 text-sm text-rose-200">
-                      {ebillAnonymousError}
-                    </div>
-                  ) : ebillAnonymousChart ? (
-                    <Bar
-                      data={ebillAnonymousChart}
-                      options={ebillAnonymousOptions}
-                      plugins={[ebillAnonymousValueLabelPlugin]}
-                    />
-                  ) : (
-                    <p className="text-sm text-white/60">
-                      Link at least one store to view this breakdown.
-                    </p>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {attentionAlerts.length > 0 && (
-              <div className="rounded-2xl border border-amber-400/20 bg-amber-500/10 p-6 text-white">
-                <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                  <div>
-                    <p className="text-sm uppercase tracking-[0.3em] text-amber-200">Attention alerts</p>
-                    <h3 className="text-2xl font-semibold">
-                      {attentionAlerts.length} store{attentionAlerts.length > 1 ? 's' : ''} need help
-                    </h3>
-                    <p className="text-sm text-white/80">
-                      Anonymous invoices overtook E-bills — investigate the reasons below.
-                    </p>
-                  </div>
-                  <span className="rounded-full border border-amber-300/50 px-3 py-1 text-xs font-semibold text-amber-100">
-                    E-bill adoption gap
-                  </span>
-                </div>
-                <div className="mt-4 space-y-3">
-                  {attentionAlerts.map(alert => (
-                    <div
-                      key={alert.storeId}
-                      className="rounded-xl border border-white/10 bg-slate-900/40 px-4 py-3 text-sm"
+                  <div className="relative">
+                    <select
+                      value={storeFilter}
+                      onChange={event => setStoreFilter(event.target.value)}
+                      className="w-full appearance-none rounded-xl border border-white/20 bg-black/30 px-4 py-2 pr-10 text-sm text-white focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-400/40"
                     >
-                      <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
-                        <div>
-                          <p className="font-semibold">{alert.label}</p>
-                          <p className="text-xs text-white/60">
-                            E-bills {alert.ebill.toLocaleString()} vs Anonymous{' '}
-                            {alert.anonymous.toLocaleString()}
-                          </p>
-                        </div>
-                        <div className="flex items-center gap-2 text-amber-200 text-xs">
-                          <AlertTriangle className="h-4 w-4" />
-                          Gap of {(alert.anonymous - alert.ebill).toLocaleString()}
-                        </div>
+                      <option value="all">All stores</option>
+                      {franchiseData.stores.map(store => (
+                        <option key={store.store_id} value={store.store_id}>
+                          {store.store_name || store.brand_name || `Store ${store.store_id}`}
+                        </option>
+                      ))}
+                    </select>
+                    <svg
+                      className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/60"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
+                  </div>
+                </div>
+                <div className="w-full sm:w-56">
+                  <p className="text-xs uppercase tracking-[0.3em] text-white/60 mb-1">
+                    Date range
+                  </p>
+                  <div className="relative">
+                    <select
+                      value={overviewDateFilter}
+                      onChange={event =>
+                        handleOverviewDateFilterChange(event.target.value as DateRangeFilter)
+                      }
+                      className="w-full appearance-none rounded-xl border border-white/20 bg-black/30 px-4 py-2 pr-10 text-sm text-white focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-400/40"
+                    >
+                      <option value="today">Today</option>
+                      <option value="thisWeek">This Week</option>
+                      <option value="thisMonth">This Month</option>
+                      <option value="thisYear">This Year</option>
+                      <option value="all">All Time</option>
+                      <option value="custom">Custom</option>
+                    </select>
+                    <svg
+                      className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/60"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
+                  </div>
+                  {overviewDateFilter === 'custom' && (
+                    <div className="mt-2 grid grid-cols-1 gap-2">
+                      <div className="relative">
+                        <input
+                          ref={overviewCustomStartRef}
+                          type="date"
+                          value={overviewCustomStart}
+                          onChange={event =>
+                            handleOverviewCustomChange('start', event.target.value)
+                          }
+                          className="w-full appearance-none rounded-xl border border-white/20 bg-black/30 px-3 py-2 pr-10 text-sm text-white focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-400/40"
+                        />
+                        <button
+                          type="button"
+                          className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full p-1 text-white/70 hover:text-white"
+                          onClick={() => {
+                            if (overviewCustomStartRef.current?.showPicker) {
+                              overviewCustomStartRef.current.showPicker();
+                            } else {
+                              overviewCustomStartRef.current?.focus();
+                            }
+                          }}
+                        >
+                          <Calendar className="h-4 w-4" />
+                        </button>
                       </div>
-                      <p className="mt-2 text-xs text-white/70">{alert.reason}</p>
+                      <div className="relative">
+                        <input
+                          ref={overviewCustomEndRef}
+                          type="date"
+                          value={overviewCustomEnd}
+                          onChange={event => handleOverviewCustomChange('end', event.target.value)}
+                          className="w-full appearance-none rounded-xl border border-white/20 bg-black/30 px-3 py-2 pr-10 text-sm text-white focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-400/40"
+                        />
+                        <button
+                          type="button"
+                          className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full p-1 text-white/70 hover:text-white"
+                          onClick={() => {
+                            if (overviewCustomEndRef.current?.showPicker) {
+                              overviewCustomEndRef.current.showPicker();
+                            } else {
+                              overviewCustomEndRef.current?.focus();
+                            }
+                          }}
+                        >
+                          <Calendar className="h-4 w-4" />
+                        </button>
+                      </div>
                     </div>
-                  ))}
+                  )}
                 </div>
               </div>
-            )}
-
+            </div>
           </div>
+
+          <div className="flex justify-end text-xs text-white/60">
+            Data for {overviewDateRange.label}
+          </div>
+
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+              <p className="text-sm text-white/60">Stores under this franchise</p>
+              <p className="text-3xl font-semibold mt-2">{visibleStoreCount}</p>
+            </div>
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+              <p className="text-sm text-white/60">Total reported revenue</p>
+              <p className="text-3xl font-semibold mt-2">
+                ₹{Math.round(totals.revenue).toLocaleString()}
+              </p>
+            </div>
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+              <p className="text-sm text-white/60">Total invoices</p>
+              <p className="text-3xl font-semibold mt-2">{totals.invoices.toLocaleString()}</p>
+            </div>
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+              <p className="text-sm text-white/60">E-bill invoices</p>
+              <p className="text-3xl font-semibold mt-2">{totals.ebillInvoices.toLocaleString()}</p>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-5">
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+              <p className="text-sm text-white/60">Total customers</p>
+              <p className="text-3xl font-semibold mt-2">{totals.customers.toLocaleString()}</p>
+            </div>
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+              <p className="text-sm text-white/60">E-bill customers</p>
+              <p className="text-3xl font-semibold mt-2">
+                {totals.ebillCustomers.toLocaleString()}
+              </p>
+            </div>
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+              <p className="text-sm text-white/60">Anonymous customers</p>
+              <p className="text-3xl font-semibold mt-2">{totals.anonymous.toLocaleString()}</p>
+            </div>
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+              <p className="text-sm text-white/60">Campaigns launched</p>
+              <p className="text-3xl font-semibold mt-2">{totals.campaigns.toLocaleString()}</p>
+            </div>
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+              <p className="text-sm text-white/60">Messages sent</p>
+              <p className="text-3xl font-semibold mt-2">{totals.messages.toLocaleString()}</p>
+            </div>
+          </div>
+
+          <div className="grid gap-6 lg:grid-cols-2">
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+              <div className="flex flex-col gap-1">
+                <p className="text-sm uppercase tracking-[0.3em] text-indigo-300">Sales velocity</p>
+                <h3 className="text-2xl font-semibold text-white">Revenue trend by store</h3>
+                <p className="text-sm text-white/60">
+                  Compares the latest invoice revenue captured for your busiest stores.
+                </p>
+              </div>
+              <div className="mt-4 h-64">
+                {comparisonLoading ? (
+                  <div className="flex h-full items-center justify-center text-white/70">
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Loading chart…
+                  </div>
+                ) : comparisonError ? (
+                  <div className="rounded-lg border border-rose-500/40 bg-rose-500/10 px-3 py-2 text-sm text-rose-200">
+                    {comparisonError}
+                  </div>
+                ) : comparisonChartData ? (
+                  <Line data={comparisonChartData} options={comparisonChartOptions} />
+                ) : (
+                  <p className="text-sm text-white/60">
+                    We need a few days of data before rendering this comparison.
+                  </p>
+                )}
+              </div>
+            </div>
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+              <div className="flex flex-col gap-1">
+                <p className="text-sm uppercase tracking-[0.3em] text-indigo-300">
+                  E-bill vs anonymous
+                </p>
+                <h3 className="text-2xl font-semibold text-white">Customer capture health</h3>
+                <p className="text-sm text-white/60">
+                  Highlights whether teams are capturing phone numbers or letting receipts go
+                  anonymous.
+                </p>
+              </div>
+              <div className="mt-4 h-64">
+                {ebillAnonymousLoading ? (
+                  <div className="flex h-full items-center justify-center text-white/70">
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Loading trend…
+                  </div>
+                ) : ebillAnonymousError ? (
+                  <div className="rounded-lg border border-rose-500/40 bg-rose-500/10 px-3 py-2 text-sm text-rose-200">
+                    {ebillAnonymousError}
+                  </div>
+                ) : ebillAnonymousChart ? (
+                  <Bar
+                    data={ebillAnonymousChart}
+                    options={ebillAnonymousOptions}
+                    plugins={[ebillAnonymousValueLabelPlugin]}
+                  />
+                ) : (
+                  <p className="text-sm text-white/60">
+                    Link at least one store to view this breakdown.
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {attentionAlerts.length > 0 && (
+            <div className="rounded-2xl border border-amber-400/20 bg-amber-500/10 p-6 text-white">
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <p className="text-sm uppercase tracking-[0.3em] text-amber-200">
+                    Attention alerts
+                  </p>
+                  <h3 className="text-2xl font-semibold">
+                    {attentionAlerts.length} store{attentionAlerts.length > 1 ? 's' : ''} need help
+                  </h3>
+                  <p className="text-sm text-white/80">
+                    Anonymous invoices overtook E-bills — investigate the reasons below.
+                  </p>
+                </div>
+                <span className="rounded-full border border-amber-300/50 px-3 py-1 text-xs font-semibold text-amber-100">
+                  E-bill adoption gap
+                </span>
+              </div>
+              <div className="mt-4 space-y-3">
+                {attentionAlerts.map(alert => (
+                  <div
+                    key={alert.storeId}
+                    className="rounded-xl border border-white/10 bg-slate-900/40 px-4 py-3 text-sm"
+                  >
+                    <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+                      <div>
+                        <p className="font-semibold">{alert.label}</p>
+                        <p className="text-xs text-white/60">
+                          E-bills {alert.ebill.toLocaleString()} vs Anonymous{' '}
+                          {alert.anonymous.toLocaleString()}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2 text-amber-200 text-xs">
+                        <AlertTriangle className="h-4 w-4" />
+                        Gap of {(alert.anonymous - alert.ebill).toLocaleString()}
+                      </div>
+                    </div>
+                    <p className="mt-2 text-xs text-white/70">{alert.reason}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
       </main>
     );
   };
@@ -2855,253 +2989,270 @@ const ebillAnonymousOptions = useMemo(
 
     return (
       <main className="flex-1 w-full px-4 py-8">
-          <div className="max-w-5xl mx-auto space-y-6">
-            <div className="flex justify-end">{renderWalletBalancePill()}</div>
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
-              <h2 className="text-xl font-semibold mb-1">Store administration</h2>
-              <p className="text-sm text-white/70">
-                Toggle store visibility and fine-tune customer segmentation thresholds per store.
-              </p>
-            </div>
+        <div className="max-w-5xl mx-auto space-y-6">
+          <div className="flex justify-end">{renderWalletBalancePill()}</div>
+          <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+            <h2 className="text-xl font-semibold mb-1">Store administration</h2>
+            <p className="text-sm text-white/70">
+              Toggle store visibility and fine-tune customer segmentation thresholds per store.
+            </p>
+          </div>
 
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
-              <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-                <div>
-                  <p className="text-sm uppercase tracking-[0.3em] text-indigo-300">Campaign quota</p>
-                  <h3 className="text-2xl font-semibold text-white">Free trial campaign quota</h3>
-                  <p className="text-sm text-white/70">
-                    Free trial campaign limits are shared across every store under this franchise.
-                  </p>
-                </div>
-                <div className="grid w-full max-w-md grid-cols-2 gap-3">
-                  <div className="rounded-xl border border-white/10 bg-black/30 px-4 py-3">
-                    <p className="text-xs uppercase tracking-[0.2em] text-white/60">Allowed</p>
-                    <p className="text-2xl font-semibold text-white mt-1">
-                      {formatCount(campaignQuota?.limit ?? null)}
-                    </p>
-                  </div>
-                  <div className="rounded-xl border border-white/10 bg-black/30 px-4 py-3">
-                    <p className="text-xs uppercase tracking-[0.2em] text-white/60">Remaining</p>
-                    <p className="text-2xl font-semibold text-white mt-1">
-                      {formatCount(campaignQuota?.remaining ?? null)}
-                    </p>
-                    <p className="text-[11px] text-white/50 mt-1">
-                      Used {formatCount(campaignQuota?.used ?? null)}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-6 space-y-5">
-              <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-                <div>
-                  <p className="text-sm uppercase tracking-[0.3em] text-indigo-300">Customer type</p>
-                  <h3 className="text-2xl font-semibold text-white">Configure spending tiers</h3>
-                  <p className="text-sm text-white/70">
-                    Set the thresholds for Premium, Standard, and Basic customers for a specific store.
-                  </p>
-                </div>
-                <div className="w-full max-w-xs">
-                  <label className="text-xs uppercase tracking-wide text-white/60">Choose store</label>
-                  <select
-                    className="mt-1 w-full rounded-lg border border-white/10 bg-transparent px-3 py-2 text-sm text-white focus:border-indigo-400 focus:outline-none"
-                    value={configStoreId ?? ''}
-                    onChange={event => {
-                      setCustomerConfigStatus('');
-                      setCustomerConfigError('');
-                      setConfigStoreId(event.target.value || null);
-                    }}
-                  >
-                    {franchiseData.stores.map(store => (
-                      <option
-                        key={store.store_id}
-                        value={store.store_id}
-                        className="bg-slate-900 text-white"
-                      >
-                        #{store.store_id} · {store.store_name || store.brand_name || 'Store'}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              <div className="grid gap-4 md:grid-cols-2">
-                <div>
-                  <label className="text-xs uppercase tracking-wide text-white/60">Premium minimum (₹)</label>
-                  <input
-                    type="number"
-                    min={0}
-                    className="mt-1 w-full rounded-lg border border-white/10 bg-transparent px-3 py-2 text-white focus:border-indigo-400 focus:outline-none"
-                    value={customerTypeForm.premiumMin}
-                    onChange={event => handleCustomerTypeFieldChange('premiumMin', event.target.value)}
-                    disabled={customerConfigLoading || !configStoreId}
-                  />
-                </div>
-                <div>
-                  <label className="text-xs uppercase tracking-wide text-white/60">Standard minimum (₹)</label>
-                  <input
-                    type="number"
-                    min={0}
-                    className="mt-1 w-full rounded-lg border border-white/10 bg-transparent px-3 py-2 text-white focus:border-indigo-400 focus:outline-none"
-                    value={customerTypeForm.standardMin}
-                    onChange={event => handleCustomerTypeFieldChange('standardMin', event.target.value)}
-                    disabled={customerConfigLoading || !configStoreId}
-                  />
-                </div>
-                <div>
-                  <label className="text-xs uppercase tracking-wide text-white/60">Standard maximum (₹)</label>
-                  <input
-                    type="number"
-                    min={0}
-                    className="mt-1 w-full rounded-lg border border-white/10 bg-transparent px-3 py-2 text-white focus:border-indigo-400 focus:outline-none"
-                    value={customerTypeForm.standardMax}
-                    onChange={event => handleCustomerTypeFieldChange('standardMax', event.target.value)}
-                    disabled={customerConfigLoading || !configStoreId}
-                  />
-                </div>
-                <div>
-                  <label className="text-xs uppercase tracking-wide text-white/60">Basic maximum (₹)</label>
-                  <input
-                    type="number"
-                    min={0}
-                    className="mt-1 w-full rounded-lg border border-white/10 bg-transparent px-3 py-2 text-white focus:border-indigo-400 focus:outline-none"
-                    value={customerTypeForm.basicMax}
-                    onChange={event => handleCustomerTypeFieldChange('basicMax', event.target.value)}
-                    disabled={customerConfigLoading || !configStoreId}
-                  />
-                </div>
-              </div>
-
-              {customerConfigError && (
-                <div className="rounded-lg border border-rose-500/40 bg-rose-500/10 px-3 py-2 text-sm text-rose-200">
-                  {customerConfigError}
-                </div>
-              )}
-              {customerConfigStatus && !customerConfigError && (
-                <div className="rounded-lg border border-emerald-500/40 bg-emerald-500/10 px-3 py-2 text-sm text-emerald-200">
-                  {customerConfigStatus}
-                </div>
-              )}
-
-              <Button
-                className="bg-indigo-500 hover:bg-indigo-600 text-white"
-                onClick={handleCustomerTypeSubmit}
-                disabled={customerConfigLoading || !configStoreId}
-              >
-                {customerConfigLoading ? (
-                  <span className="flex items-center justify-center gap-2">
-                    <Loader2 className="h-4 w-4 animate-spin" /> Saving…
-                  </span>
-                ) : (
-                  'Save customer type configuration'
-                )}
-              </Button>
-            </div>
-
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-6 space-y-4">
-              <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-                <div>
-                  <p className="text-sm uppercase tracking-[0.3em] text-indigo-300">Store audit</p>
-                  <h3 className="text-2xl font-semibold text-white">Recent login history</h3>
-                  <p className="text-sm text-white/70">
-                    Only franchise owners can inspect or clear a store’s audit footprint from here.
-                  </p>
-                </div>
-                <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-                  <Button
-                    variant="ghost"
-                    className="border border-white/20 text-white hover:bg-white/10"
-                    onClick={handleLogoutAllDevices}
-                    disabled={logoutAllLoading || auditLoading}
-                  >
-                    {logoutAllLoading ? (
-                      <span className="flex items-center gap-2">
-                        <Loader2 className="h-4 w-4 animate-spin" /> Logging out…
-                      </span>
-                    ) : (
-                      'Logout from all devices'
-                    )}
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    className="border border-white/20 text-white hover:bg-white/10"
-                    onClick={handleClearAuditHistory}
-                    disabled={auditClearing || auditHistory.length === 0 || auditLoading}
-                  >
-                    {auditClearing ? (
-                      <span className="flex items-center gap-2">
-                        <Loader2 className="h-4 w-4 animate-spin" /> Clearing…
-                      </span>
-                    ) : (
-                      'Delete audit history'
-                    )}
-                  </Button>
-                </div>
-              </div>
-
-              {auditError && (
-                <div className="rounded-lg border border-rose-500/40 bg-rose-500/10 px-3 py-2 text-sm text-rose-200">
-                  {auditError}
-                </div>
-              )}
-              {auditStatus && !auditError && (
-                <div className="rounded-lg border border-emerald-500/40 bg-emerald-500/10 px-3 py-2 text-sm text-emerald-200">
-                  {auditStatus}
-                </div>
-              )}
-
-              {auditLoading ? (
-                <div className="flex items-center justify-center py-6 text-white/70">
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Loading audit entries…
-                </div>
-              ) : auditHistory.length === 0 ? (
-                <p className="text-sm text-white/60">
-                  No audit entries recorded yet for store #{configStoreId}. Entries will appear here as
-                  users authenticate.
+          <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+            <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+              <div>
+                <p className="text-sm uppercase tracking-[0.3em] text-indigo-300">Campaign quota</p>
+                <h3 className="text-2xl font-semibold text-white">Free trial campaign quota</h3>
+                <p className="text-sm text-white/70">
+                  Free trial campaign limits are shared across every store under this franchise.
                 </p>
-              ) : (
-                <div className="space-y-3">
-                  {auditHistory.slice(0, 10).map((entry, index) => (
-                    <div
-                      key={`${entry.time ?? 'unknown'}-${index}`}
-                      className="rounded-xl border border-white/10 bg-white/5 px-4 py-3"
+              </div>
+              <div className="grid w-full max-w-md grid-cols-2 gap-3">
+                <div className="rounded-xl border border-white/10 bg-black/30 px-4 py-3">
+                  <p className="text-xs uppercase tracking-[0.2em] text-white/60">Allowed</p>
+                  <p className="text-2xl font-semibold text-white mt-1">
+                    {formatCount(campaignQuota?.limit ?? null)}
+                  </p>
+                </div>
+                <div className="rounded-xl border border-white/10 bg-black/30 px-4 py-3">
+                  <p className="text-xs uppercase tracking-[0.2em] text-white/60">Remaining</p>
+                  <p className="text-2xl font-semibold text-white mt-1">
+                    {formatCount(campaignQuota?.remaining ?? null)}
+                  </p>
+                  <p className="text-[11px] text-white/50 mt-1">
+                    Used {formatCount(campaignQuota?.used ?? null)}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="rounded-2xl border border-white/10 bg-white/5 p-6 space-y-5">
+            <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+              <div>
+                <p className="text-sm uppercase tracking-[0.3em] text-indigo-300">Customer type</p>
+                <h3 className="text-2xl font-semibold text-white">Configure spending tiers</h3>
+                <p className="text-sm text-white/70">
+                  Set the thresholds for Premium, Standard, and Basic customers for a specific
+                  store.
+                </p>
+              </div>
+              <div className="w-full max-w-xs">
+                <label className="text-xs uppercase tracking-wide text-white/60">
+                  Choose store
+                </label>
+                <select
+                  className="mt-1 w-full rounded-lg border border-white/10 bg-transparent px-3 py-2 text-sm text-white focus:border-indigo-400 focus:outline-none"
+                  value={configStoreId ?? ''}
+                  onChange={event => {
+                    setCustomerConfigStatus('');
+                    setCustomerConfigError('');
+                    setConfigStoreId(event.target.value || null);
+                  }}
+                >
+                  {franchiseData.stores.map(store => (
+                    <option
+                      key={store.store_id}
+                      value={store.store_id}
+                      className="bg-slate-900 text-white"
                     >
-                      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                        <div>
-                          <p className="text-sm font-semibold text-white">
-                            {entry.time ? dayjs(entry.time).format('DD MMM YYYY, hh:mm A') : 'Unknown time'}
-                          </p>
-                          <p className="text-xs text-white/60">
-                            {entry.system || 'Unknown system'}
-                          </p>
-                        </div>
-                        <div className="text-xs uppercase tracking-wide text-white/70">
-                          {entry.location || 'Unknown location'}
-                        </div>
+                      #{store.store_id} · {store.store_name || store.brand_name || 'Store'}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-2">
+              <div>
+                <label className="text-xs uppercase tracking-wide text-white/60">
+                  Premium minimum (₹)
+                </label>
+                <input
+                  type="number"
+                  min={0}
+                  className="mt-1 w-full rounded-lg border border-white/10 bg-transparent px-3 py-2 text-white focus:border-indigo-400 focus:outline-none"
+                  value={customerTypeForm.premiumMin}
+                  onChange={event =>
+                    handleCustomerTypeFieldChange('premiumMin', event.target.value)
+                  }
+                  disabled={customerConfigLoading || !configStoreId}
+                />
+              </div>
+              <div>
+                <label className="text-xs uppercase tracking-wide text-white/60">
+                  Standard minimum (₹)
+                </label>
+                <input
+                  type="number"
+                  min={0}
+                  className="mt-1 w-full rounded-lg border border-white/10 bg-transparent px-3 py-2 text-white focus:border-indigo-400 focus:outline-none"
+                  value={customerTypeForm.standardMin}
+                  onChange={event =>
+                    handleCustomerTypeFieldChange('standardMin', event.target.value)
+                  }
+                  disabled={customerConfigLoading || !configStoreId}
+                />
+              </div>
+              <div>
+                <label className="text-xs uppercase tracking-wide text-white/60">
+                  Standard maximum (₹)
+                </label>
+                <input
+                  type="number"
+                  min={0}
+                  className="mt-1 w-full rounded-lg border border-white/10 bg-transparent px-3 py-2 text-white focus:border-indigo-400 focus:outline-none"
+                  value={customerTypeForm.standardMax}
+                  onChange={event =>
+                    handleCustomerTypeFieldChange('standardMax', event.target.value)
+                  }
+                  disabled={customerConfigLoading || !configStoreId}
+                />
+              </div>
+              <div>
+                <label className="text-xs uppercase tracking-wide text-white/60">
+                  Basic maximum (₹)
+                </label>
+                <input
+                  type="number"
+                  min={0}
+                  className="mt-1 w-full rounded-lg border border-white/10 bg-transparent px-3 py-2 text-white focus:border-indigo-400 focus:outline-none"
+                  value={customerTypeForm.basicMax}
+                  onChange={event => handleCustomerTypeFieldChange('basicMax', event.target.value)}
+                  disabled={customerConfigLoading || !configStoreId}
+                />
+              </div>
+            </div>
+
+            {customerConfigError && (
+              <div className="rounded-lg border border-rose-500/40 bg-rose-500/10 px-3 py-2 text-sm text-rose-200">
+                {customerConfigError}
+              </div>
+            )}
+            {customerConfigStatus && !customerConfigError && (
+              <div className="rounded-lg border border-emerald-500/40 bg-emerald-500/10 px-3 py-2 text-sm text-emerald-200">
+                {customerConfigStatus}
+              </div>
+            )}
+
+            <Button
+              className="bg-indigo-500 hover:bg-indigo-600 text-white"
+              onClick={handleCustomerTypeSubmit}
+              disabled={customerConfigLoading || !configStoreId}
+            >
+              {customerConfigLoading ? (
+                <span className="flex items-center justify-center gap-2">
+                  <Loader2 className="h-4 w-4 animate-spin" /> Saving…
+                </span>
+              ) : (
+                'Save customer type configuration'
+              )}
+            </Button>
+          </div>
+
+          <div className="rounded-2xl border border-white/10 bg-white/5 p-6 space-y-4">
+            <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+              <div>
+                <p className="text-sm uppercase tracking-[0.3em] text-indigo-300">Store audit</p>
+                <h3 className="text-2xl font-semibold text-white">Recent login history</h3>
+                <p className="text-sm text-white/70">
+                  Only franchise owners can inspect or clear a store’s audit footprint from here.
+                </p>
+              </div>
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+                <Button
+                  variant="ghost"
+                  className="border border-white/20 text-white hover:bg-white/10"
+                  onClick={handleLogoutAllDevices}
+                  disabled={logoutAllLoading || auditLoading}
+                >
+                  {logoutAllLoading ? (
+                    <span className="flex items-center gap-2">
+                      <Loader2 className="h-4 w-4 animate-spin" /> Logging out…
+                    </span>
+                  ) : (
+                    'Logout from all devices'
+                  )}
+                </Button>
+                <Button
+                  variant="ghost"
+                  className="border border-white/20 text-white hover:bg-white/10"
+                  onClick={handleClearAuditHistory}
+                  disabled={auditClearing || auditHistory.length === 0 || auditLoading}
+                >
+                  {auditClearing ? (
+                    <span className="flex items-center gap-2">
+                      <Loader2 className="h-4 w-4 animate-spin" /> Clearing…
+                    </span>
+                  ) : (
+                    'Delete audit history'
+                  )}
+                </Button>
+              </div>
+            </div>
+
+            {auditError && (
+              <div className="rounded-lg border border-rose-500/40 bg-rose-500/10 px-3 py-2 text-sm text-rose-200">
+                {auditError}
+              </div>
+            )}
+            {auditStatus && !auditError && (
+              <div className="rounded-lg border border-emerald-500/40 bg-emerald-500/10 px-3 py-2 text-sm text-emerald-200">
+                {auditStatus}
+              </div>
+            )}
+
+            {auditLoading ? (
+              <div className="flex items-center justify-center py-6 text-white/70">
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Loading audit entries…
+              </div>
+            ) : auditHistory.length === 0 ? (
+              <p className="text-sm text-white/60">
+                No audit entries recorded yet for store #{configStoreId}. Entries will appear here
+                as users authenticate.
+              </p>
+            ) : (
+              <div className="space-y-3">
+                {auditHistory.slice(0, 10).map((entry, index) => (
+                  <div
+                    key={`${entry.time ?? 'unknown'}-${index}`}
+                    className="rounded-xl border border-white/10 bg-white/5 px-4 py-3"
+                  >
+                    <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                      <div>
+                        <p className="text-sm font-semibold text-white">
+                          {entry.time
+                            ? dayjs(entry.time).format('DD MMM YYYY, hh:mm A')
+                            : 'Unknown time'}
+                        </p>
+                        <p className="text-xs text-white/60">{entry.system || 'Unknown system'}</p>
+                      </div>
+                      <div className="text-xs uppercase tracking-wide text-white/70">
+                        {entry.location || 'Unknown location'}
                       </div>
                     </div>
-                  ))}
-                </div>
-              )}
-              {logoutAllError && (
-                <div className="rounded-lg border border-rose-500/40 bg-rose-500/10 px-3 py-2 text-sm text-rose-200">
-                  {logoutAllError}
-                </div>
-              )}
-              {logoutAllStatus && !logoutAllError && (
-                <div className="rounded-lg border border-emerald-500/40 bg-emerald-500/10 px-3 py-2 text-sm text-emerald-200">
-                  {logoutAllStatus}
-                </div>
-              )}
-            </div>
-
-            {accessError && (
-              <div className="rounded-lg border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-200">
-                {accessError}
+                  </div>
+                ))}
+              </div>
+            )}
+            {logoutAllError && (
+              <div className="rounded-lg border border-rose-500/40 bg-rose-500/10 px-3 py-2 text-sm text-rose-200">
+                {logoutAllError}
+              </div>
+            )}
+            {logoutAllStatus && !logoutAllError && (
+              <div className="rounded-lg border border-emerald-500/40 bg-emerald-500/10 px-3 py-2 text-sm text-emerald-200">
+                {logoutAllStatus}
               </div>
             )}
           </div>
+
+          {accessError && (
+            <div className="rounded-lg border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-200">
+              {accessError}
+            </div>
+          )}
+        </div>
       </main>
     );
   };
@@ -3131,7 +3282,8 @@ const ebillAnonymousOptions = useMemo(
               {selectedStoreConfig.store_name || selectedStoreConfig.brand_name || 'Store'}
             </h3>
             <p className="text-sm text-white/70">
-              #{selectedStoreConfig.store_id} · {selectedStoreConfig.business_type || 'General business'}
+              #{selectedStoreConfig.store_id} ·{' '}
+              {selectedStoreConfig.business_type || 'General business'}
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-3">
@@ -3165,7 +3317,9 @@ const ebillAnonymousOptions = useMemo(
           </div>
           <div className="rounded-xl border border-white/10 bg-white/5 p-4">
             <p className="text-xs text-white/60">Customers</p>
-            <p className="text-2xl font-semibold text-white mt-1">{totalCustomers.toLocaleString()}</p>
+            <p className="text-2xl font-semibold text-white mt-1">
+              {totalCustomers.toLocaleString()}
+            </p>
           </div>
           <div className="rounded-xl border border-white/10 bg-white/5 p-4">
             <p className="text-xs text-white/60">Store created</p>
@@ -3184,7 +3338,9 @@ const ebillAnonymousOptions = useMemo(
               <div>
                 <p className="text-sm font-semibold text-white">Store access</p>
                 <p className="text-xs text-white/60">
-                  {allowed ? 'Visible in the franchise workspace' : 'Hidden from franchise workspace'}
+                  {allowed
+                    ? 'Visible in the franchise workspace'
+                    : 'Hidden from franchise workspace'}
                 </p>
               </div>
             </div>
@@ -3192,9 +3348,7 @@ const ebillAnonymousOptions = useMemo(
               variant="outline"
               className="border-white/30 text-white hover:text-white w-full"
               disabled={accessLoading === selectedStoreConfig.store_id}
-              onClick={() =>
-                handleStoreAccessChange(selectedStoreConfig.store_id, !allowed)
-              }
+              onClick={() => handleStoreAccessChange(selectedStoreConfig.store_id, !allowed)}
             >
               {accessLoading === selectedStoreConfig.store_id
                 ? 'Saving…'
@@ -3211,7 +3365,9 @@ const ebillAnonymousOptions = useMemo(
               <Key className="h-5 w-5 text-sky-300" />
               <div>
                 <p className="text-sm font-semibold text-white">Contact & metadata</p>
-                <p className="text-xs text-white/60">Keep store details in sync to simplify onboarding.</p>
+                <p className="text-xs text-white/60">
+                  Keep store details in sync to simplify onboarding.
+                </p>
               </div>
             </div>
             <div className="space-y-2 text-sm text-white/80">
@@ -3256,128 +3412,139 @@ const ebillAnonymousOptions = useMemo(
 
     return (
       <main className="flex-1 w-full px-4 py-8">
-          <div className="max-w-6xl mx-auto space-y-8">
-            <div className="flex justify-end">{renderWalletBalancePill()}</div>
-            <div className="space-y-6">
-              <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                  <h2 className="text-xl font-semibold">Stores</h2>
-                  <p className="text-sm text-white/60">
-                    Tap a store to open its configuration workspace.
-                  </p>
-                </div>
-                <span className="text-sm text-white/60">
-                  {selectedStoreConfig
-                    ? `${selectedStoreConfig.store_name || 'Selected store'}`
-                    : 'Select a store'}
-                </span>
+        <div className="max-w-6xl mx-auto space-y-8">
+          <div className="flex justify-end">{renderWalletBalancePill()}</div>
+          <div className="space-y-6">
+            <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <h2 className="text-xl font-semibold">Stores</h2>
+                <p className="text-sm text-white/60">
+                  Tap a store to open its configuration workspace.
+                </p>
               </div>
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-                <div className="text-xs text-white/60 sm:pt-6">Data for {overviewDateRange.label}</div>
-                <div className="w-full sm:w-56">
-                  <p className="text-xs uppercase tracking-[0.3em] text-white/60 mb-1">Date range</p>
-                  <div className="relative">
-                    <select
-                      value={overviewDateFilter}
-                      onChange={event =>
-                        handleOverviewDateFilterChange(event.target.value as DateRangeFilter)
-                      }
-                      className="w-full appearance-none rounded-xl border border-white/20 bg-black/30 px-4 py-2 pr-10 text-sm text-white focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-400/40"
-                    >
-                      <option value="today">Today</option>
-                      <option value="thisWeek">This Week</option>
-                      <option value="thisMonth">This Month</option>
-                      <option value="thisYear">This Year</option>
-                      <option value="all">All Time</option>
-                      <option value="custom">Custom</option>
-                    </select>
-                    <svg
-                      className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/60"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </div>
-                  {overviewDateFilter === 'custom' && (
-                    <div className="mt-2 grid grid-cols-1 gap-2">
-                      <div className="relative">
-                        <input
-                          ref={overviewCustomStartRef}
-                          type="date"
-                          value={overviewCustomStart}
-                          onChange={event => handleOverviewCustomChange('start', event.target.value)}
-                          className="w-full appearance-none rounded-xl border border-white/20 bg-black/30 px-3 py-2 pr-10 text-sm text-white focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-400/40"
-                        />
-                        <button
-                          type="button"
-                          className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full p-1 text-white/70 hover:text-white"
-                          onClick={() => {
-                            if (overviewCustomStartRef.current?.showPicker) {
-                              overviewCustomStartRef.current.showPicker();
-                            } else {
-                              overviewCustomStartRef.current?.focus();
-                            }
-                          }}
-                        >
-                          <Calendar className="h-4 w-4" />
-                        </button>
-                      </div>
-                      <div className="relative">
-                        <input
-                          ref={overviewCustomEndRef}
-                          type="date"
-                          value={overviewCustomEnd}
-                          onChange={event => handleOverviewCustomChange('end', event.target.value)}
-                          className="w-full appearance-none rounded-xl border border-white/20 bg-black/30 px-3 py-2 pr-10 text-sm text-white focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-400/40"
-                        />
-                        <button
-                          type="button"
-                          className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full p-1 text-white/70 hover:text-white"
-                          onClick={() => {
-                            if (overviewCustomEndRef.current?.showPicker) {
-                              overviewCustomEndRef.current.showPicker();
-                            } else {
-                              overviewCustomEndRef.current?.focus();
-                            }
-                          }}
-                        >
-                          <Calendar className="h-4 w-4" />
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-              {storeSsoError && (
-                <div className="rounded-lg border border-amber-400/20 bg-amber-500/10 px-4 py-3 text-sm text-amber-100">
-                  {storeSsoError}
-                </div>
-              )}
-              {renderStoreCardsGrid({
-                highlightStoreId: selectedStoreConfig?.store_id ?? null,
-                onSelectStore: store => setSelectedStoreConfig(store),
-                onPrimaryAction: store => handleOpenStoreManager(store),
-                primaryActionLabel: 'Open manager view',
-                busyStoreId: storeSsoBusyId
-              })}
+              <span className="text-sm text-white/60">
+                {selectedStoreConfig
+                  ? `${selectedStoreConfig.store_name || 'Selected store'}`
+                  : 'Select a store'}
+              </span>
             </div>
-
-            {/* Config panel removed per request */}
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+              <div className="text-xs text-white/60 sm:pt-6">
+                Data for {overviewDateRange.label}
+              </div>
+              <div className="w-full sm:w-56">
+                <p className="text-xs uppercase tracking-[0.3em] text-white/60 mb-1">Date range</p>
+                <div className="relative">
+                  <select
+                    value={overviewDateFilter}
+                    onChange={event =>
+                      handleOverviewDateFilterChange(event.target.value as DateRangeFilter)
+                    }
+                    className="w-full appearance-none rounded-xl border border-white/20 bg-black/30 px-4 py-2 pr-10 text-sm text-white focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-400/40"
+                  >
+                    <option value="today">Today</option>
+                    <option value="thisWeek">This Week</option>
+                    <option value="thisMonth">This Month</option>
+                    <option value="thisYear">This Year</option>
+                    <option value="all">All Time</option>
+                    <option value="custom">Custom</option>
+                  </select>
+                  <svg
+                    className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/60"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </div>
+                {overviewDateFilter === 'custom' && (
+                  <div className="mt-2 grid grid-cols-1 gap-2">
+                    <div className="relative">
+                      <input
+                        ref={overviewCustomStartRef}
+                        type="date"
+                        value={overviewCustomStart}
+                        onChange={event => handleOverviewCustomChange('start', event.target.value)}
+                        className="w-full appearance-none rounded-xl border border-white/20 bg-black/30 px-3 py-2 pr-10 text-sm text-white focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-400/40"
+                      />
+                      <button
+                        type="button"
+                        className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full p-1 text-white/70 hover:text-white"
+                        onClick={() => {
+                          if (overviewCustomStartRef.current?.showPicker) {
+                            overviewCustomStartRef.current.showPicker();
+                          } else {
+                            overviewCustomStartRef.current?.focus();
+                          }
+                        }}
+                      >
+                        <Calendar className="h-4 w-4" />
+                      </button>
+                    </div>
+                    <div className="relative">
+                      <input
+                        ref={overviewCustomEndRef}
+                        type="date"
+                        value={overviewCustomEnd}
+                        onChange={event => handleOverviewCustomChange('end', event.target.value)}
+                        className="w-full appearance-none rounded-xl border border-white/20 bg-black/30 px-3 py-2 pr-10 text-sm text-white focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-400/40"
+                      />
+                      <button
+                        type="button"
+                        className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full p-1 text-white/70 hover:text-white"
+                        onClick={() => {
+                          if (overviewCustomEndRef.current?.showPicker) {
+                            overviewCustomEndRef.current.showPicker();
+                          } else {
+                            overviewCustomEndRef.current?.focus();
+                          }
+                        }}
+                      >
+                        <Calendar className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+            {storeSsoError && (
+              <div className="rounded-lg border border-amber-400/20 bg-amber-500/10 px-4 py-3 text-sm text-amber-100">
+                {storeSsoError}
+              </div>
+            )}
+            {renderStoreCardsGrid({
+              highlightStoreId: selectedStoreConfig?.store_id ?? null,
+              onSelectStore: store => setSelectedStoreConfig(store),
+              onPrimaryAction: store => handleOpenStoreManager(store),
+              primaryActionLabel: 'Open manager view',
+              busyStoreId: storeSsoBusyId,
+            })}
           </div>
+
+          {/* Config panel removed per request */}
+        </div>
       </main>
     );
   };
 
-  const renderWalletBalancePill = () => (
+  const renderWalletBalancePill = () =>
     walletEnabledByAdmin ? (
       <div className="flex max-w-full flex-wrap items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-xs text-slate-600">
         <Wallet className="h-4 w-4 text-emerald-600" />
         <span className="font-semibold text-slate-700">Wallet Balance</span>
         <span className="rounded-md bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-700">
-          {walletLoading ? 'Loading...' : walletError ? '--' : formatINR(walletSummary?.balance ?? 0)}
+          {walletLoading
+            ? 'Loading...'
+            : walletError
+            ? '--'
+            : formatINR(walletSummary?.balance ?? 0)}
         </span>
         {walletSummary?.low_balance_threshold !== undefined &&
           walletSummary?.balance !== undefined &&
@@ -3388,8 +3555,7 @@ const ebillAnonymousOptions = useMemo(
             </span>
           )}
       </div>
-    ) : null
-  );
+    ) : null;
 
   const renderWalletTab = () => {
     if (!franchiseData) {
@@ -3431,7 +3597,10 @@ const ebillAnonymousOptions = useMemo(
     const totalUsageCount = ebillCount + smartEbillCount + campaignCount;
 
     const expenseByDate = new Map<string, number>();
-    const paidByDate = new Map<string, { ebills: number; smartEbills: number; campaigns: number }>();
+    const paidByDate = new Map<
+      string,
+      { ebills: number; smartEbills: number; campaigns: number }
+    >();
     debitEvents.forEach(event => {
       const dateKey = event.timestamp ? dayjs(event.timestamp).format('YYYY-MM-DD') : null;
       if (!dateKey) {
@@ -3460,9 +3629,9 @@ const ebillAnonymousOptions = useMemo(
           data: expenseDates.map(date => Number(expenseByDate.get(date) || 0)),
           borderColor: '#16a34a',
           backgroundColor: 'rgba(22,163,74,0.15)',
-          tension: 0.35
-        }
-      ]
+          tension: 0.35,
+        },
+      ],
     };
     const paidChartData = {
       labels: paidDates.map(date => dayjs(date).format('MMM D')),
@@ -3470,19 +3639,19 @@ const ebillAnonymousOptions = useMemo(
         {
           label: 'E-bills',
           data: paidDates.map(date => paidByDate.get(date)?.ebills || 0),
-          backgroundColor: 'rgba(59,130,246,0.45)'
+          backgroundColor: 'rgba(59,130,246,0.45)',
         },
         {
           label: 'Smart E-bills',
           data: paidDates.map(date => paidByDate.get(date)?.smartEbills || 0),
-          backgroundColor: 'rgba(168,85,247,0.45)'
+          backgroundColor: 'rgba(168,85,247,0.45)',
         },
         {
           label: 'Campaigns',
           data: paidDates.map(date => paidByDate.get(date)?.campaigns || 0),
-          backgroundColor: 'rgba(16,185,129,0.45)'
-        }
-      ]
+          backgroundColor: 'rgba(16,185,129,0.45)',
+        },
+      ],
     };
 
     const paymentsTabs: Array<{ id: typeof paymentsActiveTab; label: string }> = [
@@ -3491,7 +3660,7 @@ const ebillAnonymousOptions = useMemo(
       { id: 'paid_messages', label: 'Usage Insights' },
       { id: 'billing_details', label: 'Billing Details' },
       { id: 'manage_subscriptions', label: 'Manage Subscriptions' },
-      { id: 'invoices', label: 'Invoices' }
+      { id: 'invoices', label: 'Invoices' },
     ];
     const showTopControlBar =
       paymentsActiveTab === 'track_expenses' || paymentsActiveTab === 'paid_messages';
@@ -3501,7 +3670,9 @@ const ebillAnonymousOptions = useMemo(
         <div className="max-w-[1280px] mr-auto ml-0 pr-4 sm:pr-6 pl-0">
           <div className="grid gap-5 lg:grid-cols-[260px_1fr] items-start">
             <aside className="rounded-lg border border-slate-200 bg-white p-4">
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Payments</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
+                Payments
+              </p>
               <nav className="mt-4 space-y-1 text-sm">
                 {paymentsTabs.map(item => (
                   <button
@@ -3512,7 +3683,7 @@ const ebillAnonymousOptions = useMemo(
                       'w-full rounded-lg px-3 py-2 text-left transition',
                       paymentsActiveTab === item.id
                         ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100',
                     ].join(' ')}
                   >
                     {item.label}
@@ -3540,7 +3711,10 @@ const ebillAnonymousOptions = useMemo(
                       disabled
                       className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs text-slate-900"
                     >
-                      <option value={franchiseData.franchise_id} className="bg-white text-slate-900">
+                      <option
+                        value={franchiseData.franchise_id}
+                        className="bg-white text-slate-900"
+                      >
                         {franchiseData.franchise_id}
                       </option>
                     </select>
@@ -3549,12 +3723,24 @@ const ebillAnonymousOptions = useMemo(
                       onChange={event => setWalletUsageRange(event.target.value)}
                       className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs text-slate-900"
                     >
-                      <option value="today" className="bg-white text-slate-900">Today</option>
-                      <option value="this_week" className="bg-white text-slate-900">This week</option>
-                      <option value="this_month" className="bg-white text-slate-900">This month</option>
-                      <option value="this_year" className="bg-white text-slate-900">This year</option>
-                      <option value="all" className="bg-white text-slate-900">All time</option>
-                      <option value="custom" className="bg-white text-slate-900">Custom</option>
+                      <option value="today" className="bg-white text-slate-900">
+                        Today
+                      </option>
+                      <option value="this_week" className="bg-white text-slate-900">
+                        This week
+                      </option>
+                      <option value="this_month" className="bg-white text-slate-900">
+                        This month
+                      </option>
+                      <option value="this_year" className="bg-white text-slate-900">
+                        This year
+                      </option>
+                      <option value="all" className="bg-white text-slate-900">
+                        All time
+                      </option>
+                      <option value="custom" className="bg-white text-slate-900">
+                        Custom
+                      </option>
                     </select>
                     {walletUsageRange === 'custom' && (
                       <>
@@ -3600,8 +3786,12 @@ const ebillAnonymousOptions = useMemo(
                         </div>
                       ) : (
                         <>
-                          <p className="mt-3 text-3xl font-semibold text-slate-900">{formatINR(available)}</p>
-                          <p className="mt-2 text-xs text-slate-500">Reserved: {formatINR(reserved)}</p>
+                          <p className="mt-3 text-3xl font-semibold text-slate-900">
+                            {formatINR(available)}
+                          </p>
+                          <p className="mt-2 text-xs text-slate-500">
+                            Reserved: {formatINR(reserved)}
+                          </p>
                         </>
                       )}
                     </div>
@@ -3638,7 +3828,8 @@ const ebillAnonymousOptions = useMemo(
                             <span className="text-xs text-slate-500">Just now</span>
                           </div>
                           <p className="mt-2 text-xs text-slate-500">
-                            Wallet balance is below {formatINR(threshold)}. Top up to avoid interruptions.
+                            Wallet balance is below {formatINR(threshold)}. Top up to avoid
+                            interruptions.
                           </p>
                           {!franchiseWalletReadOnly && (
                             <button
@@ -3667,9 +3858,12 @@ const ebillAnonymousOptions = useMemo(
                       { label: 'Total Expenditure', value: formatINR(totalSpend) },
                       { label: 'Campaign Charges', value: formatINR(marketingSpend) },
                       { label: 'E-bill Charges', value: formatINR(ebillSpend) },
-                      { label: 'Smart E-bill Charges', value: formatINR(smartEbillSpend) }
+                      { label: 'Smart E-bill Charges', value: formatINR(smartEbillSpend) },
                     ].map(card => (
-                      <div key={card.label} className="rounded-xl border border-slate-200 bg-white p-4">
+                      <div
+                        key={card.label}
+                        className="rounded-xl border border-slate-200 bg-white p-4"
+                      >
                         <p className="text-xs text-slate-500">{card.label}</p>
                         <p className="mt-2 text-xl font-semibold text-slate-900">{card.value}</p>
                       </div>
@@ -3702,9 +3896,15 @@ const ebillAnonymousOptions = useMemo(
                             responsive: true,
                             plugins: { legend: { display: false } },
                             scales: {
-                              x: { ticks: { color: '#64748b' }, grid: { color: 'rgba(148,163,184,0.25)' } },
-                              y: { ticks: { color: '#64748b' }, grid: { color: 'rgba(148,163,184,0.25)' } }
-                            }
+                              x: {
+                                ticks: { color: '#64748b' },
+                                grid: { color: 'rgba(148,163,184,0.25)' },
+                              },
+                              y: {
+                                ticks: { color: '#64748b' },
+                                grid: { color: 'rgba(148,163,184,0.25)' },
+                              },
+                            },
                           }}
                         />
                       ) : (
@@ -3721,7 +3921,9 @@ const ebillAnonymousOptions = useMemo(
                           onClick={() => setTrackExpenseTab('wallet')}
                           className={[
                             'rounded-lg px-3 py-1',
-                            trackExpenseTab === 'wallet' ? 'bg-slate-100 text-slate-900' : 'bg-white text-slate-500'
+                            trackExpenseTab === 'wallet'
+                              ? 'bg-slate-100 text-slate-900'
+                              : 'bg-white text-slate-500',
                           ].join(' ')}
                         >
                           Wallet Transactions
@@ -3731,7 +3933,9 @@ const ebillAnonymousOptions = useMemo(
                           onClick={() => setTrackExpenseTab('subscription')}
                           className={[
                             'rounded-lg px-3 py-1',
-                            trackExpenseTab === 'subscription' ? 'bg-slate-100 text-slate-900' : 'bg-white text-slate-500'
+                            trackExpenseTab === 'subscription'
+                              ? 'bg-slate-100 text-slate-900'
+                              : 'bg-white text-slate-500',
                           ].join(' ')}
                         >
                           Subscription Deduction
@@ -3754,13 +3958,19 @@ const ebillAnonymousOptions = useMemo(
                                 >
                                   <div>
                                     <p className="text-xs text-slate-600">
-                                      {(event.usage_type || event.type || '').toString().toUpperCase()}
+                                      {(event.usage_type || event.type || '')
+                                        .toString()
+                                        .toUpperCase()}
                                     </p>
                                     <p className="text-[11px] text-slate-500">
-                                      {event.timestamp ? dayjs(event.timestamp).format('DD MMM YYYY, HH:mm') : '--'}
+                                      {event.timestamp
+                                        ? dayjs(event.timestamp).format('DD MMM YYYY, HH:mm')
+                                        : '--'}
                                     </p>
                                   </div>
-                                  <span className="text-sm text-slate-900">-{formatINR(event.amount ?? 0)}</span>
+                                  <span className="text-sm text-slate-900">
+                                    -{formatINR(event.amount ?? 0)}
+                                  </span>
                                 </div>
                               ))}
                             </div>
@@ -3786,10 +3996,14 @@ const ebillAnonymousOptions = useMemo(
                                       {payment.status || 'subscription'}
                                     </p>
                                     <p className="text-[11px] text-slate-500">
-                                      {payment.created_at ? dayjs(payment.created_at).format('DD MMM YYYY, HH:mm') : '--'}
+                                      {payment.created_at
+                                        ? dayjs(payment.created_at).format('DD MMM YYYY, HH:mm')
+                                        : '--'}
                                     </p>
                                   </div>
-                                  <span className="text-sm text-slate-900">{formatINR(payment.amount ?? 0)}</span>
+                                  <span className="text-sm text-slate-900">
+                                    {formatINR(payment.amount ?? 0)}
+                                  </span>
                                 </div>
                               ))}
                             </div>
@@ -3803,16 +4017,19 @@ const ebillAnonymousOptions = useMemo(
                 </>
               )}
 
-{paymentsActiveTab === 'paid_messages' && (
+              {paymentsActiveTab === 'paid_messages' && (
                 <>
                   <div className="grid gap-4 md:grid-cols-4">
                     {[
                       { label: 'Total Usage', value: totalUsageCount.toString() },
                       { label: 'E-bills', value: ebillCount.toString() },
                       { label: 'Smart E-bills', value: smartEbillCount.toString() },
-                      { label: 'Campaigns', value: campaignCount.toString() }
+                      { label: 'Campaigns', value: campaignCount.toString() },
                     ].map(card => (
-                      <div key={card.label} className="rounded-xl border border-slate-200 bg-white p-4">
+                      <div
+                        key={card.label}
+                        className="rounded-xl border border-slate-200 bg-white p-4"
+                      >
                         <p className="text-xs text-slate-500">{card.label}</p>
                         <p className="mt-2 text-xl font-semibold text-slate-900">{card.value}</p>
                       </div>
@@ -3843,11 +4060,19 @@ const ebillAnonymousOptions = useMemo(
                           data={paidChartData}
                           options={{
                             responsive: true,
-                            plugins: { legend: { position: 'bottom', labels: { color: '#334155' } } },
+                            plugins: {
+                              legend: { position: 'bottom', labels: { color: '#334155' } },
+                            },
                             scales: {
-                              x: { ticks: { color: '#64748b' }, grid: { color: 'rgba(148,163,184,0.25)' } },
-                              y: { ticks: { color: '#64748b' }, grid: { color: 'rgba(148,163,184,0.25)' } }
-                            }
+                              x: {
+                                ticks: { color: '#64748b' },
+                                grid: { color: 'rgba(148,163,184,0.25)' },
+                              },
+                              y: {
+                                ticks: { color: '#64748b' },
+                                grid: { color: 'rgba(148,163,184,0.25)' },
+                              },
+                            },
                           }}
                         />
                       ) : (
@@ -3871,7 +4096,11 @@ const ebillAnonymousOptions = useMemo(
                           </thead>
                           <tbody>
                             {paidDates.map(date => {
-                              const row = paidByDate.get(date) || { ebills: 0, smartEbills: 0, campaigns: 0 };
+                              const row = paidByDate.get(date) || {
+                                ebills: 0,
+                                smartEbills: 0,
+                                campaigns: 0,
+                              };
                               const total = row.ebills + row.smartEbills + row.campaigns;
                               return (
                                 <tr key={date} className="border-t border-slate-200">
@@ -3893,7 +4122,7 @@ const ebillAnonymousOptions = useMemo(
                 </>
               )}
 
-{paymentsActiveTab === 'billing_details' && (
+              {paymentsActiveTab === 'billing_details' && (
                 <div className="rounded-xl border border-slate-200 bg-white">
                   <div className="flex items-center justify-between border-b border-slate-200 px-6 py-4">
                     <p className="text-sm font-semibold text-slate-800">Billing Details</p>
@@ -3905,11 +4134,15 @@ const ebillAnonymousOptions = useMemo(
                     {[
                       {
                         label: 'Legal Business Name',
-                        value: profileForm.legalBusinessName || billingProfile?.franchise_name || franchiseData.franchise_id
+                        value:
+                          profileForm.legalBusinessName ||
+                          billingProfile?.franchise_name ||
+                          franchiseData.franchise_id,
                       },
                       {
                         label: 'Business Email',
-                        value: profileForm.businessEmail || billingProfile?.billing_email || 'Not set'
+                        value:
+                          profileForm.businessEmail || billingProfile?.billing_email || 'Not set',
                       },
                       {
                         label: 'Business Address',
@@ -3921,19 +4154,22 @@ const ebillAnonymousOptions = useMemo(
                             profileForm.city,
                             profileForm.state,
                             profileForm.country,
-                            profileForm.pincode
+                            profileForm.pincode,
                           ]
                             .filter(Boolean)
                             .join(', ') ||
-                          'Not set'
+                          'Not set',
                       },
                       {
                         label: 'GST Details',
                         value: profileForm.gstNumber ? 'View GST Certificate' : 'Not set',
-                        isLink: Boolean(profileForm.gstCertificateUrl)
-                      }
+                        isLink: Boolean(profileForm.gstCertificateUrl),
+                      },
                     ].map(row => (
-                      <div key={row.label} className="flex items-start justify-between gap-6 px-6 py-4">
+                      <div
+                        key={row.label}
+                        className="flex items-start justify-between gap-6 px-6 py-4"
+                      >
                         <div className="text-slate-600">{row.label}</div>
                         <div className="flex items-center gap-3">
                           {row.isLink ? (
@@ -3955,7 +4191,7 @@ const ebillAnonymousOptions = useMemo(
                 </div>
               )}
 
-{paymentsActiveTab === 'manage_subscriptions' && (
+              {paymentsActiveTab === 'manage_subscriptions' && (
                 <div className="rounded-xl border border-slate-200 bg-white p-6 space-y-4">
                   <p className="text-sm text-slate-600">Manage Subscriptions</p>
                   <div className="rounded-xl border border-slate-200 bg-white p-4 text-sm text-slate-600">
@@ -3982,7 +4218,7 @@ const ebillAnonymousOptions = useMemo(
                 </div>
               )}
 
-{paymentsActiveTab === 'invoices' && (
+              {paymentsActiveTab === 'invoices' && (
                 <div className="rounded-xl border border-slate-200 bg-white p-6">
                   <p className="text-sm text-slate-600">Invoices</p>
                   <div className="mt-4 rounded-xl border border-slate-200 bg-white p-4 text-sm text-slate-500">
@@ -4005,7 +4241,10 @@ const ebillAnonymousOptions = useMemo(
                         </thead>
                         <tbody>
                           {paymentsHistory.map(payment => (
-                            <tr key={payment.payment_id || payment.order_id} className="border-t border-slate-200">
+                            <tr
+                              key={payment.payment_id || payment.order_id}
+                              className="border-t border-slate-200"
+                            >
                               <td className="py-2">
                                 {payment.created_at
                                   ? dayjs(payment.created_at).format('DD MMM YYYY')
@@ -4025,7 +4264,6 @@ const ebillAnonymousOptions = useMemo(
                   </div>
                 </div>
               )}
-
             </section>
           </div>
         </div>
@@ -4097,9 +4335,7 @@ const ebillAnonymousOptions = useMemo(
                   </div>
                 )}
 
-                {walletTopupError && (
-                  <p className="text-sm text-rose-600">{walletTopupError}</p>
-                )}
+                {walletTopupError && <p className="text-sm text-rose-600">{walletTopupError}</p>}
                 {walletTopupSuccess && (
                   <p className="text-sm text-emerald-600">{walletTopupSuccess}</p>
                 )}
@@ -4126,7 +4362,9 @@ const ebillAnonymousOptions = useMemo(
             <div className="relative w-full max-w-2xl overflow-hidden rounded-2xl bg-white shadow-[0_24px_60px_rgba(15,23,42,0.35)]">
               <div className="flex items-center justify-between border-b border-slate-200 px-6 py-4">
                 <div>
-                  <p className="text-base font-semibold text-slate-900">Update your billing information</p>
+                  <p className="text-base font-semibold text-slate-900">
+                    Update your billing information
+                  </p>
                   <p className="text-sm text-slate-500">
                     Please share your business location and the relevant document.
                   </p>
@@ -4141,17 +4379,23 @@ const ebillAnonymousOptions = useMemo(
               </div>
               <div className="px-6 py-5 space-y-4">
                 <div>
-                  <label className="text-sm font-medium text-slate-700">Select your Business Location</label>
+                  <label className="text-sm font-medium text-slate-700">
+                    Select your Business Location
+                  </label>
                   <select
                     value={billingForm.country}
-                    onChange={event => setBillingForm(prev => ({ ...prev, country: event.target.value }))}
+                    onChange={event =>
+                      setBillingForm(prev => ({ ...prev, country: event.target.value }))
+                    }
                     className="mt-2 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900"
                   >
                     <option value="India">India</option>
                   </select>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-slate-700">Do you have a GST Number</label>
+                  <label className="text-sm font-medium text-slate-700">
+                    Do you have a GST Number
+                  </label>
                   <div className="mt-2 flex items-center gap-6 text-sm text-slate-700">
                     <label className="flex items-center gap-2">
                       <input
@@ -4177,7 +4421,9 @@ const ebillAnonymousOptions = useMemo(
                       <input
                         type="text"
                         value={billingForm.gstNumber}
-                        onChange={event => setBillingForm(prev => ({ ...prev, gstNumber: event.target.value }))}
+                        onChange={event =>
+                          setBillingForm(prev => ({ ...prev, gstNumber: event.target.value }))
+                        }
                         placeholder="Enter business GST Number"
                         className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900"
                       />
@@ -4186,8 +4432,12 @@ const ebillAnonymousOptions = useMemo(
                           +
                         </div>
                         <div>
-                          <p className="font-medium text-slate-700">Upload GST Certificate (Optional)</p>
-                          <p className="text-xs text-slate-500">Supported file formats: PDF, JPEG, JPG & PNG</p>
+                          <p className="font-medium text-slate-700">
+                            Upload GST Certificate (Optional)
+                          </p>
+                          <p className="text-xs text-slate-500">
+                            Supported file formats: PDF, JPEG, JPG & PNG
+                          </p>
                         </div>
                         <input type="file" className="hidden" accept=".pdf,.jpeg,.jpg,.png" />
                       </label>
@@ -4199,11 +4449,15 @@ const ebillAnonymousOptions = useMemo(
                   )}
                 </div>
                 <div className="space-y-3">
-                  <label className="text-sm font-medium text-slate-700">Please enter the billing details</label>
+                  <label className="text-sm font-medium text-slate-700">
+                    Please enter the billing details
+                  </label>
                   <input
                     type="text"
                     value={billingForm.legalName}
-                    onChange={event => setBillingForm(prev => ({ ...prev, legalName: event.target.value }))}
+                    onChange={event =>
+                      setBillingForm(prev => ({ ...prev, legalName: event.target.value }))
+                    }
                     placeholder="Legal Business Name"
                     className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900"
                   />
@@ -4211,14 +4465,18 @@ const ebillAnonymousOptions = useMemo(
                     <input
                       type="text"
                       value={billingForm.addressLine1}
-                      onChange={event => setBillingForm(prev => ({ ...prev, addressLine1: event.target.value }))}
+                      onChange={event =>
+                        setBillingForm(prev => ({ ...prev, addressLine1: event.target.value }))
+                      }
                       placeholder="Address line 1"
                       className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900"
                     />
                     <input
                       type="text"
                       value={billingForm.addressLine2}
-                      onChange={event => setBillingForm(prev => ({ ...prev, addressLine2: event.target.value }))}
+                      onChange={event =>
+                        setBillingForm(prev => ({ ...prev, addressLine2: event.target.value }))
+                      }
                       placeholder="Address line 2"
                       className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900"
                     />
@@ -4227,21 +4485,27 @@ const ebillAnonymousOptions = useMemo(
                     <input
                       type="text"
                       value={billingForm.city}
-                      onChange={event => setBillingForm(prev => ({ ...prev, city: event.target.value }))}
+                      onChange={event =>
+                        setBillingForm(prev => ({ ...prev, city: event.target.value }))
+                      }
                       placeholder="City"
                       className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900"
                     />
                     <input
                       type="text"
                       value={billingForm.state}
-                      onChange={event => setBillingForm(prev => ({ ...prev, state: event.target.value }))}
+                      onChange={event =>
+                        setBillingForm(prev => ({ ...prev, state: event.target.value }))
+                      }
                       placeholder="State"
                       className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900"
                     />
                     <input
                       type="text"
                       value={billingForm.zip}
-                      onChange={event => setBillingForm(prev => ({ ...prev, zip: event.target.value }))}
+                      onChange={event =>
+                        setBillingForm(prev => ({ ...prev, zip: event.target.value }))
+                      }
                       placeholder="Pin code"
                       className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900"
                     />
@@ -4263,7 +4527,10 @@ const ebillAnonymousOptions = useMemo(
 
   const renderSmartEbillTab = () => {
     if (!franchiseData) {
-      return renderPlaceholderTab('Smart E-bill', 'Log in again to manage franchise Smart E-bill assets.');
+      return renderPlaceholderTab(
+        'Smart E-bill',
+        'Log in again to manage franchise Smart E-bill assets.'
+      );
     }
 
     return (
@@ -4277,9 +4544,12 @@ const ebillAnonymousOptions = useMemo(
                     <UploadCloud className="h-5 w-5" />
                   </div>
                   <div>
-                    <h3 className="text-lg font-semibold text-slate-900">Franchise Smart E-bill studio</h3>
+                    <h3 className="text-lg font-semibold text-slate-900">
+                      Franchise Smart E-bill studio
+                    </h3>
                     <p className="text-sm text-slate-600">
-                      Upload once for the franchise. Assets are stored under the franchise folder and synced to every store row.
+                      Upload once for the franchise. Assets are stored under the franchise folder
+                      and synced to every store row.
                     </p>
                   </div>
                 </div>
@@ -4296,7 +4566,9 @@ const ebillAnonymousOptions = useMemo(
               <form className="mt-6 space-y-6" onSubmit={handleSmartEbillSave}>
                 <div className="grid gap-4 lg:grid-cols-2">
                   <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-                    <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">Messaging</p>
+                    <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">
+                      Messaging
+                    </p>
                     <div className="mt-4 space-y-4">
                       <div>
                         <label className="text-sm font-medium text-slate-700">Header text</label>
@@ -4334,7 +4606,9 @@ const ebillAnonymousOptions = useMemo(
                   <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">Selections</p>
+                        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">
+                          Selections
+                        </p>
                         <p className="mt-2 text-sm font-semibold text-slate-900">Header slider</p>
                       </div>
                       <span className="rounded-full bg-white px-3 py-1 text-xs font-semibold text-slate-600 shadow-sm">
@@ -4353,20 +4627,46 @@ const ebillAnonymousOptions = useMemo(
                             className="flex items-center justify-between rounded-lg border border-slate-200 bg-white px-3 py-2"
                           >
                             <div className="flex items-center gap-3">
-                              <img src={url} alt={`Header ${index + 1}`} className="h-12 w-16 rounded-md object-cover" />
+                              <img
+                                src={url}
+                                alt={`Header ${index + 1}`}
+                                className="h-12 w-16 rounded-md object-cover"
+                              />
                               <div>
-                                <p className="text-sm font-semibold text-slate-800">IMG-{smartImages.indexOf(url) + 1}</p>
+                                <p className="text-sm font-semibold text-slate-800">
+                                  IMG-{smartImages.indexOf(url) + 1}
+                                </p>
                                 <p className="text-xs text-slate-500">Header banner</p>
                               </div>
                             </div>
                             <div className="flex items-center gap-2">
-                              <Button type="button" variant="outline" size="icon" className="h-8 w-8 border-slate-900 bg-slate-900 text-white hover:bg-slate-800" onClick={() => moveHeaderImage(index, -1)} disabled={index === 0}>
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="icon"
+                                className="h-8 w-8 border-slate-900 bg-slate-900 text-white hover:bg-slate-800"
+                                onClick={() => moveHeaderImage(index, -1)}
+                                disabled={index === 0}
+                              >
                                 ↑
                               </Button>
-                              <Button type="button" variant="outline" size="icon" className="h-8 w-8 border-slate-900 bg-slate-900 text-white hover:bg-slate-800" onClick={() => moveHeaderImage(index, 1)} disabled={index === headerImages.length - 1}>
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="icon"
+                                className="h-8 w-8 border-slate-900 bg-slate-900 text-white hover:bg-slate-800"
+                                onClick={() => moveHeaderImage(index, 1)}
+                                disabled={index === headerImages.length - 1}
+                              >
                                 ↓
                               </Button>
-                              <Button type="button" variant="ghost" size="icon" className="h-8 w-8 text-rose-500 hover:text-rose-600" onClick={() => toggleHeaderImage(url)}>
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8 text-rose-500 hover:text-rose-600"
+                                onClick={() => toggleHeaderImage(url)}
+                              >
                                 ✕
                               </Button>
                             </div>
@@ -4379,7 +4679,11 @@ const ebillAnonymousOptions = useMemo(
                       <p className="text-sm font-semibold text-slate-900">Bottom banner</p>
                       {bottomBanner ? (
                         <div className="mt-3 flex items-center gap-3 rounded-lg border border-slate-200 bg-white px-3 py-2">
-                          <img src={bottomBanner} alt="Bottom banner" className="h-12 w-20 rounded-md object-cover" />
+                          <img
+                            src={bottomBanner}
+                            alt="Bottom banner"
+                            className="h-12 w-20 rounded-md object-cover"
+                          />
                           <div className="flex-1">
                             <p className="text-sm font-semibold text-slate-800">
                               IMG-{smartImages.indexOf(bottomBanner) + 1}
@@ -4400,7 +4704,9 @@ const ebillAnonymousOptions = useMemo(
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <div>
                       <p className="text-sm font-semibold text-slate-900">Mobile preview</p>
-                      <p className="text-xs text-slate-500">This preview will be applied across all franchise stores.</p>
+                      <p className="text-xs text-slate-500">
+                        This preview will be applied across all franchise stores.
+                      </p>
                     </div>
                     <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-500">
                       {franchiseData.store_count} stores
@@ -4411,9 +4717,15 @@ const ebillAnonymousOptions = useMemo(
                       <div className="space-y-4">
                         <div className="relative overflow-hidden rounded-2xl bg-slate-200">
                           {headerImages.length > 0 ? (
-                            <img src={headerImages[previewHeaderIndex]} alt="Header banner preview" className="h-32 w-full object-cover" />
+                            <img
+                              src={headerImages[previewHeaderIndex]}
+                              alt="Header banner preview"
+                              className="h-32 w-full object-cover"
+                            />
                           ) : (
-                            <div className="flex h-32 items-center justify-center text-xs text-slate-500">Header banner preview</div>
+                            <div className="flex h-32 items-center justify-center text-xs text-slate-500">
+                              Header banner preview
+                            </div>
                           )}
                         </div>
                         <div className="rounded-2xl bg-white px-4 py-3 text-center shadow-sm">
@@ -4433,11 +4745,17 @@ const ebillAnonymousOptions = useMemo(
                           <p className="font-semibold text-slate-800">
                             {profileForm.legalBusinessName || franchiseData.franchise_id}
                           </p>
-                          <p className="mt-1">{smartFooterText || 'Smart E-bill powered by BillBox'}</p>
+                          <p className="mt-1">
+                            {smartFooterText || 'Smart E-bill powered by BillBox'}
+                          </p>
                         </div>
                         {bottomBanner ? (
                           <div className="relative overflow-hidden rounded-2xl shadow-sm">
-                            <img src={bottomBanner} alt="Bottom banner preview" className="h-28 w-full object-cover" />
+                            <img
+                              src={bottomBanner}
+                              alt="Bottom banner preview"
+                              className="h-28 w-full object-cover"
+                            />
                           </div>
                         ) : (
                           <div className="flex h-28 items-center justify-center rounded-2xl border border-dashed border-slate-300 bg-white text-xs text-slate-400">
@@ -4462,7 +4780,9 @@ const ebillAnonymousOptions = useMemo(
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <div>
                       <p className="text-sm font-semibold text-slate-900">Asset library</p>
-                      <p className="text-xs text-slate-500">Select franchise assets to use as header or bottom banners.</p>
+                      <p className="text-xs text-slate-500">
+                        Select franchise assets to use as header or bottom banners.
+                      </p>
                     </div>
                     <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-500">
                       {smartImages.length} assets
@@ -4476,7 +4796,8 @@ const ebillAnonymousOptions = useMemo(
                     </div>
                   ) : smartImages.length === 0 ? (
                     <div className="mt-4 rounded-xl border border-dashed border-slate-300 bg-slate-50 p-6 text-sm text-slate-500">
-                      No assets uploaded yet. Use the upload button to add banner images once for the franchise.
+                      No assets uploaded yet. Use the upload button to add banner images once for
+                      the franchise.
                     </div>
                   ) : (
                     <div className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
@@ -4484,21 +4805,34 @@ const ebillAnonymousOptions = useMemo(
                         const inHeader = headerImages.includes(url);
                         const isBottom = bottomBanner === url;
                         return (
-                          <div key={url} className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+                          <div
+                            key={url}
+                            className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
+                          >
                             <div className="relative h-36 w-full overflow-hidden bg-slate-100">
-                              <img src={url} alt={`Asset ${index + 1}`} className="h-full w-full object-cover" />
+                              <img
+                                src={url}
+                                alt={`Asset ${index + 1}`}
+                                className="h-full w-full object-cover"
+                              />
                               <div className="absolute left-3 top-3 flex gap-2">
                                 {inHeader && (
-                                  <span className="rounded-full bg-slate-900 px-2 py-1 text-[11px] font-semibold text-white">Header</span>
+                                  <span className="rounded-full bg-slate-900 px-2 py-1 text-[11px] font-semibold text-white">
+                                    Header
+                                  </span>
                                 )}
                                 {isBottom && (
-                                  <span className="rounded-full bg-emerald-600 px-2 py-1 text-[11px] font-semibold text-white">Bottom</span>
+                                  <span className="rounded-full bg-emerald-600 px-2 py-1 text-[11px] font-semibold text-white">
+                                    Bottom
+                                  </span>
                                 )}
                               </div>
                             </div>
                             <div className="space-y-3 p-4">
                               <div className="flex items-center justify-between">
-                                <p className="text-sm font-semibold text-slate-800">IMG-{index + 1}</p>
+                                <p className="text-sm font-semibold text-slate-800">
+                                  IMG-{index + 1}
+                                </p>
                                 <button
                                   type="button"
                                   className="text-xs font-semibold text-slate-400 hover:text-slate-600"
@@ -4514,7 +4848,9 @@ const ebillAnonymousOptions = useMemo(
                                   size="sm"
                                   className="bg-slate-900 text-white hover:bg-slate-800"
                                   onClick={() => toggleHeaderImage(url)}
-                                  disabled={!inHeader && headerImages.length >= MAX_SMART_HEADER_IMAGES}
+                                  disabled={
+                                    !inHeader && headerImages.length >= MAX_SMART_HEADER_IMAGES
+                                  }
                                 >
                                   {inHeader ? 'In header' : 'Add to header'}
                                 </Button>
@@ -4557,7 +4893,8 @@ const ebillAnonymousOptions = useMemo(
                     {smartSaving ? 'Saving…' : 'Save Smart E-bill'}
                   </Button>
                   <p className="text-xs text-slate-500">
-                    Saving updates the franchise config and writes the same image paths to every store row.
+                    Saving updates the franchise config and writes the same image paths to every
+                    store row.
                   </p>
                 </div>
               </form>
@@ -4633,54 +4970,70 @@ const ebillAnonymousOptions = useMemo(
                   <input
                     type="text"
                     value={profileForm.legalBusinessName}
-                    onChange={event => setProfileForm(prev => ({ ...prev, legalBusinessName: event.target.value }))}
+                    onChange={event =>
+                      setProfileForm(prev => ({ ...prev, legalBusinessName: event.target.value }))
+                    }
                     className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900"
                   />
                 </div>
-              <div className="space-y-2">
-                <label className="text-sm text-slate-600">Franchise owner full name</label>
-                <input
-                  type="text"
-                  value={profileForm.ownerFullName}
-                  onChange={event => setProfileForm(prev => ({ ...prev, ownerFullName: event.target.value }))}
-                  className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900"
-                />
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm text-slate-600">Business Email</label>
-                <input
-                  type="email"
-                  value={profileForm.businessEmail}
-                  onChange={event => setProfileForm(prev => ({ ...prev, businessEmail: event.target.value }))}
-                  className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900"
-                />
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm text-slate-600">Primary phone number</label>
-                <input
-                  type="tel"
-                    value={profileForm.phonePrimary}
-                    onChange={event => setProfileForm(prev => ({ ...prev, phonePrimary: event.target.value }))}
-                    className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900"
-                  />
-                </div>
-              <div className="space-y-2">
-                <label className="text-sm text-slate-600">WhatsApp number</label>
-                <input
-                  type="tel"
-                  value={profileForm.whatsappNumber}
-                  onChange={event => setProfileForm(prev => ({ ...prev, whatsappNumber: event.target.value }))}
-                  placeholder="+91XXXXXXXXXX (E.164 format)"
-                  className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900"
-                />
-                <p className="text-xs text-slate-500">Use country code (e.g., +91XXXXXXXXXX). This is required for daily stats.</p>
-              </div>
                 <div className="space-y-2">
-                  <label className="text-sm text-slate-600">Alternate phone number (optional)</label>
+                  <label className="text-sm text-slate-600">Franchise owner full name</label>
+                  <input
+                    type="text"
+                    value={profileForm.ownerFullName}
+                    onChange={event =>
+                      setProfileForm(prev => ({ ...prev, ownerFullName: event.target.value }))
+                    }
+                    className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm text-slate-600">Business Email</label>
+                  <input
+                    type="email"
+                    value={profileForm.businessEmail}
+                    onChange={event =>
+                      setProfileForm(prev => ({ ...prev, businessEmail: event.target.value }))
+                    }
+                    className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm text-slate-600">Primary phone number</label>
+                  <input
+                    type="tel"
+                    value={profileForm.phonePrimary}
+                    onChange={event =>
+                      setProfileForm(prev => ({ ...prev, phonePrimary: event.target.value }))
+                    }
+                    className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm text-slate-600">WhatsApp number</label>
+                  <input
+                    type="tel"
+                    value={profileForm.whatsappNumber}
+                    onChange={event =>
+                      setProfileForm(prev => ({ ...prev, whatsappNumber: event.target.value }))
+                    }
+                    placeholder="+91XXXXXXXXXX (E.164 format)"
+                    className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900"
+                  />
+                  <p className="text-xs text-slate-500">
+                    Use country code (e.g., +91XXXXXXXXXX). This is required for daily stats.
+                  </p>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm text-slate-600">
+                    Alternate phone number (optional)
+                  </label>
                   <input
                     type="tel"
                     value={profileForm.phoneAlternate}
-                    onChange={event => setProfileForm(prev => ({ ...prev, phoneAlternate: event.target.value }))}
+                    onChange={event =>
+                      setProfileForm(prev => ({ ...prev, phoneAlternate: event.target.value }))
+                    }
                     className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900"
                   />
                 </div>
@@ -4689,7 +5042,9 @@ const ebillAnonymousOptions = useMemo(
                   <input
                     type="text"
                     value={profileForm.addressLine1}
-                    onChange={event => setProfileForm(prev => ({ ...prev, addressLine1: event.target.value }))}
+                    onChange={event =>
+                      setProfileForm(prev => ({ ...prev, addressLine1: event.target.value }))
+                    }
                     className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900"
                   />
                 </div>
@@ -4698,7 +5053,9 @@ const ebillAnonymousOptions = useMemo(
                   <input
                     type="text"
                     value={profileForm.addressLine2}
-                    onChange={event => setProfileForm(prev => ({ ...prev, addressLine2: event.target.value }))}
+                    onChange={event =>
+                      setProfileForm(prev => ({ ...prev, addressLine2: event.target.value }))
+                    }
                     className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900"
                   />
                 </div>
@@ -4707,7 +5064,9 @@ const ebillAnonymousOptions = useMemo(
                   <input
                     type="text"
                     value={profileForm.city}
-                    onChange={event => setProfileForm(prev => ({ ...prev, city: event.target.value }))}
+                    onChange={event =>
+                      setProfileForm(prev => ({ ...prev, city: event.target.value }))
+                    }
                     className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900"
                   />
                 </div>
@@ -4716,7 +5075,9 @@ const ebillAnonymousOptions = useMemo(
                   <input
                     type="text"
                     value={profileForm.state}
-                    onChange={event => setProfileForm(prev => ({ ...prev, state: event.target.value }))}
+                    onChange={event =>
+                      setProfileForm(prev => ({ ...prev, state: event.target.value }))
+                    }
                     className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900"
                   />
                 </div>
@@ -4725,7 +5086,9 @@ const ebillAnonymousOptions = useMemo(
                   <input
                     type="text"
                     value={profileForm.country}
-                    onChange={event => setProfileForm(prev => ({ ...prev, country: event.target.value }))}
+                    onChange={event =>
+                      setProfileForm(prev => ({ ...prev, country: event.target.value }))
+                    }
                     className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900"
                   />
                 </div>
@@ -4734,7 +5097,9 @@ const ebillAnonymousOptions = useMemo(
                   <input
                     type="text"
                     value={profileForm.pincode}
-                    onChange={event => setProfileForm(prev => ({ ...prev, pincode: event.target.value }))}
+                    onChange={event =>
+                      setProfileForm(prev => ({ ...prev, pincode: event.target.value }))
+                    }
                     className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900"
                   />
                 </div>
@@ -4771,12 +5136,16 @@ const ebillAnonymousOptions = useMemo(
                       <input
                         type="text"
                         value={profileForm.gstNumber}
-                        onChange={event => setProfileForm(prev => ({ ...prev, gstNumber: event.target.value }))}
+                        onChange={event =>
+                          setProfileForm(prev => ({ ...prev, gstNumber: event.target.value }))
+                        }
                         className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900"
                       />
                     </div>
                     <div className="space-y-2">
-                      <label className="text-sm text-slate-600">GST certificate (PDF/JPG/PNG)</label>
+                      <label className="text-sm text-slate-600">
+                        GST certificate (PDF/JPG/PNG)
+                      </label>
                       <input
                         type="file"
                         accept=".pdf,.jpg,.jpeg,.png"
@@ -4786,9 +5155,7 @@ const ebillAnonymousOptions = useMemo(
                       {gstUploadStatus && (
                         <p className="text-xs text-emerald-600">{gstUploadStatus}</p>
                       )}
-                      {gstUploadError && (
-                        <p className="text-xs text-rose-600">{gstUploadError}</p>
-                      )}
+                      {gstUploadError && <p className="text-xs text-rose-600">{gstUploadError}</p>}
                       {profileForm.gstCertificateUrl && (
                         <a
                           href={profileForm.gstCertificateUrl}
@@ -4807,7 +5174,9 @@ const ebillAnonymousOptions = useMemo(
                   <input
                     type="text"
                     value={profileForm.panNumber}
-                    onChange={event => setProfileForm(prev => ({ ...prev, panNumber: event.target.value }))}
+                    onChange={event =>
+                      setProfileForm(prev => ({ ...prev, panNumber: event.target.value }))
+                    }
                     className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900"
                   />
                 </div>
@@ -4831,7 +5200,7 @@ const ebillAnonymousOptions = useMemo(
       profileForValidation.city,
       profileForValidation.state,
       profileForValidation.country,
-      profileForValidation.pincode
+      profileForValidation.pincode,
     ];
     return required.every(value => String(value || '').trim().length > 0);
   };
@@ -4862,7 +5231,8 @@ const ebillAnonymousOptions = useMemo(
               <div className="space-y-2">
                 <p className="text-2xl font-semibold text-white">Wallet Disabled</p>
                 <p>
-                  Wallet access is currently unavailable because you are on a free trial plan. Upgrade to enable wallet features.
+                  Wallet access is currently unavailable because you are on a free trial plan.
+                  Upgrade to enable wallet features.
                 </p>
               </div>
             </div>

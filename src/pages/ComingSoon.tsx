@@ -1,25 +1,21 @@
-import { Link } from "react-router-dom";
+import { Link } from 'react-router-dom';
 
 interface ComingSoonProps {
   featureName?: string;
 }
 
 const ComingSoon: React.FC<ComingSoonProps> = ({ featureName }) => {
-  const label = featureName ?? "This feature";
+  const label = featureName ?? 'This feature';
 
   return (
     <div className="min-h-screen bg-[#e8f0fe] flex flex-col items-center justify-center px-6 py-12 text-center">
       <div className="max-w-md space-y-6">
         <div className="space-y-2">
-          <p className="text-sm font-semibold tracking-wide text-blue-500 uppercase">
-            Coming Soon
-          </p>
-          <h1 className="text-3xl font-bold text-gray-900">
-            {label} is almost here
-          </h1>
+          <p className="text-sm font-semibold tracking-wide text-blue-500 uppercase">Coming Soon</p>
+          <h1 className="text-3xl font-bold text-gray-900">{label} is almost here</h1>
           <p className="text-gray-600">
-            We&apos;re polishing the last details before sharing it with you. In
-            the meantime, explore everything else inside your Billbox dashboard.
+            We&apos;re polishing the last details before sharing it with you. In the meantime,
+            explore everything else inside your Billbox dashboard.
           </p>
         </div>
 

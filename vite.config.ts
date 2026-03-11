@@ -1,19 +1,19 @@
 /// <reference types="vitest" />
-import { defineConfig, loadEnv } from "vite";
-import react from "@vitejs/plugin-react-swc";
-import path from "path";
+import { defineConfig, loadEnv } from 'vite';
+import react from '@vitejs/plugin-react-swc';
+import path from 'path';
 
 export default defineConfig(({ mode }) => {
-  const env = loadEnv(mode, process.cwd(), "");
+  const env = loadEnv(mode, process.cwd(), '');
   const backendTarget = env.VITE_BACKEND_URL;
 
   return {
     root: __dirname,
     server: {
-      host: "::",
+      host: '::',
       port: 8080,
       proxy: {
-        "/api": {
+        '/api': {
           target: backendTarget,
           changeOrigin: true,
           secure: false,
@@ -21,7 +21,7 @@ export default defineConfig(({ mode }) => {
       },
     },
     build: {
-      outDir: "dist",
+      outDir: 'dist',
       emptyOutDir: true,
       minify: 'terser' as const,
       rollupOptions: {
@@ -30,12 +30,10 @@ export default defineConfig(({ mode }) => {
         },
       },
     },
-    plugins: [
-      react(),
-    ],
+    plugins: [react()],
     resolve: {
       alias: {
-        "@": path.resolve(__dirname, "./src"),
+        '@': path.resolve(__dirname, './src'),
       },
     },
     test: {

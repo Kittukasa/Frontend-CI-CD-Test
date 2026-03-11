@@ -1,4 +1,17 @@
-import { TrendingUp, Users, Zap, Shield, Clock, Target, BarChart3, MessageSquare, Gift, Building2, BrainCircuit, FileText } from 'lucide-react';
+import {
+  TrendingUp,
+  Users,
+  Zap,
+  Shield,
+  Clock,
+  Target,
+  BarChart3,
+  MessageSquare,
+  Gift,
+  Building2,
+  BrainCircuit,
+  FileText,
+} from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 const VendorBenefits = () => {
@@ -23,67 +36,71 @@ const VendorBenefits = () => {
   const benefits = [
     {
       icon: FileText,
-      title: "Smart E-Bill",
-      description: "Instant digital bills that are always accessible and ready to share across channels.",
-      color: "from-blue-500 to-cyan-500",
-      stat: "WhatsApp-ready"
+      title: 'Smart E-Bill',
+      description:
+        'Instant digital bills that are always accessible and ready to share across channels.',
+      color: 'from-blue-500 to-cyan-500',
+      stat: 'WhatsApp-ready',
     },
     {
       icon: Building2,
-      title: "MultiStore Analytics",
-      description: "Chain level visibility with store comparisons, trends and drill downs in one dashboard.",
-      color: "from-cyan-500 to-blue-500",
-      stat: "Real time across stores"
+      title: 'MultiStore Analytics',
+      description:
+        'Chain level visibility with store comparisons, trends and drill downs in one dashboard.',
+      color: 'from-cyan-500 to-blue-500',
+      stat: 'Real time across stores',
     },
     {
       icon: Zap,
-      title: "Instant Automation",
-      description: "Automated WhatsApp campaigns, follow-ups, and customer engagement",
-      color: "from-purple-500 to-pink-500",
-      stat: "10x faster campaigns"
+      title: 'Instant Automation',
+      description: 'Automated WhatsApp campaigns, follow-ups, and customer engagement',
+      color: 'from-purple-500 to-pink-500',
+      stat: '10x faster campaigns',
     },
     {
       icon: Users,
-      title: "Customer Intelligence",
-      description: "Deep insights into customer behavior, preferences, and purchase patterns",
-      color: "from-blue-500 to-cyan-500",
-      stat: "95% data accuracy"
+      title: 'Customer Intelligence',
+      description: 'Deep insights into customer behavior, preferences, and purchase patterns',
+      color: 'from-blue-500 to-cyan-500',
+      stat: '95% data accuracy',
     },
     {
       icon: TrendingUp,
-      title: "35% Revenue Growth",
-      description: "Increase repeat customers and average order value through targeted campaigns",
-      color: "from-green-500 to-emerald-500",
-      stat: "ƒ,12.5L+ avg increase"
+      title: '35% Revenue Growth',
+      description: 'Increase repeat customers and average order value through targeted campaigns',
+      color: 'from-green-500 to-emerald-500',
+      stat: 'ƒ,12.5L+ avg increase',
     },
     {
       icon: Clock,
-      title: "Save 15+ Hours/Week",
-      description: "Eliminate manual processes with automated billing and customer management",
-      color: "from-indigo-500 to-purple-500",
-      stat: "80% time savings"
+      title: 'Save 15+ Hours/Week',
+      description: 'Eliminate manual processes with automated billing and customer management',
+      color: 'from-indigo-500 to-purple-500',
+      stat: '80% time savings',
     },
     {
       icon: Shield,
-      title: "Secure & Compliant",
-      description: "Bank-grade security with GDPR compliance and data protection",
-      color: "from-orange-500 to-red-500",
-      stat: "99.9% uptime"
+      title: 'Secure & Compliant',
+      description: 'Bank-grade security with GDPR compliance and data protection',
+      color: 'from-orange-500 to-red-500',
+      stat: '99.9% uptime',
     },
     {
       icon: Gift,
-      title: "Rewards & Coupons System",
-      description: "Digital rewards that turn repeat visits into long-term engagement with rewards & coupons. Simple tiers, instant redemption.",
-      color: "from-violet-500 to-fuchsia-500",
-      stat: "+25% repeat orders"
+      title: 'Rewards & Coupons System',
+      description:
+        'Digital rewards that turn repeat visits into long-term engagement with rewards & coupons. Simple tiers, instant redemption.',
+      color: 'from-violet-500 to-fuchsia-500',
+      stat: '+25% repeat orders',
     },
     {
       icon: BrainCircuit,
-      title: "Customer Data Platform+",
-      description: "Advanced CDP with segments, journeys and Best Path across WhatsApp, SMS, Email and App.",
-      color: "from-purple-500 to-pink-500",
-      stat: "+40% open rates"
-    }
+      title: 'Customer Data Platform+',
+      description:
+        'Advanced CDP with segments, journeys and Best Path across WhatsApp, SMS, Email and App.',
+      color: 'from-purple-500 to-pink-500',
+      stat: '+40% open rates',
+    },
   ];
 
   return (
@@ -101,14 +118,18 @@ const VendorBenefits = () => {
             <BarChart3 className="w-4 h-4 text-blue-400 mr-2" />
             <span className="text-sm font-medium text-blue-300">Proven Results</span>
           </div>
-          
+
           <h2 className="text-4xl lg:text-6xl font-bold text-white mb-6">
             Why Vendors Choose
-            <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent"> Billbox</span>
+            <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+              {' '}
+              Billbox
+            </span>
           </h2>
-          
+
           <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-            Join 100+ businesses already growing with Billbox. See the measurable impact on your revenue and customer relationships.
+            Join 100+ businesses already growing with Billbox. See the measurable impact on your
+            revenue and customer relationships.
           </p>
         </div>
 
@@ -125,7 +146,9 @@ const VendorBenefits = () => {
                 style={{ transitionDelay: `${index * 100}ms` }}
               >
                 {/* Icon */}
-                <div className={`w-16 h-16 bg-gradient-to-r ${benefit.color} rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}>
+                <div
+                  className={`w-16 h-16 bg-gradient-to-r ${benefit.color} rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}
+                >
                   <Icon className="w-8 h-8 text-white" />
                 </div>
 
@@ -133,14 +156,16 @@ const VendorBenefits = () => {
                 <h3 className="text-xl font-bold text-white mb-3 group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-blue-400 group-hover:to-purple-400 group-hover:bg-clip-text transition-all duration-300">
                   {benefit.title}
                 </h3>
-                
-                <p className="text-gray-400 mb-4 leading-relaxed">
-                  {benefit.description}
-                </p>
+
+                <p className="text-gray-400 mb-4 leading-relaxed">{benefit.description}</p>
 
                 {/* Stat */}
-                <div className={`inline-flex items-center px-3 py-1 rounded-full bg-gradient-to-r ${benefit.color} bg-opacity-10 border border-current border-opacity-20`}>
-                  <span className={`text-sm font-semibold bg-gradient-to-r ${benefit.color} bg-clip-text text-transparent`}>
+                <div
+                  className={`inline-flex items-center px-3 py-1 rounded-full bg-gradient-to-r ${benefit.color} bg-opacity-10 border border-current border-opacity-20`}
+                >
+                  <span
+                    className={`text-sm font-semibold bg-gradient-to-r ${benefit.color} bg-clip-text text-transparent`}
+                  >
                     {benefit.stat}
                   </span>
                 </div>
@@ -150,17 +175,21 @@ const VendorBenefits = () => {
         </div>
 
         {/* Success Stories Section */}
-        <div className={`relative bg-gradient-to-r from-slate-800/50 to-slate-700/50 rounded-3xl p-8 lg:p-12 border border-slate-600/30 transition-all duration-1000 delay-500 overflow-hidden ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+        <div
+          className={`relative bg-gradient-to-r from-slate-800/50 to-slate-700/50 rounded-3xl p-8 lg:p-12 border border-slate-600/30 transition-all duration-1000 delay-500 overflow-hidden ${
+            isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+          }`}
+        >
           {/* Background Lifestyle Image */}
           <div className="absolute inset-0 opacity-20">
-            <img 
-              src="/images/lifestyle-store-owner-1.svg" 
+            <img
+              src="/images/lifestyle-store-owner-1.svg"
               alt="Store owner success story"
               className="w-full h-full object-cover rounded-3xl"
             />
             <div className="absolute inset-0 bg-gradient-to-r from-slate-900/80 to-slate-800/80 rounded-3xl" />
           </div>
-          
+
           <div className="grid lg:grid-cols-2 gap-12 items-center relative z-10">
             {/* Left Content */}
             <div>
@@ -168,13 +197,13 @@ const VendorBenefits = () => {
                 <MessageSquare className="w-4 h-4 text-green-400 mr-2" />
                 <span className="text-sm font-medium text-green-300">Success Story</span>
               </div>
-              
+
               <blockquote className="text-2xl lg:text-3xl font-medium text-white mb-6 leading-relaxed">
-                "Billbox transformed our customer engagement. We saw a 
-                <span className="text-green-400"> 45% increase in repeat customers</span> 
+                "Billbox transformed our customer engagement. We saw a
+                <span className="text-green-400"> 45% increase in repeat customers</span>
                 within just 3 months."
               </blockquote>
-              
+
               <div className="flex items-center">
                 <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center mr-4">
                   <span className="text-white font-bold">RS</span>

@@ -48,8 +48,8 @@ const ChatDrawer: React.FC<ChatDrawerProps> = ({ isOpen, onClose, userId }) => {
       const token = localStorage.getItem('bb_token');
       const response = await fetch(`/api/whatsapp/chat/${userId}`, {
         headers: {
-          'Authorization': `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       });
       if (response.ok) {
         const data = await response.json();
@@ -79,7 +79,7 @@ const ChatDrawer: React.FC<ChatDrawerProps> = ({ isOpen, onClose, userId }) => {
       type: 'sent',
       text: messageText,
       timestamp: new Date().toISOString(),
-      from: 'vendor'
+      from: 'vendor',
     };
     setMessages(prev => [...prev, optimisticMessage]);
 
@@ -89,7 +89,7 @@ const ChatDrawer: React.FC<ChatDrawerProps> = ({ isOpen, onClose, userId }) => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ message: messageText }),
       });
@@ -97,11 +97,13 @@ const ChatDrawer: React.FC<ChatDrawerProps> = ({ isOpen, onClose, userId }) => {
       if (response.ok) {
         const result = await response.json();
         // Update the optimistic message with real data
-        setMessages(prev => prev.map(msg => 
-          msg.id === optimisticMessage.id 
-            ? { ...msg, id: result.messageId, timestamp: result.timestamp }
-            : msg
-        ));
+        setMessages(prev =>
+          prev.map(msg =>
+            msg.id === optimisticMessage.id
+              ? { ...msg, id: result.messageId, timestamp: result.timestamp }
+              : msg
+          )
+        );
       } else {
         // Revert optimistic update on failure
         setMessages(prev => prev.filter(msg => msg.id !== optimisticMessage.id));
@@ -130,16 +132,13 @@ const ChatDrawer: React.FC<ChatDrawerProps> = ({ isOpen, onClose, userId }) => {
     <div className="fixed inset-0 z-50 flex">
       {/* Backdrop */}
       <div className="flex-1 bg-black bg-opacity-50" onClick={onClose} />
-      
+
       {/* Drawer */}
       <div className="w-96 bg-white shadow-xl flex flex-col h-full">
         {/* Header */}
         <div className="p-4 border-b border-gray-200 flex items-center justify-between">
           <h2 className="text-lg font-semibold text-gray-900">{userId}</h2>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 text-xl font-bold"
-          >
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-xl font-bold">
             ×
           </button>
         </div>
@@ -155,14 +154,14 @@ const ChatDrawer: React.FC<ChatDrawerProps> = ({ isOpen, onClose, userId }) => {
               <div className="text-gray-500">No messages yet</div>
             </div>
           ) : (
-            messages.map((message) => (
+            messages.map(message => (
               <div
                 key={message.id}
                 className={`flex ${
-                  message.from === 'vendor' 
-                    ? 'justify-end' 
-                    : message.from === 'system' 
-                    ? 'justify-center' 
+                  message.from === 'vendor'
+                    ? 'justify-end'
+                    : message.from === 'system'
+                    ? 'justify-center'
                     : 'justify-start'
                 }`}
               >
@@ -181,9 +180,7 @@ const ChatDrawer: React.FC<ChatDrawerProps> = ({ isOpen, onClose, userId }) => {
                         📢 {message.campaignName}
                       </div>
                       {message.status && (
-                        <div className="text-xs mt-1 opacity-75">
-                          Status: {message.status}
-                        </div>
+                        <div className="text-xs mt-1 opacity-75">Status: {message.status}</div>
                       )}
                     </div>
                   ) : (
@@ -191,8 +188,8 @@ const ChatDrawer: React.FC<ChatDrawerProps> = ({ isOpen, onClose, userId }) => {
                   )}
                   <div
                     className={`text-xs mt-1 ${
-                      message.from === 'vendor' 
-                        ? 'text-blue-100' 
+                      message.from === 'vendor'
+                        ? 'text-blue-100'
                         : message.from === 'system'
                         ? 'text-yellow-600'
                         : 'text-gray-500'
@@ -220,7 +217,7 @@ const ChatDrawer: React.FC<ChatDrawerProps> = ({ isOpen, onClose, userId }) => {
             <input
               type="text"
               value={newMessage}
-              onChange={(e) => setNewMessage(e.target.value)}
+              onChange={e => setNewMessage(e.target.value)}
               onKeyPress={handleKeyPress}
               placeholder="Type a message..."
               disabled={sending}

@@ -95,9 +95,7 @@ const Footer = () => {
               Contact
             </p>
             <h3 className="mt-3 text-2xl font-semibold text-white">Talk to Billbox</h3>
-            <p className="mt-2 text-sm text-white/70">
-              Reach us quickly from your phone.
-            </p>
+            <p className="mt-2 text-sm text-white/70">Reach us quickly from your phone.</p>
             <div className="mt-5 space-y-4 text-sm text-white/80">
               <a href="tel:+918008407999" className="flex items-center gap-3">
                 <Phone className="h-4 w-4 text-white/70" />
@@ -115,8 +113,8 @@ const Footer = () => {
               >
                 <MapPin className="mt-0.5 h-4 w-4 flex-shrink-0 text-white/70" />
                 <span>
-                  Vaishnavi Cymbol, 3rd floor, A block, Financial District, Nanakramguda,
-                  Hyderabad, Telangana 500032
+                  Vaishnavi Cymbol, 3rd floor, A block, Financial District, Nanakramguda, Hyderabad,
+                  Telangana 500032
                 </span>
               </a>
             </div>
@@ -155,7 +153,7 @@ const Footer = () => {
                 Transform every transaction into an opportunity for growth.
               </p>
             </div>
-            
+
             <div className="hidden space-y-3 md:block">
               <div className="flex items-center space-x-3">
                 <Mail className="w-4 h-4 text-white/70" />
@@ -173,7 +171,8 @@ const Footer = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  Vaishnavi Cymbol, 3rd floor, A block, Financial District, Nanakramguda, Hyderabad, Telangana 500032
+                  Vaishnavi Cymbol, 3rd floor, A block, Financial District, Nanakramguda, Hyderabad,
+                  Telangana 500032
                 </a>
               </div>
             </div>
@@ -183,7 +182,11 @@ const Footer = () => {
           <div>
             <h4 className="text-lg font-semibold mb-6">Product</h4>
             <ul className="space-y-3">
-              <li><a href="#features" className="text-white/70 hover:text-white transition-colors">Features</a></li>
+              <li>
+                <a href="#features" className="text-white/70 hover:text-white transition-colors">
+                  Features
+                </a>
+              </li>
             </ul>
           </div>
 
@@ -191,9 +194,21 @@ const Footer = () => {
           <div>
             <h4 className="text-lg font-semibold mb-6">Company</h4>
             <ul className="space-y-3">
-              <li><a href="#about" className="text-white/70 hover:text-white transition-colors">About Us</a></li>
-              <li><a href="#careers" className="text-white/70 hover:text-white transition-colors">Careers</a></li>
-              <li><a href="#contact" className="text-white/70 hover:text-white transition-colors">Contact</a></li>
+              <li>
+                <a href="#about" className="text-white/70 hover:text-white transition-colors">
+                  About Us
+                </a>
+              </li>
+              <li>
+                <a href="#careers" className="text-white/70 hover:text-white transition-colors">
+                  Careers
+                </a>
+              </li>
+              <li>
+                <a href="#contact" className="text-white/70 hover:text-white transition-colors">
+                  Contact
+                </a>
+              </li>
             </ul>
           </div>
 
@@ -201,9 +216,30 @@ const Footer = () => {
           <div>
             <h4 className="text-lg font-semibold mb-6">Legal</h4>
             <ul className="space-y-3">
-              <li><a href="/privacy-policy" className="text-white/70 hover:text-white transition-colors">Privacy Policy</a></li>
-              <li><a href="/terms-and-conditions" className="text-white/70 hover:text-white transition-colors">Terms & Conditions</a></li>
-              <li><a href="/data-deletion-policy" className="text-white/70 hover:text-white transition-colors">Data Deletion Policy</a></li>
+              <li>
+                <a
+                  href="/privacy-policy"
+                  className="text-white/70 hover:text-white transition-colors"
+                >
+                  Privacy Policy
+                </a>
+              </li>
+              <li>
+                <a
+                  href="/terms-and-conditions"
+                  className="text-white/70 hover:text-white transition-colors"
+                >
+                  Terms & Conditions
+                </a>
+              </li>
+              <li>
+                <a
+                  href="/data-deletion-policy"
+                  className="text-white/70 hover:text-white transition-colors"
+                >
+                  Data Deletion Policy
+                </a>
+              </li>
             </ul>
           </div>
 
@@ -214,14 +250,12 @@ const Footer = () => {
               Get the latest updates and insights delivered to your inbox.
             </p>
             <div className="space-y-3">
-              <input 
-                type="email" 
-                placeholder="Enter your email" 
+              <input
+                type="email"
+                placeholder="Enter your email"
                 className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent"
               />
-              <Button 
-                className="w-full bg-gradient-hero hover:opacity-90 transition-opacity"
-              >
+              <Button className="w-full bg-gradient-hero hover:opacity-90 transition-opacity">
                 Subscribe
               </Button>
             </div>
@@ -230,10 +264,8 @@ const Footer = () => {
 
         {/* Bottom section */}
         <div className="border-t border-white/10 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
-          <div className="text-white/60 text-sm">
-            © 2025 Billbox. All rights reserved.
-          </div>
-          
+          <div className="text-white/60 text-sm">© 2025 Billbox. All rights reserved.</div>
+
           <div className="flex items-center space-x-6 mt-4 md:mt-0">
             <a href="#" className="text-white/60 hover:text-white transition-colors">
               <Twitter className="w-5 h-5" />

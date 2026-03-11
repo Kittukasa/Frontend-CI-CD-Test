@@ -58,7 +58,7 @@ export function decodeToken(token: string): TokenPayload | null {
 export function isTokenExpired(token: string): boolean {
   const decoded = decodeToken(token);
   if (!decoded || !decoded.exp) return true;
-  
+
   // Token exp is in seconds, Date.now() is in milliseconds
   const expiryTime = decoded.exp * 1000;
   return Date.now() >= expiryTime;
@@ -79,10 +79,10 @@ export function getTokenExpiry(token: string): Date | null {
 export function isTokenExpiringSoon(token: string): boolean {
   const decoded = decodeToken(token);
   if (!decoded || !decoded.exp) return false;
-  
+
   const expiryTime = decoded.exp * 1000;
   const timeUntilExpiry = expiryTime - Date.now();
-  
+
   return timeUntilExpiry > 0 && timeUntilExpiry <= TOKEN_EXPIRY_WARNING_MS;
 }
 
@@ -92,10 +92,10 @@ export function isTokenExpiringSoon(token: string): boolean {
 export function getTimeUntilExpiry(token: string): number {
   const decoded = decodeToken(token);
   if (!decoded || !decoded.exp) return 0;
-  
+
   const expiryTime = decoded.exp * 1000;
   const timeRemaining = expiryTime - Date.now();
-  
+
   return Math.max(0, timeRemaining);
 }
 
@@ -121,7 +121,7 @@ export function getStoreIdFromToken(token: string): string | null {
  */
 export function clearAuthData(): void {
   if (typeof window === 'undefined') return;
-  
+
   const authKeys = [
     'bb_token',
     'bb_store_id',
@@ -140,9 +140,9 @@ export function clearAuthData(): void {
     'bb_trial_period',
     'bb_webhook_config',
     'bb_customer_type_config',
-    'bb_owner_mode'
+    'bb_owner_mode',
   ];
-  
+
   authKeys.forEach(key => localStorage.removeItem(key));
 }
 
@@ -151,20 +151,20 @@ export function clearAuthData(): void {
  */
 export function formatTimeRemaining(milliseconds: number): string {
   if (milliseconds <= 0) return 'Expired';
-  
+
   const seconds = Math.floor(milliseconds / 1000);
   const minutes = Math.floor(seconds / 60);
   const hours = Math.floor(minutes / 60);
-  
+
   if (hours > 0) {
     const remainingMinutes = minutes % 60;
     return `${hours}h ${remainingMinutes}m`;
   }
-  
+
   if (minutes > 0) {
     const remainingSeconds = seconds % 60;
     return `${minutes}m ${remainingSeconds}s`;
   }
-  
+
   return `${seconds}s`;
 }

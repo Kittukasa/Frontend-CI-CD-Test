@@ -16,9 +16,9 @@ const steps: CommerceStep[] = [
   {
     id: 'autocheckout',
     title: "Help customers place orders with Interakt's Autocheckout Workflow!",
-    disabled: true
+    disabled: true,
   },
-  { id: 'enquiries', title: 'See all enquiries & orders you get from customers', disabled: true }
+  { id: 'enquiries', title: 'See all enquiries & orders you get from customers', disabled: true },
 ];
 
 const WhatsAppCommerce: React.FC = () => {
@@ -47,9 +47,9 @@ const WhatsAppCommerce: React.FC = () => {
   const [catalogLoading, setCatalogLoading] = useState(false);
   const [catalogMessage, setCatalogMessage] = useState<string | null>(null);
   const [catalogConnected, setCatalogConnected] = useState(false);
-  const [openSection, setOpenSection] = useState<'logo' | 'description' | 'contact' | 'compliance' | null>(
-    'logo'
-  );
+  const [openSection, setOpenSection] = useState<
+    'logo' | 'description' | 'contact' | 'compliance' | null
+  >('logo');
 
   const websiteList = useMemo(
     () => [websiteOne.trim(), websiteTwo.trim()].filter(Boolean),
@@ -60,14 +60,14 @@ const WhatsAppCommerce: React.FC = () => {
     'Content-Type': 'application/json',
     ...(typeof window !== 'undefined'
       ? { Authorization: `Bearer ${localStorage.getItem('bb_token') || ''}` }
-      : {})
+      : {}),
   });
 
   useEffect(() => {
     const loadCatalog = async () => {
       try {
         const response = await fetch('/api/whatsapp/catalog', {
-          headers: buildAuthHeaders()
+          headers: buildAuthHeaders(),
         });
         if (!response.ok) {
           return;
@@ -94,7 +94,7 @@ const WhatsAppCommerce: React.FC = () => {
       setSaveMessage(null);
       try {
         const response = await fetch('/api/whatsapp/business-profile', {
-          headers: buildAuthHeaders()
+          headers: buildAuthHeaders(),
         });
         if (!response.ok) {
           throw new Error('Unable to load WhatsApp business profile.');
@@ -136,7 +136,9 @@ const WhatsAppCommerce: React.FC = () => {
       <div className="flex flex-wrap items-center justify-between gap-4 opacity-60">
         <div>
           <div className="text-sm font-semibold text-gray-900">Create your catalog</div>
-          <div className="text-xs text-gray-500">Add your products to the CSV and upload it here</div>
+          <div className="text-xs text-gray-500">
+            Add your products to the CSV and upload it here
+          </div>
           <div className="mt-1 text-xs font-semibold text-gray-400">Coming Soon</div>
         </div>
         <div className="flex items-center gap-4">
@@ -154,13 +156,13 @@ const WhatsAppCommerce: React.FC = () => {
             <div className="text-xs text-gray-500">This will appear in your WhatsApp Profile</div>
           </div>
           <div className="flex items-center gap-3 text-xs">
-                    <button
-                      type="button"
-                      className="text-blue-600 hover:text-blue-700 disabled:cursor-not-allowed disabled:text-gray-400"
-                      disabled
-                    >
-                      Update Info
-                    </button>
+            <button
+              type="button"
+              className="text-blue-600 hover:text-blue-700 disabled:cursor-not-allowed disabled:text-gray-400"
+              disabled
+            >
+              Update Info
+            </button>
             <Button variant="outline" size="sm" disabled>
               Open
             </Button>
@@ -169,7 +171,9 @@ const WhatsAppCommerce: React.FC = () => {
 
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <div className="text-sm font-semibold text-gray-900">B. Set up FB Catalog & Collections</div>
+            <div className="text-sm font-semibold text-gray-900">
+              B. Set up FB Catalog & Collections
+            </div>
             <div className="text-xs text-gray-500">via Google Sheets | Shopify</div>
           </div>
           <Button className="bg-emerald-600 text-white hover:bg-emerald-700" size="sm" asChild>
@@ -185,8 +189,12 @@ const WhatsAppCommerce: React.FC = () => {
 
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <div className="text-sm font-semibold text-gray-900">C. Give Catalog Access to Billbox</div>
-            <div className="text-xs text-gray-500">Add Billbox (91894461757738) as Catalog Partner</div>
+            <div className="text-sm font-semibold text-gray-900">
+              C. Give Catalog Access to Billbox
+            </div>
+            <div className="text-xs text-gray-500">
+              Add Billbox (91894461757738) as Catalog Partner
+            </div>
           </div>
           <Button className="bg-emerald-600 text-white hover:bg-emerald-700" size="sm" asChild>
             <a
@@ -201,8 +209,12 @@ const WhatsAppCommerce: React.FC = () => {
 
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <div className="text-sm font-semibold text-gray-900">D. Connect your Catalog to your WhatsApp account</div>
-            <div className="text-xs text-gray-500">Go here and follow the steps shown in the video</div>
+            <div className="text-sm font-semibold text-gray-900">
+              D. Connect your Catalog to your WhatsApp account
+            </div>
+            <div className="text-xs text-gray-500">
+              Go here and follow the steps shown in the video
+            </div>
           </div>
           <Button className="bg-emerald-600 text-white hover:bg-emerald-700" size="sm" asChild>
             <a
@@ -238,7 +250,7 @@ const WhatsAppCommerce: React.FC = () => {
                   try {
                     const response = await fetch('/api/whatsapp/catalog', {
                       method: 'DELETE',
-                      headers: buildAuthHeaders()
+                      headers: buildAuthHeaders(),
                     });
                     if (!response.ok) {
                       throw new Error('Failed to disconnect catalog');
@@ -266,7 +278,7 @@ const WhatsAppCommerce: React.FC = () => {
                     const response = await fetch('/api/whatsapp/catalog', {
                       method: 'POST',
                       headers: buildAuthHeaders(),
-                      body: JSON.stringify({ catalogId })
+                      body: JSON.stringify({ catalogId }),
                     });
                     if (!response.ok) {
                       throw new Error('Failed to connect catalog');
@@ -291,9 +303,7 @@ const WhatsAppCommerce: React.FC = () => {
             Great! Your FB catalog is now connected to Billbox!
           </div>
         )}
-        {catalogMessage && (
-          <div className="text-xs text-gray-500">{catalogMessage}</div>
-        )}
+        {catalogMessage && <div className="text-xs text-gray-500">{catalogMessage}</div>}
       </div>
 
       <div className="flex items-center justify-between border-t border-gray-200 pt-4">
@@ -394,10 +404,12 @@ const WhatsAppCommerce: React.FC = () => {
         <div className="rounded-2xl border border-blue-100 bg-white p-6 shadow-sm">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div>
-              <h2 className="text-xl font-semibold text-gray-900">Your Business Account Appearance</h2>
+              <h2 className="text-xl font-semibold text-gray-900">
+                Your Business Account Appearance
+              </h2>
               <p className="mt-1 text-sm text-gray-600">
-                Easily configure your WhatsApp Business Profile appearance. (Note: WhatsApp Business number and
-                display name can not be changed once approved)
+                Easily configure your WhatsApp Business Profile appearance. (Note: WhatsApp Business
+                number and display name can not be changed once approved)
               </p>
             </div>
             <Button
@@ -418,7 +430,9 @@ const WhatsAppCommerce: React.FC = () => {
                 >
                   Business Logo
                   <ChevronDown
-                    className={`h-4 w-4 text-gray-500 transition-transform ${openSection === 'logo' ? 'rotate-180' : ''}`}
+                    className={`h-4 w-4 text-gray-500 transition-transform ${
+                      openSection === 'logo' ? 'rotate-180' : ''
+                    }`}
                   />
                 </button>
                 {openSection === 'logo' && (
@@ -446,11 +460,15 @@ const WhatsAppCommerce: React.FC = () => {
                 <button
                   type="button"
                   className="flex w-full items-center justify-between px-4 py-3 text-left text-sm font-semibold text-gray-900"
-                  onClick={() => setOpenSection(prev => (prev === 'description' ? null : 'description'))}
+                  onClick={() =>
+                    setOpenSection(prev => (prev === 'description' ? null : 'description'))
+                  }
                 >
                   Description
                   <ChevronDown
-                    className={`h-4 w-4 text-gray-500 transition-transform ${openSection === 'description' ? 'rotate-180' : ''}`}
+                    className={`h-4 w-4 text-gray-500 transition-transform ${
+                      openSection === 'description' ? 'rotate-180' : ''
+                    }`}
                   />
                 </button>
                 {openSection === 'description' && (
@@ -493,7 +511,9 @@ const WhatsAppCommerce: React.FC = () => {
                 >
                   Contact Information
                   <ChevronDown
-                    className={`h-4 w-4 text-gray-500 transition-transform ${openSection === 'contact' ? 'rotate-180' : ''}`}
+                    className={`h-4 w-4 text-gray-500 transition-transform ${
+                      openSection === 'contact' ? 'rotate-180' : ''
+                    }`}
                   />
                 </button>
                 {openSection === 'contact' && (
@@ -505,13 +525,17 @@ const WhatsAppCommerce: React.FC = () => {
                       value={businessAddress}
                       onChange={event => setBusinessAddress(event.target.value)}
                     />
-                    <div className="mt-3 text-sm font-semibold text-gray-900">Your Business Email Address</div>
+                    <div className="mt-3 text-sm font-semibold text-gray-900">
+                      Your Business Email Address
+                    </div>
                     <input
                       className="mt-2 w-full rounded-md border border-gray-200 px-3 py-2 text-sm shadow-sm"
                       value={businessEmail}
                       onChange={event => setBusinessEmail(event.target.value)}
                     />
-                    <div className="mt-3 text-sm font-semibold text-gray-900">Your Business Website</div>
+                    <div className="mt-3 text-sm font-semibold text-gray-900">
+                      Your Business Website
+                    </div>
                     <input
                       className="mt-2 w-full rounded-md border border-gray-200 px-3 py-2 text-sm shadow-sm"
                       value={websiteOne}
@@ -530,16 +554,22 @@ const WhatsAppCommerce: React.FC = () => {
                 <button
                   type="button"
                   className="flex w-full items-center justify-between px-4 py-3 text-left text-sm font-semibold text-gray-900"
-                  onClick={() => setOpenSection(prev => (prev === 'compliance' ? null : 'compliance'))}
+                  onClick={() =>
+                    setOpenSection(prev => (prev === 'compliance' ? null : 'compliance'))
+                  }
                 >
                   Provide Compliance Info
                   <ChevronDown
-                    className={`h-4 w-4 text-gray-500 transition-transform ${openSection === 'compliance' ? 'rotate-180' : ''}`}
+                    className={`h-4 w-4 text-gray-500 transition-transform ${
+                      openSection === 'compliance' ? 'rotate-180' : ''
+                    }`}
                   />
                 </button>
                 {openSection === 'compliance' && (
                   <div className="border-t border-gray-100 px-4 py-4 text-sm text-gray-600">
-                    <div className="text-sm font-semibold text-gray-900">Legal name of Business</div>
+                    <div className="text-sm font-semibold text-gray-900">
+                      Legal name of Business
+                    </div>
                     <input
                       className="mt-2 w-full rounded-md border border-gray-200 px-3 py-2 text-sm shadow-sm"
                       value={legalBusinessName}
@@ -557,7 +587,9 @@ const WhatsAppCommerce: React.FC = () => {
                       <option value="proprietorship">Proprietorship</option>
                       <option value="partnership">Partnership</option>
                     </select>
-                    <div className="mt-3 text-sm font-semibold text-gray-900">Is your business registered?</div>
+                    <div className="mt-3 text-sm font-semibold text-gray-900">
+                      Is your business registered?
+                    </div>
                     <div className="mt-2 flex items-center gap-4 text-sm">
                       <label className="flex items-center gap-2">
                         <input
@@ -576,7 +608,9 @@ const WhatsAppCommerce: React.FC = () => {
                         No
                       </label>
                     </div>
-                    <div className="mt-4 text-sm font-semibold text-gray-900">Customer Care Information</div>
+                    <div className="mt-4 text-sm font-semibold text-gray-900">
+                      Customer Care Information
+                    </div>
                     <div className="mt-2 grid gap-3 md:grid-cols-2">
                       <input
                         className="w-full rounded-md border border-gray-200 px-3 py-2 text-sm shadow-sm"
@@ -591,7 +625,9 @@ const WhatsAppCommerce: React.FC = () => {
                         onChange={event => setCustomerCarePhone(event.target.value)}
                       />
                     </div>
-                    <div className="mt-4 text-sm font-semibold text-gray-900">Grievance Officer Information</div>
+                    <div className="mt-4 text-sm font-semibold text-gray-900">
+                      Grievance Officer Information
+                    </div>
                     <input
                       className="mt-2 w-full rounded-md border border-gray-200 px-3 py-2 text-sm shadow-sm"
                       placeholder="Officer Name"
@@ -638,7 +674,7 @@ const WhatsAppCommerce: React.FC = () => {
                       'Content-Type': 'application/json',
                       ...(typeof window !== 'undefined'
                         ? { Authorization: `Bearer ${localStorage.getItem('bb_token') || ''}` }
-                        : {})
+                        : {}),
                     },
                     body: JSON.stringify({
                       address: businessAddress,
@@ -656,8 +692,8 @@ const WhatsAppCommerce: React.FC = () => {
                       grievance_officer_name: grievanceOfficerName,
                       grievance_officer_phone: grievanceOfficerPhone,
                       grievance_officer_alt_phone: grievanceOfficerAltPhone,
-                      logo_handle: logoHandle
-                    })
+                      logo_handle: logoHandle,
+                    }),
                   });
                   if (!response.ok) {
                     throw new Error('Failed to update business profile');

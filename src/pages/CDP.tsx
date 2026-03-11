@@ -47,8 +47,8 @@ const getSortedCommunicationPaths = (communicationPaths: CommunicationPaths) =>
   Object.entries(communicationPaths)
     .filter(([, path]) => path.available)
     .sort(([, a], [, b]) => b.openRate - a.openRate) as Array<
-      [keyof CommunicationPaths, CommunicationPaths[keyof CommunicationPaths]]
-    >;
+    [keyof CommunicationPaths, CommunicationPaths[keyof CommunicationPaths]]
+  >;
 
 const CDP: React.FC<CDPProps> = ({
   customers,
@@ -61,9 +61,7 @@ const CDP: React.FC<CDPProps> = ({
     : [];
 
   const topOpenRate =
-    selectedCustomer && availableSortedPaths.length > 0
-      ? availableSortedPaths[0][1].openRate
-      : 0;
+    selectedCustomer && availableSortedPaths.length > 0 ? availableSortedPaths[0][1].openRate : 0;
 
   return (
     <div className="space-y-6">
@@ -154,78 +152,84 @@ const CDP: React.FC<CDPProps> = ({
                     {/* Quick Stats */}
                     <div className="grid grid-cols-2 gap-3 mb-4">
                       <div className="bg-green-50 rounded-lg p-3 border border-green-100">
-                          <div className="flex items-center justify-between">
-                              <div>
-                                <p className="text-xs font-medium text-green-600 uppercase">
-                                  Total Spent
-                                </p>
-                                <p className="text-sm font-bold text-green-900">
-                                  ₹{customer.totalSpent.toLocaleString()}
-                                </p>
-                              </div>
-                              <DollarSign className="w-4 h-4 text-green-600" />
-                            </div>
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-xs font-medium text-green-600 uppercase">
+                              Total Spent
+                            </p>
+                            <p className="text-sm font-bold text-green-900">
+                              ₹{customer.totalSpent.toLocaleString()}
+                            </p>
                           </div>
+                          <DollarSign className="w-4 h-4 text-green-600" />
+                        </div>
+                      </div>
                       <div className="bg-blue-50 rounded-lg p-3 border border-blue-100">
                         <div>
                           <p className="text-xs font-medium text-blue-600 uppercase mb-2">
                             Best Path
                           </p>
                           <div className="flex items-center justify-between">
-                            {['sms', 'whatsapp', 'email', 'appNotification'].map((pathType, idx) => {
-                              const path = customer.communicationPaths[pathType as keyof CommunicationPaths];
-                              const isTopPath = path?.openRate === bestOpenRate && path?.available;
+                            {['sms', 'whatsapp', 'email', 'appNotification'].map(
+                              (pathType, idx) => {
+                                const path =
+                                  customer.communicationPaths[pathType as keyof CommunicationPaths];
+                                const isTopPath =
+                                  path?.openRate === bestOpenRate && path?.available;
 
-                              return (
-                                <React.Fragment key={pathType}>
-                                  <div className="flex flex-col items-center space-y-1">
-                                    <div
-                                      className={`p-1 rounded-full ${
-                                        pathType === 'sms'
-                                          ? 'bg-blue-100'
-                                          : pathType === 'whatsapp'
-                                          ? 'bg-green-100'
-                                          : pathType === 'email'
-                                          ? 'bg-purple-100'
-                                          : 'bg-orange-100'
-                                      }`}
-                                    >
-                                      {pathType === 'sms' && (
-                                        <Smartphone className="w-2.5 h-2.5 text-blue-600" />
-                                      )}
-                                      {pathType === 'whatsapp' && (
-                                        <MessageSquare className="w-2.5 h-2.5 text-green-600" />
-                                      )}
-                                      {pathType === 'email' && (
-                                        <Mail className="w-2.5 h-2.5 text-purple-600" />
-                                      )}
-                                      {pathType === 'appNotification' && (
-                                        <Bell className="w-2.5 h-2.5 text-orange-600" />
+                                return (
+                                  <React.Fragment key={pathType}>
+                                    <div className="flex flex-col items-center space-y-1">
+                                      <div
+                                        className={`p-1 rounded-full ${
+                                          pathType === 'sms'
+                                            ? 'bg-blue-100'
+                                            : pathType === 'whatsapp'
+                                            ? 'bg-green-100'
+                                            : pathType === 'email'
+                                            ? 'bg-purple-100'
+                                            : 'bg-orange-100'
+                                        }`}
+                                      >
+                                        {pathType === 'sms' && (
+                                          <Smartphone className="w-2.5 h-2.5 text-blue-600" />
+                                        )}
+                                        {pathType === 'whatsapp' && (
+                                          <MessageSquare className="w-2.5 h-2.5 text-green-600" />
+                                        )}
+                                        {pathType === 'email' && (
+                                          <Mail className="w-2.5 h-2.5 text-purple-600" />
+                                        )}
+                                        {pathType === 'appNotification' && (
+                                          <Bell className="w-2.5 h-2.5 text-orange-600" />
+                                        )}
+                                      </div>
+                                      <span
+                                        className={`text-xs font-medium ${
+                                          pathType === 'sms'
+                                            ? 'text-blue-700'
+                                            : pathType === 'whatsapp'
+                                            ? 'text-green-700'
+                                            : pathType === 'email'
+                                            ? 'text-purple-700'
+                                            : 'text-orange-700'
+                                        }`}
+                                      >
+                                        {pathType === 'appNotification'
+                                          ? 'App'
+                                          : pathType.toUpperCase()}
+                                      </span>
+                                      {isTopPath && (
+                                        <span className="text-[10px] font-semibold text-indigo-600">
+                                          {path.openRate}%
+                                        </span>
                                       )}
                                     </div>
-                                    <span
-                                      className={`text-xs font-medium ${
-                                        pathType === 'sms'
-                                          ? 'text-blue-700'
-                                          : pathType === 'whatsapp'
-                                          ? 'text-green-700'
-                                          : pathType === 'email'
-                                          ? 'text-purple-700'
-                                          : 'text-orange-700'
-                                      }`}
-                                    >
-                                      {pathType === 'appNotification' ? 'App' : pathType.toUpperCase()}
-                                    </span>
-                                    {isTopPath && (
-                                      <span className="text-[10px] font-semibold text-indigo-600">
-                                        {path.openRate}%
-                                      </span>
-                                    )}
-                                  </div>
-                                  {idx < 3 && <div className="text-blue-400 text-sm">→</div>}
-                                </React.Fragment>
-                              );
-                            })}
+                                    {idx < 3 && <div className="text-blue-400 text-sm">→</div>}
+                                  </React.Fragment>
+                                );
+                              }
+                            )}
                           </div>
                         </div>
                       </div>
@@ -297,7 +301,9 @@ const CDP: React.FC<CDPProps> = ({
                                 <div className={`mr-3 ${config.iconColor}`}>
                                   {getCommunicationPathIcon(pathType)}
                                 </div>
-                                <span className="text-sm font-medium text-gray-700">{pathLabel}</span>
+                                <span className="text-sm font-medium text-gray-700">
+                                  {pathLabel}
+                                </span>
                               </div>
                               <div className="text-right">
                                 <div className={`text-sm font-bold ${config.textColor}`}>
@@ -436,9 +442,11 @@ const CDP: React.FC<CDPProps> = ({
                   })}
 
                   {selectedCustomer &&
-                    (Object.entries(selectedCustomer.communicationPaths) as Array<
-                      [keyof CommunicationPaths, CommunicationPaths[keyof CommunicationPaths]]
-                    >)
+                    (
+                      Object.entries(selectedCustomer.communicationPaths) as Array<
+                        [keyof CommunicationPaths, CommunicationPaths[keyof CommunicationPaths]]
+                      >
+                    )
                       .filter(([, path]) => !path.available)
                       .map(([pathType]) => (
                         <div

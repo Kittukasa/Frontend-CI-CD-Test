@@ -1,51 +1,45 @@
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { FEATURE_FLAGS } from "@/config/featureFlags";
-import { getAdminToken } from "@/utils/adminAuth";
-import ComingSoon from "@/pages/ComingSoon";
-import type { ReactElement } from "react";
-import { useEffect } from "react";
-import {
-  BrowserRouter,
-  Routes,
-  Route,
-  Navigate,
-  useLocation,
-} from "react-router-dom";
-import Index from "./pages/Index";
-import Analytics from "./pages/Analytics";
-import Login from "./pages/Login";
-import Signup from "./pages/Signup";
-import FranchiseDashboard from "./pages/FranchiseDashboard";
-import FranchisePortal from "./pages/FranchisePortal";
-import StoreProfile from "./pages/StoreProfile";
-import NotFound from "./pages/NotFound";
-import PrivacyPolicy from "./pages/PrivacyPolicy";
-import TermsAndConditions from "./pages/TermsAndConditions";
-import DataDeletionPolicy from "./pages/DataDeletionPolicy";
-import EBillProduct from "./pages/EBillProduct";
-import CustomerAnalyticsProduct from "./pages/CustomerAnalyticsProduct";
-import MultiStoreProduct from "./pages/MultiStoreProduct";
-import CampaignsProduct from "./pages/CampaignsProduct";
-import TemplatesProduct from "./pages/TemplatesProduct";
-import FeedbacksProduct from "./pages/FeedbacksProduct";
-import CampaignProgress from "./pages/CampaignProgress";
-import DemoAccess from "./pages/DemoAccess";
-import AdminPanelLayout from "./pages/AdminPanel/AdminPanelLayout";
-import AdminOverviewPage from "./pages/AdminPanel/AdminOverviewPage";
-import AdminStoresPage from "./pages/AdminPanel/AdminStoresPage";
-import AdminStoreDetailsPage from "./pages/AdminPanel/AdminStoreDetailsPage";
-import AdminSettingsPage from "./pages/AdminPanel/AdminSettingsPage";
-import AdminLoginPage from "./pages/AdminPanel/AdminLoginPage";
-import AdminFranchiseDetailsPage from "./pages/AdminPanel/AdminFranchiseDetailsPage";
-import AdminWalletsPage from "./pages/AdminPanel/AdminWalletsPage";
-import AdminLeadsPage from "./pages/AdminPanel/AdminLeadsPage";
-import CatalogBrowser from "./pages/CatalogBrowser";
+import { Toaster } from '@/components/ui/toaster';
+import { Toaster as Sonner } from '@/components/ui/sonner';
+import { TooltipProvider } from '@/components/ui/tooltip';
+import { FEATURE_FLAGS } from '@/config/featureFlags';
+import { getAdminToken } from '@/utils/adminAuth';
+import ComingSoon from '@/pages/ComingSoon';
+import type { ReactElement } from 'react';
+import { useEffect } from 'react';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import Index from './pages/Index';
+import Analytics from './pages/Analytics';
+import Login from './pages/Login';
+import Signup from './pages/Signup';
+import FranchiseDashboard from './pages/FranchiseDashboard';
+import FranchisePortal from './pages/FranchisePortal';
+import StoreProfile from './pages/StoreProfile';
+import NotFound from './pages/NotFound';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import TermsAndConditions from './pages/TermsAndConditions';
+import DataDeletionPolicy from './pages/DataDeletionPolicy';
+import EBillProduct from './pages/EBillProduct';
+import CustomerAnalyticsProduct from './pages/CustomerAnalyticsProduct';
+import MultiStoreProduct from './pages/MultiStoreProduct';
+import CampaignsProduct from './pages/CampaignsProduct';
+import TemplatesProduct from './pages/TemplatesProduct';
+import FeedbacksProduct from './pages/FeedbacksProduct';
+import CampaignProgress from './pages/CampaignProgress';
+import DemoAccess from './pages/DemoAccess';
+import AdminPanelLayout from './pages/AdminPanel/AdminPanelLayout';
+import AdminOverviewPage from './pages/AdminPanel/AdminOverviewPage';
+import AdminStoresPage from './pages/AdminPanel/AdminStoresPage';
+import AdminStoreDetailsPage from './pages/AdminPanel/AdminStoreDetailsPage';
+import AdminSettingsPage from './pages/AdminPanel/AdminSettingsPage';
+import AdminLoginPage from './pages/AdminPanel/AdminLoginPage';
+import AdminFranchiseDetailsPage from './pages/AdminPanel/AdminFranchiseDetailsPage';
+import AdminWalletsPage from './pages/AdminPanel/AdminWalletsPage';
+import AdminLeadsPage from './pages/AdminPanel/AdminLeadsPage';
+import CatalogBrowser from './pages/CatalogBrowser';
 
 const RequireAuth = ({ children }: { children: ReactElement }) => {
   const location = useLocation();
-  const token = typeof window !== "undefined" ? localStorage.getItem("bb_token") : null;
+  const token = typeof window !== 'undefined' ? localStorage.getItem('bb_token') : null;
 
   if (!token) {
     const redirectFrom = `${location.pathname}${location.search}`;
@@ -74,7 +68,7 @@ const ScrollToHash = () => {
     if (!hash) {
       return;
     }
-    const id = hash.replace("#", "");
+    const id = hash.replace('#', '');
     if (!id) {
       return;
     }
@@ -83,14 +77,14 @@ const ScrollToHash = () => {
       return;
     }
     const scroll = () => {
-      el.scrollIntoView({ behavior: "auto", block: "start" });
+      el.scrollIntoView({ behavior: 'auto', block: 'start' });
     };
-    if (document.readyState === "complete") {
+    if (document.readyState === 'complete') {
       requestAnimationFrame(scroll);
       return;
     }
-    window.addEventListener("load", scroll, { once: true });
-    return () => window.removeEventListener("load", scroll);
+    window.addEventListener('load', scroll, { once: true });
+    return () => window.removeEventListener('load', scroll);
   }, [hash, pathname]);
 
   return null;
@@ -224,4 +218,4 @@ const App = () => (
 );
 
 export default App;
-import ContactsPage from "./pages/Contacts";
+import ContactsPage from './pages/Contacts';

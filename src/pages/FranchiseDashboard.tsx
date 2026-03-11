@@ -17,7 +17,7 @@ const FranchiseDashboard: React.FC = () => {
     franchiseId: '',
     otp: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
   });
   const [resetOtpLoading, setResetOtpLoading] = useState(false);
   const [resetLoading, setResetLoading] = useState(false);
@@ -33,7 +33,7 @@ const FranchiseDashboard: React.FC = () => {
   const [loginOtpCooldown, setLoginOtpCooldown] = useState(0);
   const [twoStepVerificationEnabled, setTwoStepVerificationEnabled] = useState(true);
 
-    useEffect(() => {
+  useEffect(() => {
     let cancelled = false;
     const loadConfig = async () => {
       try {
@@ -52,7 +52,7 @@ const FranchiseDashboard: React.FC = () => {
     };
   }, []);
 
-useEffect(() => {
+  useEffect(() => {
     if (loginOtpCooldown <= 0) {
       return;
     }
@@ -93,15 +93,20 @@ useEffect(() => {
     try {
       setLoading(true);
       setError('');
-      const response = await fetch(twoStepVerificationEnabled ? '/api/franchise/login/password' : '/api/franchise/login/password-only', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          franchise_id: trimmedId,
-          password: form.password.trim(),
-          ...(twoStepVerificationEnabled ? { otp: trimmedOtp } : {})
-        })
-      });
+      const response = await fetch(
+        twoStepVerificationEnabled
+          ? '/api/franchise/login/password'
+          : '/api/franchise/login/password-only',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            franchise_id: trimmedId,
+            password: form.password.trim(),
+            ...(twoStepVerificationEnabled ? { otp: trimmedOtp } : {}),
+          }),
+        }
+      );
 
       const data = await response.json().catch(() => ({}));
       if (!response.ok) {
@@ -112,7 +117,7 @@ useEffect(() => {
         'franchisePortal:data',
         JSON.stringify({
           ...data,
-          session_token: data.session_token || data.token
+          session_token: data.session_token || data.token,
         })
       );
       navigate('/franchise/dashboard', { replace: true, state: data });
@@ -127,7 +132,7 @@ useEffect(() => {
     if (showResetPanel) {
       setResetForm(prev => ({
         ...prev,
-        franchiseId: prev.franchiseId || form.franchiseId
+        franchiseId: prev.franchiseId || form.franchiseId,
       }));
       setResetError('');
       setResetSuccess('');
@@ -178,7 +183,7 @@ useEffect(() => {
       const response = await fetch('/api/franchise/login/password/send-otp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ franchise_id: franchiseId, password: form.password.trim() })
+        body: JSON.stringify({ franchise_id: franchiseId, password: form.password.trim() }),
       });
       const data = await response.json().catch(() => ({}));
       if (!response.ok) {
@@ -212,8 +217,8 @@ useEffect(() => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           franchise_id: targetFranchiseId,
-          purpose: 'franchise_reset'
-        })
+          purpose: 'franchise_reset',
+        }),
       });
       const data = await response.json().catch(() => ({}));
       if (!response.ok) {
@@ -222,7 +227,9 @@ useEffect(() => {
       setResetOtpSent(true);
       setResetMaskedPhone(data?.masked_phone || '');
       setResetForm(prev => ({ ...prev, franchiseId: targetFranchiseId }));
-      setResetStatusMessage('OTP sent successfully. Check the owner phone number registered with your first store.');
+      setResetStatusMessage(
+        'OTP sent successfully. Check the owner phone number registered with your first store.'
+      );
     } catch (err) {
       setResetError(err instanceof Error ? err.message : 'Unable to send OTP. Please try again.');
     } finally {
@@ -268,25 +275,29 @@ useEffect(() => {
         body: JSON.stringify({
           franchise_id: targetFranchiseId,
           password: trimmedPassword,
-          otp: trimmedOtp
-        })
+          otp: trimmedOtp,
+        }),
       });
       const data = await response.json().catch(() => ({}));
       if (!response.ok) {
         throw new Error(data?.error || 'Unable to reset franchise password.');
       }
-      setResetSuccess('Franchise password updated. Keep the new password handy for owner approvals.');
+      setResetSuccess(
+        'Franchise password updated. Keep the new password handy for owner approvals.'
+      );
       setResetForm({
         franchiseId: targetFranchiseId,
         otp: '',
         password: '',
-        confirmPassword: ''
+        confirmPassword: '',
       });
       setResetOtpSent(false);
       setResetMaskedPhone('');
       setResetStatusMessage('');
     } catch (err) {
-      setResetError(err instanceof Error ? err.message : 'Unable to reset franchise password. Please try again.');
+      setResetError(
+        err instanceof Error ? err.message : 'Unable to reset franchise password. Please try again.'
+      );
     } finally {
       setResetLoading(false);
     }
@@ -319,8 +330,8 @@ useEffect(() => {
             <p className="text-sm uppercase tracking-[0.3em] text-indigo-300">Franchise Login</p>
             <h1 className="text-3xl font-semibold mt-2">Manage all your stores from one place</h1>
             <p className="text-sm text-white/70 mt-3">
-              Enter your Franchise ID and verify with the OTP sent to the franchise owner's registered
-              mobile number to review every store linked to your franchise.
+              Enter your Franchise ID and verify with the OTP sent to the franchise owner's
+              registered mobile number to review every store linked to your franchise.
             </p>
             <form className="mt-8 space-y-5" onSubmit={handleSubmit}>
               <div>
@@ -355,47 +366,51 @@ useEffect(() => {
                 </div>
               </div>
               {twoStepVerificationEnabled && (
-              <div>
-                <label className="text-sm font-medium text-white/80">One-Time Password</label>
-                <div className="mt-1 flex gap-3">
-                  <input
-                    type="text"
-                    value={loginOtp}
-                    onChange={event => {
-                      setLoginOtp(event.target.value.replace(/\D/g, '').slice(0, 6));
-                      setError('');
-                    }}
-                    className="w-full rounded-xl border border-white/20 bg-white/5 px-4 py-3 text-white focus:border-indigo-400 focus:ring focus:ring-indigo-400/30"
-                    placeholder="Enter 6-digit OTP"
-                    inputMode="numeric"
-                  />
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={handleSendLoginOtp}
-                    disabled={
-                      loginOtpSending || !twoStepVerificationEnabled || !form.franchiseId.trim() || !form.password.trim() || loginOtpCooldown > 0
-                    }
-                  >
-                    {loginOtpSending
-                      ? 'Sending…'
-                      : loginOtpCooldown > 0
+                <div>
+                  <label className="text-sm font-medium text-white/80">One-Time Password</label>
+                  <div className="mt-1 flex gap-3">
+                    <input
+                      type="text"
+                      value={loginOtp}
+                      onChange={event => {
+                        setLoginOtp(event.target.value.replace(/\D/g, '').slice(0, 6));
+                        setError('');
+                      }}
+                      className="w-full rounded-xl border border-white/20 bg-white/5 px-4 py-3 text-white focus:border-indigo-400 focus:ring focus:ring-indigo-400/30"
+                      placeholder="Enter 6-digit OTP"
+                      inputMode="numeric"
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={handleSendLoginOtp}
+                      disabled={
+                        loginOtpSending ||
+                        !twoStepVerificationEnabled ||
+                        !form.franchiseId.trim() ||
+                        !form.password.trim() ||
+                        loginOtpCooldown > 0
+                      }
+                    >
+                      {loginOtpSending
+                        ? 'Sending…'
+                        : loginOtpCooldown > 0
                         ? `Resend in ${loginOtpCooldown}s`
                         : loginOtpSent
-                          ? 'Resend OTP'
-                          : 'Send OTP'}
-                  </Button>
+                        ? 'Resend OTP'
+                        : 'Send OTP'}
+                    </Button>
+                  </div>
+                  {loginOtpStatus ? (
+                    <p className="text-xs text-emerald-300 mt-2">{loginOtpStatus}</p>
+                  ) : (
+                    <p className="text-xs text-white/60 mt-2">
+                      OTPs are delivered to the franchise owner's phone. Request a new OTP if you
+                      didn't receive one.
+                    </p>
+                  )}
                 </div>
-                {loginOtpStatus ? (
-                  <p className="text-xs text-emerald-300 mt-2">{loginOtpStatus}</p>
-                ) : (
-                  <p className="text-xs text-white/60 mt-2">
-                    OTPs are delivered to the franchise owner's phone. Request a new OTP if you didn't
-                    receive one.
-                  </p>
-                )}
-              </div>
-                            )}
+              )}
               {error && <p className="text-sm text-red-400">{error}</p>}
               <Button
                 type="submit"
@@ -418,13 +433,15 @@ useEffect(() => {
               <div className="mt-6 rounded-2xl border border-white/10 bg-black/20 p-5">
                 {resetSuccess ? (
                   <div className="rounded-xl border border-emerald-400/40 bg-emerald-500/10 p-4 text-sm text-emerald-200">
-                    Franchise password reset is successful! Keep the new password handy for owner approvals.
+                    Franchise password reset is successful! Keep the new password handy for owner
+                    approvals.
                   </div>
                 ) : (
                   <>
                     <h2 className="text-lg font-semibold text-white">Reset franchise password</h2>
                     <p className="text-xs text-white/60 mt-1">
-                      OTP will be sent to the phone number of the very first store in this franchise.
+                      OTP will be sent to the phone number of the very first store in this
+                      franchise.
                     </p>
                     {resetError && (
                       <p className="mt-3 rounded-lg border border-red-500/40 bg-red-500/10 px-3 py-2 text-xs text-red-300">
@@ -444,11 +461,15 @@ useEffect(() => {
                     <form className="mt-4 space-y-4" onSubmit={handleFranchiseReset}>
                       <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
                         <div className="flex-1">
-                          <label className="text-xs font-semibold text-white/70">Franchise ID</label>
+                          <label className="text-xs font-semibold text-white/70">
+                            Franchise ID
+                          </label>
                           <input
                             type="text"
                             value={resetForm.franchiseId}
-                            onChange={event => handleResetFieldChange('franchiseId', event.target.value)}
+                            onChange={event =>
+                              handleResetFieldChange('franchiseId', event.target.value)
+                            }
                             className="mt-1 w-full rounded-lg border border-white/20 bg-white/5 px-4 py-2 text-white placeholder:text-white/40 focus:border-indigo-400 focus:ring focus:ring-indigo-400/30"
                             placeholder="restaurant1017"
                           />
@@ -459,15 +480,13 @@ useEffect(() => {
                           onClick={sendFranchiseResetOtp}
                           disabled={resetOtpLoading}
                         >
-                          {resetOtpLoading
-                            ? 'Sending…'
-                            : resetOtpSent
-                            ? 'Resend OTP'
-                            : 'Send OTP'}
+                          {resetOtpLoading ? 'Sending…' : resetOtpSent ? 'Resend OTP' : 'Send OTP'}
                         </Button>
                       </div>
                       <div>
-                        <label className="text-xs font-semibold text-white/70">OTP (6 digits)</label>
+                        <label className="text-xs font-semibold text-white/70">
+                          OTP (6 digits)
+                        </label>
                         <input
                           type="text"
                           value={resetForm.otp}
@@ -483,21 +502,29 @@ useEffect(() => {
                       </div>
                       <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
                         <div className="flex-1">
-                          <label className="text-xs font-semibold text-white/70">New password</label>
+                          <label className="text-xs font-semibold text-white/70">
+                            New password
+                          </label>
                           <input
                             type="password"
                             value={resetForm.password}
-                            onChange={event => handleResetFieldChange('password', event.target.value)}
+                            onChange={event =>
+                              handleResetFieldChange('password', event.target.value)
+                            }
                             className="mt-1 w-full rounded-lg border border-white/20 bg-white/5 px-4 py-2 text-white placeholder:text-white/40 focus:border-indigo-400 focus:ring focus:ring-indigo-400/30"
                             placeholder="••••••••"
                           />
                         </div>
                         <div className="flex-1">
-                          <label className="text-xs font-semibold text-white/70">Confirm password</label>
+                          <label className="text-xs font-semibold text-white/70">
+                            Confirm password
+                          </label>
                           <input
                             type="password"
                             value={resetForm.confirmPassword}
-                            onChange={event => handleResetFieldChange('confirmPassword', event.target.value)}
+                            onChange={event =>
+                              handleResetFieldChange('confirmPassword', event.target.value)
+                            }
                             className="mt-1 w-full rounded-lg border border-white/20 bg-white/5 px-4 py-2 text-white placeholder:text-white/40 focus:border-indigo-400 focus:ring focus:ring-indigo-400/30"
                             placeholder="••••••••"
                           />
@@ -518,8 +545,9 @@ useEffect(() => {
                         Use 8+ characters with letters, numbers, and special symbols.
                       </p>
                       <p className="text-xs text-white/50">
-                        OTP is sent automatically to the primary store owner's registered phone. Click
-                        the button once and wait for the SMS, then enter the 6-digit code below before setting your new password.
+                        OTP is sent automatically to the primary store owner's registered phone.
+                        Click the button once and wait for the SMS, then enter the 6-digit code
+                        below before setting your new password.
                       </p>
                       <Button
                         type="submit"

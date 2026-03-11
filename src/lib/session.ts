@@ -16,7 +16,7 @@ const AUTH_STORAGE_KEYS = [
   'bb_verified_name',
   'bb_store_name',
   'bb_webhook_config',
-  CUSTOMER_TYPE_STORAGE_KEY
+  CUSTOMER_TYPE_STORAGE_KEY,
 ];
 
 const POST_LOGIN_REDIRECT_KEY = 'bb_post_login_redirect';

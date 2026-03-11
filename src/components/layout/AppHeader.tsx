@@ -1,7 +1,7 @@
-import React from "react";
-import { BillboxLogo } from "@/components/common/BillboxLogo";
-import { Button } from "@/components/ui/button";
-import { Menu, Lock, Unlock, UserCircle2, Wallet } from "lucide-react";
+import React from 'react';
+import { BillboxLogo } from '@/components/common/BillboxLogo';
+import { Button } from '@/components/ui/button';
+import { Menu, Lock, Unlock, UserCircle2, Wallet } from 'lucide-react';
 import { formatINR } from '@/utils/formatCurrency';
 
 type AppHeaderProps = {
@@ -37,7 +37,7 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
   walletBalanceError = null,
   walletBalanceLow = false,
   walletBalanceLabel = 'Wallet Balance',
-  showWalletBalance = true
+  showWalletBalance = true,
 }) => {
   const trialInfo = (() => {
     if (!trialStartedAt || !trialPeriodDays) {
@@ -55,8 +55,8 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
       endLabel: end.toLocaleDateString('en-US', {
         month: 'short',
         day: '2-digit',
-        year: 'numeric'
-      })
+        year: 'numeric',
+      }),
     };
   })();
 
@@ -108,7 +108,7 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
             <Button
               variant="ghost"
               size="icon"
-              aria-label={revenueUnlocked ? "Lock revenue KPIs" : "Unlock revenue KPIs"}
+              aria-label={revenueUnlocked ? 'Lock revenue KPIs' : 'Unlock revenue KPIs'}
               onClick={revenueUnlocked ? onLock : onUnlock}
               className="border border-gray-700 bg-gray-800 text-white hover:bg-gray-700"
             >

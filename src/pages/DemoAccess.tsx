@@ -22,7 +22,10 @@ const DemoAccess: React.FC = () => {
                 <ShieldCheck className="h-4 w-4 text-indigo-200" />
                 Access Pending
               </div>
-              <h1 className="mt-5 text-3xl font-semibold leading-tight text-white sm:text-4xl" style={{ fontFamily: 'Space Grotesk, IBM Plex Sans, sans-serif' }}>
+              <h1
+                className="mt-5 text-3xl font-semibold leading-tight text-white sm:text-4xl"
+                style={{ fontFamily: 'Space Grotesk, IBM Plex Sans, sans-serif' }}
+              >
                 Thank You for Signing Up
               </h1>
               <p className="mt-4 text-base text-slate-200 sm:text-lg">
@@ -33,7 +36,9 @@ const DemoAccess: React.FC = () => {
             <div className="flex w-full flex-col gap-3 sm:w-auto">
               <Button
                 className="w-full bg-emerald-400 text-slate-900 hover:bg-emerald-300"
-                onClick={() => window.open('https://wa.me/918008407999', '_blank', 'noopener,noreferrer')}
+                onClick={() =>
+                  window.open('https://wa.me/918008407999', '_blank', 'noopener,noreferrer')
+                }
               >
                 <MessageCircle className="h-4 w-4" />
                 WhatsApp Us
@@ -52,21 +57,18 @@ const DemoAccess: React.FC = () => {
             {[
               {
                 title: 'Onboarding',
-                copy: 'We will walk you through onboarding and store configuration.'
+                copy: 'We will walk you through onboarding and store configuration.',
               },
               {
                 title: 'Software Installation',
-                copy: 'We will help you set up the Billbox software for fast, reliable billing.'
+                copy: 'We will help you set up the Billbox software for fast, reliable billing.',
               },
               {
                 title: 'Demo experience',
-                copy: 'Explore a preview while we enable full dashboard access.'
-              }
+                copy: 'Explore a preview while we enable full dashboard access.',
+              },
             ].map(item => (
-              <div
-                key={item.title}
-                className="rounded-2xl border border-white/10 bg-black/30 p-5"
-              >
+              <div key={item.title} className="rounded-2xl border border-white/10 bg-black/30 p-5">
                 <p className="text-sm font-semibold text-white">{item.title}</p>
                 <p className="mt-2 text-sm text-slate-300">{item.copy}</p>
               </div>

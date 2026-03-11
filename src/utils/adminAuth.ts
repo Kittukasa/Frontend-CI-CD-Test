@@ -1,6 +1,6 @@
-export const ADMIN_TOKEN_KEY = "bb_admin_token";
-export const ADMIN_LOGIN_FLAG_KEY = "billbox_admin_logged_in";
-export const ADMIN_USER_KEY = "billbox_admin_user";
+export const ADMIN_TOKEN_KEY = 'bb_admin_token';
+export const ADMIN_LOGIN_FLAG_KEY = 'billbox_admin_logged_in';
+export const ADMIN_USER_KEY = 'billbox_admin_user';
 
 export type StoredAdminIdentity = {
   adminName: string;
@@ -8,21 +8,21 @@ export type StoredAdminIdentity = {
 };
 
 export const getAdminToken = (): string | null => {
-  if (typeof window === "undefined") {
+  if (typeof window === 'undefined') {
     return null;
   }
   return window.localStorage.getItem(ADMIN_TOKEN_KEY);
 };
 
 export const persistAdminToken = (token: string) => {
-  if (typeof window === "undefined") {
+  if (typeof window === 'undefined') {
     return;
   }
   window.localStorage.setItem(ADMIN_TOKEN_KEY, token);
 };
 
 export const clearAdminToken = () => {
-  if (typeof window === "undefined") {
+  if (typeof window === 'undefined') {
     return;
   }
   window.localStorage.removeItem(ADMIN_TOKEN_KEY);
@@ -43,15 +43,15 @@ export const withAdminAuthHeaders = (headers: HeadersInit = {}): HeadersInit => 
 });
 
 export const persistAdminIdentity = (identity: StoredAdminIdentity) => {
-  if (typeof window === "undefined") {
+  if (typeof window === 'undefined') {
     return;
   }
-  window.localStorage.setItem(ADMIN_LOGIN_FLAG_KEY, "true");
+  window.localStorage.setItem(ADMIN_LOGIN_FLAG_KEY, 'true');
   window.localStorage.setItem(ADMIN_USER_KEY, JSON.stringify(identity));
 };
 
 export const getStoredAdminIdentity = (): StoredAdminIdentity | null => {
-  if (typeof window === "undefined") {
+  if (typeof window === 'undefined') {
     return null;
   }
   const raw = window.localStorage.getItem(ADMIN_USER_KEY);
@@ -60,17 +60,17 @@ export const getStoredAdminIdentity = (): StoredAdminIdentity | null => {
   }
   try {
     const parsed = JSON.parse(raw) as StoredAdminIdentity;
-    if (parsed && typeof parsed.adminName === "string") {
+    if (parsed && typeof parsed.adminName === 'string') {
       return parsed;
     }
   } catch (error) {
-    console.warn("Failed to parse admin identity", error);
+    console.warn('Failed to parse admin identity', error);
   }
   return null;
 };
 
 export const clearAdminIdentity = () => {
-  if (typeof window === "undefined") {
+  if (typeof window === 'undefined') {
     return;
   }
   window.localStorage.removeItem(ADMIN_LOGIN_FLAG_KEY);
@@ -99,7 +99,7 @@ export const fetchAdminJson = async <T>(
   const response = await fetch(input, {
     ...init,
     headers: withAdminAuthHeaders(init.headers || {}),
-    cache: "no-store",
+    cache: 'no-store',
   });
 
   const status = response.status;
@@ -117,15 +117,15 @@ export const fetchAdminJson = async <T>(
     };
   }
 
-  const contentType = response.headers.get("content-type") || "";
+  const contentType = response.headers.get('content-type') || '';
   const trimmed = raw.trim();
-  const looksLikeJson = trimmed.startsWith("{") || trimmed.startsWith("[");
+  const looksLikeJson = trimmed.startsWith('{') || trimmed.startsWith('[');
 
-  if (!contentType.includes("application/json") && !looksLikeJson) {
+  if (!contentType.includes('application/json') && !looksLikeJson) {
     return {
       ok: false,
       status,
-      error: "Received non-JSON response.",
+      error: 'Received non-JSON response.',
       isHtml: /^<!doctype|^<html/i.test(trimmed),
       raw,
     };
@@ -138,7 +138,7 @@ export const fetchAdminJson = async <T>(
     return {
       ok: false,
       status,
-      error: "Failed to parse response.",
+      error: 'Failed to parse response.',
       raw,
       isHtml: /^<!doctype|^<html/i.test(trimmed),
     };

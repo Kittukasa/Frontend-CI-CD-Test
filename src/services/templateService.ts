@@ -110,23 +110,20 @@ export interface UpdateTemplateRequest extends Partial<CreateTemplateRequest> {
 class TemplateService {
   private baseUrl = '/api/templates';
 
-  private async makeRequest<T>(
-    endpoint: string,
-    options: RequestInit = {}
-  ): Promise<T> {
+  private async makeRequest<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
     const token = localStorage.getItem('bb_token') || localStorage.getItem('token');
     const storeId =
       localStorage.getItem('selectedStore') || localStorage.getItem('bb_store_id') || '';
     const baseUrl = `${this.baseUrl}${endpoint}`;
     const separator = endpoint.includes('?') ? '&' : '?';
     const url = storeId ? `${baseUrl}${separator}storeId=${storeId}` : baseUrl;
-    
+
     const response = await fetch(url, {
       ...options,
       headers: {
         'Content-Type': 'application/json',
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        ...options.headers
+        ...options.headers,
       },
     });
 
@@ -150,7 +147,9 @@ class TemplateService {
 
   async getPredefinedTemplates(): Promise<Template[]> {
     try {
-      const response = await this.makeRequest<{ success: boolean; data: Template[] }>('/predefined');
+      const response = await this.makeRequest<{ success: boolean; data: Template[] }>(
+        '/predefined'
+      );
       return response.data || [];
     } catch (error) {
       console.error('Error fetching predefined templates:', error);
@@ -202,10 +201,10 @@ class TemplateService {
         body: JSON.stringify(
           templateName
             ? {
-                templateName
+                templateName,
               }
             : {}
-        )
+        ),
       });
       return true;
     } catch (error) {

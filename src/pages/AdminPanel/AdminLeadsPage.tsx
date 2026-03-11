@@ -1,7 +1,7 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import { Phone, Mail, MessageCircle, Loader2, RefreshCcw, ChevronDown } from "lucide-react";
-import { fetchAdminJson, clearAdminSession } from "@/utils/adminAuth";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { Phone, Mail, MessageCircle, Loader2, RefreshCcw, ChevronDown } from 'lucide-react';
+import { fetchAdminJson, clearAdminSession } from '@/utils/adminAuth';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 type LeadRecord = {
   lead_id: string;
@@ -23,29 +23,24 @@ type LeadDraft = {
   assigned_to: string;
 };
 
-const STATUS_OPTIONS = ["new", "contacted", "qualified", "converted", "rejected"] as const;
-const ASSIGNED_TO_OPTIONS = [
-  "Manoj Sai",
-  "Rohith Reddy",
-  "Santhosh",
-  "Thirupathi"
-] as const;
+const STATUS_OPTIONS = ['new', 'contacted', 'qualified', 'converted', 'rejected'] as const;
+const ASSIGNED_TO_OPTIONS = ['Manoj Sai', 'Rohith Reddy', 'Santhosh', 'Thirupathi'] as const;
 
 const formatDate = (value?: string | null) => {
-  if (!value) return "—";
+  if (!value) return '—';
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return value;
-  return date.toLocaleString("en-IN", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit"
+  return date.toLocaleString('en-IN', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
   });
 };
 
 const normalizePhone = (value?: string | null) =>
-  value ? value.toString().replace(/\D/g, "") : "";
+  value ? value.toString().replace(/\D/g, '') : '';
 
 const AdminLeadsPage = () => {
   const navigate = useNavigate();
@@ -53,8 +48,8 @@ const AdminLeadsPage = () => {
   const [leads, setLeads] = useState<LeadRecord[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
+  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
   const [savingId, setSavingId] = useState<string | null>(null);
   const [statusMenuOpen, setStatusMenuOpen] = useState(false);
   const statusMenuRef = useRef<HTMLDivElement | null>(null);
@@ -65,15 +60,15 @@ const AdminLeadsPage = () => {
   const loadLeads = async () => {
     setIsLoading(true);
     setError(null);
-    const result = await fetchAdminJson<{ leads?: LeadRecord[] }>("/api/admin/leads");
+    const result = await fetchAdminJson<{ leads?: LeadRecord[] }>('/api/admin/leads');
     if (!result.ok) {
       if (result.isAuthError || result.isHtml) {
         clearAdminSession();
         const redirectFrom = `${location.pathname}${location.search}`;
-        navigate("/admin/login", { replace: true, state: { from: redirectFrom } });
+        navigate('/admin/login', { replace: true, state: { from: redirectFrom } });
         return;
       }
-      setError(result.error || "Unable to load leads.");
+      setError(result.error || 'Unable to load leads.');
       setIsLoading(false);
       return;
     }
@@ -86,17 +81,17 @@ const AdminLeadsPage = () => {
   }, []);
 
   useEffect(() => {
-    setLeadDrafts((prev) => {
+    setLeadDrafts(prev => {
       const next = { ...prev };
-      leads.forEach((lead) => {
+      leads.forEach(lead => {
         if (!lead.lead_id) {
           return;
         }
         if (!next[lead.lead_id]) {
           next[lead.lead_id] = {
-            status: (lead.status || "new").toString(),
-            notes: lead.notes || "",
-            assigned_to: lead.assigned_to || ""
+            status: (lead.status || 'new').toString(),
+            notes: lead.notes || '',
+            assigned_to: lead.assigned_to || '',
           };
         }
       });
@@ -113,12 +108,12 @@ const AdminLeadsPage = () => {
       setStatusMenuOpen(false);
     };
     if (statusMenuOpen) {
-      document.addEventListener("mousedown", handleOutside);
-      document.addEventListener("touchstart", handleOutside);
+      document.addEventListener('mousedown', handleOutside);
+      document.addEventListener('touchstart', handleOutside);
     }
     return () => {
-      document.removeEventListener("mousedown", handleOutside);
-      document.removeEventListener("touchstart", handleOutside);
+      document.removeEventListener('mousedown', handleOutside);
+      document.removeEventListener('touchstart', handleOutside);
     };
   }, [statusMenuOpen]);
 
@@ -131,19 +126,19 @@ const AdminLeadsPage = () => {
       setActiveLeadStatusMenu(null);
     };
     if (activeLeadStatusMenu) {
-      document.addEventListener("mousedown", handleOutside);
-      document.addEventListener("touchstart", handleOutside);
+      document.addEventListener('mousedown', handleOutside);
+      document.addEventListener('touchstart', handleOutside);
     }
     return () => {
-      document.removeEventListener("mousedown", handleOutside);
-      document.removeEventListener("touchstart", handleOutside);
+      document.removeEventListener('mousedown', handleOutside);
+      document.removeEventListener('touchstart', handleOutside);
     };
   }, [activeLeadStatusMenu]);
 
   const filteredLeads = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
-    return leads.filter((lead) => {
-      if (statusFilter !== "all" && (lead.status || "new") !== statusFilter) {
+    return leads.filter(lead => {
+      if (statusFilter !== 'all' && (lead.status || 'new') !== statusFilter) {
         return false;
       }
       if (!query) return true;
@@ -153,10 +148,10 @@ const AdminLeadsPage = () => {
         lead.brand_name,
         lead.email,
         lead.phone,
-        lead.business_type
+        lead.business_type,
       ]
         .filter(Boolean)
-        .join(" ")
+        .join(' ')
         .toLowerCase();
       return haystack.includes(query);
     });
@@ -170,54 +165,52 @@ const AdminLeadsPage = () => {
     const result = await fetchAdminJson<{ lead?: LeadRecord }>(
       `/api/admin/leads/${encodeURIComponent(lead.lead_id)}`,
       {
-        method: "PATCH",
+        method: 'PATCH',
         headers: {
-          "Content-Type": "application/json"
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ ...updates, created_at: lead.created_at })
+        body: JSON.stringify({ ...updates, created_at: lead.created_at }),
       }
     );
     if (!result.ok) {
       if (result.isAuthError || result.isHtml) {
         clearAdminSession();
         const redirectFrom = `${location.pathname}${location.search}`;
-        navigate("/admin/login", { replace: true, state: { from: redirectFrom } });
+        navigate('/admin/login', { replace: true, state: { from: redirectFrom } });
         return;
       }
-      setError(result.error || "Unable to update lead.");
+      setError(result.error || 'Unable to update lead.');
       setSavingId(null);
       return;
     }
     const updated = result.data?.lead;
     if (updated) {
-      setLeads((prev) =>
-        prev.map((item) =>
-          item.lead_id === updated.lead_id ? { ...item, ...updated } : item
-        )
+      setLeads(prev =>
+        prev.map(item => (item.lead_id === updated.lead_id ? { ...item, ...updated } : item))
       );
     }
     setSavingId(null);
   };
 
   const updateDraft = (leadId: string, updates: Partial<LeadDraft>) => {
-    setLeadDrafts((prev) => ({
+    setLeadDrafts(prev => ({
       ...prev,
       [leadId]: {
-        status: prev[leadId]?.status ?? "new",
-        notes: prev[leadId]?.notes ?? "",
-        assigned_to: prev[leadId]?.assigned_to ?? "",
-        ...updates
-      }
+        status: prev[leadId]?.status ?? 'new',
+        notes: prev[leadId]?.notes ?? '',
+        assigned_to: prev[leadId]?.assigned_to ?? '',
+        ...updates,
+      },
     }));
   };
 
   const isDraftDirty = (lead: LeadRecord, draft?: LeadDraft) => {
     if (!draft) return false;
-    const currentStatus = (lead.status || "new").toString();
+    const currentStatus = (lead.status || 'new').toString();
     return (
       draft.status !== currentStatus ||
-      draft.notes !== (lead.notes || "") ||
-      draft.assigned_to !== (lead.assigned_to || "")
+      draft.notes !== (lead.notes || '') ||
+      draft.assigned_to !== (lead.assigned_to || '')
     );
   };
 
@@ -225,14 +218,18 @@ const AdminLeadsPage = () => {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.4em] text-white/40">Operations</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.4em] text-white/40">
+            Operations
+          </p>
           <h1 className="text-2xl font-semibold text-white">Lead Signups</h1>
-          <p className="mt-1 text-sm text-white/60">Review new signups and contact them directly.</p>
+          <p className="mt-1 text-sm text-white/60">
+            Review new signups and contact them directly.
+          </p>
         </div>
         <div className="flex flex-col gap-3">
           <input
             value={searchQuery}
-            onChange={(event) => setSearchQuery(event.target.value)}
+            onChange={event => setSearchQuery(event.target.value)}
             placeholder="Search name, phone, email…"
             className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-2 text-sm text-white placeholder:text-white/40 focus:border-cyan-300/50 focus:outline-none sm:w-64"
           />
@@ -240,12 +237,12 @@ const AdminLeadsPage = () => {
             <div className="relative w-full" ref={statusMenuRef}>
               <button
                 type="button"
-                onClick={() => setStatusMenuOpen((prev) => !prev)}
+                onClick={() => setStatusMenuOpen(prev => !prev)}
                 className="flex w-full items-center justify-between rounded-2xl border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-white/80 focus:border-cyan-300/50 focus:outline-none"
                 aria-haspopup="listbox"
                 aria-expanded={statusMenuOpen}
               >
-                <span>{statusFilter === "all" ? "All statuses" : statusFilter}</span>
+                <span>{statusFilter === 'all' ? 'All statuses' : statusFilter}</span>
                 <ChevronDown className="h-4 w-4 text-white/60" />
               </button>
               {statusMenuOpen && (
@@ -253,7 +250,7 @@ const AdminLeadsPage = () => {
                   className="absolute left-0 right-0 top-full z-50 mt-2 rounded-2xl border border-white/10 bg-[#050816] p-2 shadow-[0_20px_50px_rgba(2,6,23,0.6)]"
                   role="listbox"
                 >
-                  {["all", ...STATUS_OPTIONS].map((status) => (
+                  {['all', ...STATUS_OPTIONS].map(status => (
                     <button
                       key={status}
                       type="button"
@@ -263,11 +260,11 @@ const AdminLeadsPage = () => {
                       }}
                       className={`flex w-full items-center justify-between rounded-xl px-3 py-2 text-xs font-semibold uppercase tracking-[0.2em] ${
                         statusFilter === status
-                          ? "bg-white/10 text-white"
-                          : "text-white/70 hover:bg-white/5"
+                          ? 'bg-white/10 text-white'
+                          : 'text-white/70 hover:bg-white/5'
                       }`}
                     >
-                      {status === "all" ? "All statuses" : status}
+                      {status === 'all' ? 'All statuses' : status}
                     </button>
                   ))}
                 </div>
@@ -301,7 +298,7 @@ const AdminLeadsPage = () => {
           <div className="text-sm text-white/60">No leads found.</div>
         ) : (
           <div className="space-y-4">
-            {filteredLeads.map((lead) => {
+            {filteredLeads.map(lead => {
               const phoneDigits = normalizePhone(lead.phone);
               return (
                 <div
@@ -311,10 +308,11 @@ const AdminLeadsPage = () => {
                   <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                     <div>
                       <p className="text-lg font-semibold text-white">
-                        {lead.full_name || "Unnamed lead"}
+                        {lead.full_name || 'Unnamed lead'}
                       </p>
                       <p className="text-xs text-white/50">
-                        {lead.store_name || "Store name pending"} • {lead.business_type || "Type pending"}
+                        {lead.store_name || 'Store name pending'} •{' '}
+                        {lead.business_type || 'Type pending'}
                       </p>
                       <p className="mt-2 text-xs text-white/50">
                         Submitted: {formatDate(lead.created_at)}
@@ -355,21 +353,30 @@ const AdminLeadsPage = () => {
 
                   <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                     <div>
-                      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/40">Phone</p>
-                      <p className="mt-1 text-sm text-white/90">{lead.phone || "—"}</p>
+                      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/40">
+                        Phone
+                      </p>
+                      <p className="mt-1 text-sm text-white/90">{lead.phone || '—'}</p>
                     </div>
                     <div>
-                      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/40">Email</p>
-                      <p className="mt-1 text-sm text-white/90">{lead.email || "—"}</p>
+                      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/40">
+                        Email
+                      </p>
+                      <p className="mt-1 text-sm text-white/90">{lead.email || '—'}</p>
                     </div>
                     <div>
-                      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/40">Status</p>
-                      <div className="relative mt-1" ref={activeLeadStatusMenu === lead.lead_id ? leadMenuRef : null}>
+                      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/40">
+                        Status
+                      </p>
+                      <div
+                        className="relative mt-1"
+                        ref={activeLeadStatusMenu === lead.lead_id ? leadMenuRef : null}
+                      >
                         <button
                           type="button"
                           disabled={savingId === lead.lead_id}
                           onClick={() =>
-                            setActiveLeadStatusMenu((prev) =>
+                            setActiveLeadStatusMenu(prev =>
                               prev === lead.lead_id ? null : lead.lead_id
                             )
                           }
@@ -378,7 +385,7 @@ const AdminLeadsPage = () => {
                           aria-expanded={activeLeadStatusMenu === lead.lead_id}
                         >
                           <span className="capitalize">
-                            {leadDrafts[lead.lead_id]?.status || lead.status || "new"}
+                            {leadDrafts[lead.lead_id]?.status || lead.status || 'new'}
                           </span>
                           <ChevronDown className="h-4 w-4 text-white/60" />
                         </button>
@@ -387,7 +394,7 @@ const AdminLeadsPage = () => {
                             className="absolute left-0 right-0 top-full z-40 mt-2 rounded-xl border border-white/10 bg-[#050816] p-2 shadow-[0_20px_50px_rgba(2,6,23,0.6)]"
                             role="listbox"
                           >
-                            {STATUS_OPTIONS.map((status) => (
+                            {STATUS_OPTIONS.map(status => (
                               <button
                                 key={status}
                                 type="button"
@@ -396,9 +403,10 @@ const AdminLeadsPage = () => {
                                   setActiveLeadStatusMenu(null);
                                 }}
                                 className={`flex w-full items-center justify-between rounded-lg px-3 py-2 text-xs font-semibold uppercase tracking-[0.2em] ${
-                                  (leadDrafts[lead.lead_id]?.status || lead.status || "new") === status
-                                    ? "bg-white/10 text-white"
-                                    : "text-white/70 hover:bg-white/5"
+                                  (leadDrafts[lead.lead_id]?.status || lead.status || 'new') ===
+                                  status
+                                    ? 'bg-white/10 text-white'
+                                    : 'text-white/70 hover:bg-white/5'
                                 }`}
                               >
                                 {status}
@@ -412,10 +420,12 @@ const AdminLeadsPage = () => {
 
                   <div className="mt-4 grid gap-3 lg:grid-cols-2">
                     <div>
-                      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/40">Assigned to</p>
+                      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/40">
+                        Assigned to
+                      </p>
                       <select
-                        value={leadDrafts[lead.lead_id]?.assigned_to ?? lead.assigned_to ?? ""}
-                        onChange={(event) =>
+                        value={leadDrafts[lead.lead_id]?.assigned_to ?? lead.assigned_to ?? ''}
+                        onChange={event =>
                           updateDraft(lead.lead_id, { assigned_to: event.target.value })
                         }
                         className="mt-1 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/30 focus:border-cyan-300/50 focus:outline-none"
@@ -423,7 +433,7 @@ const AdminLeadsPage = () => {
                         <option value="" className="bg-[#050816] text-white">
                           Select a person
                         </option>
-                        {ASSIGNED_TO_OPTIONS.map((name) => (
+                        {ASSIGNED_TO_OPTIONS.map(name => (
                           <option key={name} value={name} className="bg-[#050816] text-white">
                             {name}
                           </option>
@@ -431,10 +441,12 @@ const AdminLeadsPage = () => {
                       </select>
                     </div>
                     <div>
-                      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/40">Notes</p>
+                      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/40">
+                        Notes
+                      </p>
                       <input
-                        value={leadDrafts[lead.lead_id]?.notes ?? lead.notes ?? ""}
-                        onChange={(event) => updateDraft(lead.lead_id, { notes: event.target.value })}
+                        value={leadDrafts[lead.lead_id]?.notes ?? lead.notes ?? ''}
+                        onChange={event => updateDraft(lead.lead_id, { notes: event.target.value })}
                         placeholder="Add notes for the team"
                         className="mt-1 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/30 focus:border-cyan-300/50 focus:outline-none"
                       />
@@ -450,7 +462,7 @@ const AdminLeadsPage = () => {
                         updateLead(lead, {
                           status: draft.status,
                           notes: draft.notes,
-                          assigned_to: draft.assigned_to
+                          assigned_to: draft.assigned_to,
                         });
                       }}
                       disabled={
@@ -458,7 +470,7 @@ const AdminLeadsPage = () => {
                       }
                       className="rounded-full border border-white/15 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-white/80 transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50"
                     >
-                      {savingId === lead.lead_id ? "Saving…" : "Save"}
+                      {savingId === lead.lead_id ? 'Saving…' : 'Save'}
                     </button>
                   </div>
                 </div>

@@ -6,12 +6,12 @@ import { getStoredWhatsAppConfig } from '@/lib/whatsappConfig';
 import {
   determineCustomerType as resolveCustomerType,
   loadCustomerTypeConfig,
-  type CustomerTypeConfig
+  type CustomerTypeConfig,
 } from '@/lib/customerTypes';
 import dayjs, {
   parseInvoiceDate as parseInvoiceDateDayjs,
   parseDateInputLocal as parseDateInputLocalDayjs,
-  toDateOrNull
+  toDateOrNull,
 } from '@/lib/date';
 import type { LucideIcon } from 'lucide-react';
 import {
@@ -30,7 +30,7 @@ import {
   Loader2,
   Info,
   Ban,
-  CheckCheck
+  CheckCheck,
 } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -145,7 +145,7 @@ const MOCK_ONGOING_CAMPAIGNS: OngoingCampaign[] = [
     sentDate: '2026-01-10T09:30:00Z',
     status: 'In Progress',
     deliveredPct: 62,
-    processingPct: 24
+    processingPct: 24,
   },
   {
     id: 'ongoing-002',
@@ -154,7 +154,7 @@ const MOCK_ONGOING_CAMPAIGNS: OngoingCampaign[] = [
     sentDate: '2026-01-11T14:15:00Z',
     status: 'In Progress',
     deliveredPct: 48,
-    processingPct: 38
+    processingPct: 38,
   },
   {
     id: 'ongoing-003',
@@ -163,8 +163,8 @@ const MOCK_ONGOING_CAMPAIGNS: OngoingCampaign[] = [
     sentDate: '2026-01-12T08:05:00Z',
     status: 'Completed',
     deliveredPct: 100,
-    processingPct: 0
-  }
+    processingPct: 0,
+  },
 ];
 
 const MOCK_ONGOING_RECIPIENTS: Record<string, CampaignRecipient[]> = {
@@ -172,17 +172,17 @@ const MOCK_ONGOING_RECIPIENTS: Record<string, CampaignRecipient[]> = {
     { phone: '+91 98765 43210', name: 'Aarav Patel', status: 'sent' },
     { phone: '+91 98765 43211', name: 'Meera Singh', status: 'delivered' },
     { phone: '+91 98765 43212', name: 'Riya Sharma', status: 'seen' },
-    { phone: '+91 98765 43213', name: 'Kabir Jain', status: 'sent' }
+    { phone: '+91 98765 43213', name: 'Kabir Jain', status: 'sent' },
   ],
   'ongoing-002': [
     { phone: '+91 98765 43221', name: 'Anaya Gupta', status: 'delivered' },
     { phone: '+91 98765 43222', name: 'Vivaan Iyer', status: 'seen' },
-    { phone: '+91 98765 43223', name: 'Isha Mehta', status: 'sent' }
+    { phone: '+91 98765 43223', name: 'Isha Mehta', status: 'sent' },
   ],
   'ongoing-003': [
     { phone: '+91 98765 43231', name: 'Arjun Rao', status: 'delivered' },
-    { phone: '+91 98765 43232', name: 'Tara Nair', status: 'seen' }
-  ]
+    { phone: '+91 98765 43232', name: 'Tara Nair', status: 'seen' },
+  ],
 };
 
 type Customer = {
@@ -308,11 +308,14 @@ type CarouselCardRuntimeInput = {
   buttonValues: Record<number, string>;
 };
 
-const HEADER_TYPE_META: Record<Exclude<QuickTemplate['headerType'], undefined>, { label: string }> = {
+const HEADER_TYPE_META: Record<
+  Exclude<QuickTemplate['headerType'], undefined>,
+  { label: string }
+> = {
   TEXT: { label: 'Text' },
   IMAGE: { label: 'Image' },
   VIDEO: { label: 'Video' },
-  DOCUMENT: { label: 'Document' }
+  DOCUMENT: { label: 'Document' },
 };
 
 const ALLOWED_HEADER_IMAGE_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
@@ -325,7 +328,7 @@ const RESEND_DELAY_LABELS: Record<string, string> = {
   '1h': '1 hour',
   '2h': '2 hours',
   '1d': '1 day',
-  '2d': '2 days'
+  '2d': '2 days',
 };
 const RESEND_DELAY_SECONDS: Record<string, number> = {
   '2m': 2 * 60,
@@ -333,7 +336,7 @@ const RESEND_DELAY_SECONDS: Record<string, number> = {
   '1h': 60 * 60,
   '2h': 2 * 60 * 60,
   '1d': 24 * 60 * 60,
-  '2d': 2 * 24 * 60 * 60
+  '2d': 2 * 24 * 60 * 60,
 };
 
 const buildUniqueCampaignName = (templateName: string) => {
@@ -361,7 +364,7 @@ type StoredCampaignDateFilter = {
 const CAMPAIGNS_DATE_FILTER_STORAGE_KEY = 'bb_campaigns_date_filter';
 
 const WHATSAPP_CHAT_WALLPAPER =
-  "url(\"data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20width%3D%27240%27%20height%3D%27240%27%20viewBox%3D%270%200%20240%20240%27%3E%3Crect%20fill%3D%27%23e5ddd5%27%20width%3D%27240%27%20height%3D%27240%27/%3E%3Cg%20fill%3D%27none%27%20stroke%3D%27%23d5c4b5%27%20stroke-width%3D%272%27%20opacity%3D%270.35%27%3E%3Cpath%20d%3D%27M0%2040h240M0%20120h240M0%20200h240M40%200v240M120%200v240M200%200v240%27/%3E%3C/g%3E%3Cg%20fill%3D%27%23d5c4b5%27%20opacity%3D%270.5%27%3E%3Ccircle%20cx%3D%2730%27%20cy%3D%2730%27%20r%3D%274%27/%3E%3Ccircle%20cx%3D%27150%27%20cy%3D%2790%27%20r%3D%274%27/%3E%3Ccircle%20cx%3D%27210%27%20cy%3D%27150%27%20r%3D%274%27/%3E%3Ccircle%20cx%3D%2790%27%20cy%3D%27180%27%20r%3D%274%27/%3E%3C/g%3E%3C/svg%3E\")";
+  'url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20width%3D%27240%27%20height%3D%27240%27%20viewBox%3D%270%200%20240%20240%27%3E%3Crect%20fill%3D%27%23e5ddd5%27%20width%3D%27240%27%20height%3D%27240%27/%3E%3Cg%20fill%3D%27none%27%20stroke%3D%27%23d5c4b5%27%20stroke-width%3D%272%27%20opacity%3D%270.35%27%3E%3Cpath%20d%3D%27M0%2040h240M0%20120h240M0%20200h240M40%200v240M120%200v240M200%200v240%27/%3E%3C/g%3E%3Cg%20fill%3D%27%23d5c4b5%27%20opacity%3D%270.5%27%3E%3Ccircle%20cx%3D%2730%27%20cy%3D%2730%27%20r%3D%274%27/%3E%3Ccircle%20cx%3D%27150%27%20cy%3D%2790%27%20r%3D%274%27/%3E%3Ccircle%20cx%3D%27210%27%20cy%3D%27150%27%20r%3D%274%27/%3E%3Ccircle%20cx%3D%2790%27%20cy%3D%27180%27%20r%3D%274%27/%3E%3C/g%3E%3C/svg%3E")';
 
 const shouldIgnoreStoredCampaignDateFilter = () => {
   if (typeof window === 'undefined') {
@@ -403,11 +406,7 @@ const readStoredCampaignDateFilter = (): StoredCampaignDateFilter | null => {
       preset?: unknown;
     };
 
-    if (
-      !dateRange ||
-      typeof dateRange.start !== 'string' ||
-      typeof dateRange.end !== 'string'
-    ) {
+    if (!dateRange || typeof dateRange.start !== 'string' || typeof dateRange.end !== 'string') {
       return null;
     }
 
@@ -417,7 +416,7 @@ const readStoredCampaignDateFilter = (): StoredCampaignDateFilter | null => {
       'month',
       'year',
       'all',
-      'custom'
+      'custom',
     ];
     const presetString = typeof preset === 'string' ? preset : 'custom';
     const safePreset: CampaignDateRangePreset = allowedPresets.includes(
@@ -429,9 +428,9 @@ const readStoredCampaignDateFilter = (): StoredCampaignDateFilter | null => {
     return {
       dateRange: {
         start: dateRange.start,
-        end: dateRange.end
+        end: dateRange.end,
       },
-      preset: safePreset
+      preset: safePreset,
     };
   } catch {
     return null;
@@ -445,7 +444,7 @@ const getDefaultCampaignDateRange = () => {
   const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
   return {
     start: formatDateInput(startOfMonth),
-    end: formatDateInput(today)
+    end: formatDateInput(today),
   };
 };
 
@@ -481,7 +480,7 @@ const parseTemplatePlaceholders = (
     placeholders.push({
       key: token,
       type: isPositional ? 'positional' : 'named',
-      component
+      component,
     });
   }
 
@@ -494,7 +493,8 @@ const extractTemplateButtonDefaults = (components: any[]): TemplateButtonDefault
   }
 
   const buttonsComponent = components.find(
-    (component: any) => (component?.type || component?.Type || '').toString().toUpperCase() === 'BUTTONS'
+    (component: any) =>
+      (component?.type || component?.Type || '').toString().toUpperCase() === 'BUTTONS'
   );
   const buttons = Array.isArray(buttonsComponent?.buttons) ? buttonsComponent.buttons : [];
 
@@ -506,7 +506,9 @@ const extractTemplateButtonDefaults = (components: any[]): TemplateButtonDefault
       }
 
       const exampleValue = Array.isArray(button?.example)
-        ? button.example.find((value: unknown) => typeof value === 'string' && value.trim().length > 0)
+        ? button.example.find(
+            (value: unknown) => typeof value === 'string' && value.trim().length > 0
+          )
         : typeof button?.example === 'string'
         ? button.example
         : '';
@@ -519,7 +521,7 @@ const extractTemplateButtonDefaults = (components: any[]): TemplateButtonDefault
       return {
         index,
         subType: 'copy_code',
-        parameters: [couponCode]
+        parameters: [couponCode],
       };
     })
     .filter((button): button is TemplateButtonDefault => Boolean(button));
@@ -548,16 +550,16 @@ const extractTemplateMediaReference = (component: any): string | null => {
 
 const buildTemplateMediaParameter = (format: string, mediaRef: string) => {
   const normalizedFormat = format.toLowerCase();
-  const key = normalizedFormat === 'image' ? 'image' : normalizedFormat === 'video' ? 'video' : 'document';
+  const key =
+    normalizedFormat === 'image' ? 'image' : normalizedFormat === 'video' ? 'video' : 'document';
   const normalizedRef = String(mediaRef || '').trim();
   const isHttpRef = /^https?:\/\//i.test(normalizedRef);
   const isNumericId = /^\d+$/.test(normalizedRef);
   return {
     type: key,
-    [key]:
-      isHttpRef
-        ? { link: normalizedRef }
-        : { id: isNumericId ? Number(normalizedRef) : normalizedRef }
+    [key]: isHttpRef
+      ? { link: normalizedRef }
+      : { id: isNumericId ? Number(normalizedRef) : normalizedRef },
   };
 };
 
@@ -594,7 +596,7 @@ const buildDefaultTemplateComponents = (
               }
               normalizedCardComponents.push({
                 type: 'header',
-                parameters: [buildTemplateMediaParameter(format, mediaRef)]
+                parameters: [buildTemplateMediaParameter(format, mediaRef)],
               });
               return;
             }
@@ -612,7 +614,7 @@ const buildDefaultTemplateComponents = (
               if (parameters.length) {
                 normalizedCardComponents.push({
                   type: 'body',
-                  parameters
+                  parameters,
                 });
               }
               return;
@@ -639,9 +641,9 @@ const buildDefaultTemplateComponents = (
                     parameters: [
                       {
                         type: 'coupon_code',
-                        coupon_code: normalizedCode
-                      }
-                    ]
+                        coupon_code: normalizedCode,
+                      },
+                    ],
                   });
                   return;
                 }
@@ -662,9 +664,9 @@ const buildDefaultTemplateComponents = (
                     parameters: [
                       {
                         type: 'text',
-                        text: normalizedExample
-                      }
-                    ]
+                        text: normalizedExample,
+                      },
+                    ],
                   });
                 }
               });
@@ -677,7 +679,7 @@ const buildDefaultTemplateComponents = (
 
           return {
             card_index: String(cardIndex),
-            components: normalizedCardComponents
+            components: normalizedCardComponents,
           };
         })
         .filter(Boolean);
@@ -685,7 +687,7 @@ const buildDefaultTemplateComponents = (
       if (normalizedCards.length) {
         defaults.push({
           type: 'carousel',
-          cards: normalizedCards
+          cards: normalizedCards,
         });
       }
     }
@@ -706,7 +708,9 @@ const buildDefaultHeaderParameters = (template: QuickTemplate | null): any[] => 
     return [];
   }
 
-  const format = (headerComponent?.format || headerComponent?.Format || '').toString().toUpperCase();
+  const format = (headerComponent?.format || headerComponent?.Format || '')
+    .toString()
+    .toUpperCase();
   if (!format || format === 'TEXT') {
     return [];
   }
@@ -734,34 +738,44 @@ const extractCarouselCardsFromComponents = (components: any[]): QuickTemplate['c
 
   return cards.map((card: any, index: number) => {
     const cardComponents = Array.isArray(card?.components) ? card.components : [];
-    const header = cardComponents.find((component: any) => (component?.type || '').toString().toUpperCase() === 'HEADER');
-    const body = cardComponents.find((component: any) => (component?.type || '').toString().toUpperCase() === 'BODY');
-    const buttonsComponent = cardComponents.find((component: any) => (component?.type || '').toString().toUpperCase() === 'BUTTONS');
+    const header = cardComponents.find(
+      (component: any) => (component?.type || '').toString().toUpperCase() === 'HEADER'
+    );
+    const body = cardComponents.find(
+      (component: any) => (component?.type || '').toString().toUpperCase() === 'BODY'
+    );
+    const buttonsComponent = cardComponents.find(
+      (component: any) => (component?.type || '').toString().toUpperCase() === 'BUTTONS'
+    );
     const buttons = Array.isArray(buttonsComponent?.buttons) ? buttonsComponent.buttons : [];
-    const mediaType = ((header?.format || 'IMAGE').toString().toUpperCase() || 'IMAGE') as 'IMAGE' | 'VIDEO' | 'DOCUMENT';
+    const mediaType = ((header?.format || 'IMAGE').toString().toUpperCase() || 'IMAGE') as
+      | 'IMAGE'
+      | 'VIDEO'
+      | 'DOCUMENT';
 
     return {
       id: `card_${index + 1}`,
       mediaType,
       mediaRef: extractTemplateMediaReference(header),
       body: typeof body?.text === 'string' ? body.text : '',
-      bodyPlaceholderKeys: parseTemplatePlaceholders(typeof body?.text === 'string' ? body.text : '', 'BODY').map(
-        placeholder => placeholder.key
-      ),
+      bodyPlaceholderKeys: parseTemplatePlaceholders(
+        typeof body?.text === 'string' ? body.text : '',
+        'BODY'
+      ).map(placeholder => placeholder.key),
       buttons: buttons.map((button: any, buttonIndex: number) => ({
         index: buttonIndex,
         type: (button?.type || '').toString().toUpperCase(),
         subType: (button?.sub_type || button?.type || '').toString().toLowerCase() || null,
         text: typeof button?.text === 'string' ? button.text : '',
-        example:
-          (Array.isArray(button?.example) ? button.example[0] : button?.example) || '',
+        example: (Array.isArray(button?.example) ? button.example[0] : button?.example) || '',
         placeholderKeys:
           (button?.type || '').toString().toUpperCase() === 'URL'
-            ? parseTemplatePlaceholders(typeof button?.url === 'string' ? button.url : '', 'BUTTON').map(
-                placeholder => placeholder.key
-              )
-            : []
-      }))
+            ? parseTemplatePlaceholders(
+                typeof button?.url === 'string' ? button.url : '',
+                'BUTTON'
+              ).map(placeholder => placeholder.key)
+            : [],
+      })),
     };
   });
 };
@@ -790,7 +804,7 @@ const extractTemplatePlaceholdersFromComponents = (components: any[]): TemplateP
             ...placeholder,
             component: 'BUTTON',
             buttonIndex: index,
-            subType: 'url'
+            subType: 'url',
           });
         });
       }
@@ -896,7 +910,7 @@ const buildCampaignIdentifier = (payload: CampaignIdentifierPayload): string => 
       campaignName: payload.campaignName,
       templateName: payload.templateName ?? null,
       start: payload.start ?? null,
-      end: payload.end ?? null
+      end: payload.end ?? null,
     };
     return JSON.stringify(normalized);
   } catch {
@@ -940,7 +954,7 @@ const buildCustomersForDateRange = (
         phone: detail.phone,
         lastPurchase: detail.lastPurchase ?? null,
         totalSpent: detail.totalSpent,
-        customerType: detail.customerType as CustomerType | undefined
+        customerType: detail.customerType as CustomerType | undefined,
       });
     }
   });
@@ -961,8 +975,7 @@ const buildCustomersForDateRange = (
     if (invoice.is_excluded) {
       return;
     }
-    const rawPhone =
-      invoice.customer_phone || invoice.customer_number || invoice.phone || null;
+    const rawPhone = invoice.customer_phone || invoice.customer_number || invoice.phone || null;
     if (!rawPhone) {
       return;
     }
@@ -975,8 +988,7 @@ const buildCustomersForDateRange = (
     }
 
     const timestamp = getInvoiceTimestamp(invoice);
-    const amountRaw =
-      invoice.total_amount ?? invoice.totalAmount ?? invoice.total;
+    const amountRaw = invoice.total_amount ?? invoice.totalAmount ?? invoice.total;
     const parsedAmount = Number(amountRaw ?? 0);
     const amount = Number.isFinite(parsedAmount) ? parsedAmount : 0;
 
@@ -988,7 +1000,7 @@ const buildCustomersForDateRange = (
         isAnonymous,
         totalSpentInRange: 0,
         lastPurchaseInRange: null,
-        invoiceCountInRange: 0
+        invoiceCountInRange: 0,
       };
       aggregated.set(key, entry);
     } else {
@@ -1001,8 +1013,7 @@ const buildCustomersForDateRange = (
     }
 
     const withinRange =
-      !timestamp ||
-      ((!startDate || timestamp >= startDate) && (!endDate || timestamp <= endDate));
+      !timestamp || ((!startDate || timestamp >= startDate) && (!endDate || timestamp <= endDate));
     if (withinRange) {
       entry.totalSpentInRange += amount;
       entry.invoiceCountInRange += 1;
@@ -1016,8 +1027,7 @@ const buildCustomersForDateRange = (
     const fallbackName = value.name?.trim() || undefined;
     const fallbackPhone = value.phone ?? null;
     const fallbackDate =
-      parseProcessedTimestampValue(value.lastPurchase) ||
-      parseInvoiceDateValue(value.lastPurchase);
+      parseProcessedTimestampValue(value.lastPurchase) || parseInvoiceDateValue(value.lastPurchase);
 
     let entry = aggregated.get(key);
     if (!entry) {
@@ -1027,7 +1037,7 @@ const buildCustomersForDateRange = (
         isAnonymous: (fallbackPhone || key).replace(/\D/g, '') === '0000000000',
         totalSpentInRange: Number(value.totalSpent ?? 0),
         lastPurchaseInRange: fallbackDate ?? null,
-        invoiceCountInRange: 1
+        invoiceCountInRange: 1,
       };
       aggregated.set(key, entry);
       return;
@@ -1036,10 +1046,7 @@ const buildCustomersForDateRange = (
     if (!entry.name && fallbackName) {
       entry.name = fallbackName;
     }
-    if (
-      fallbackPhone &&
-      (!entry.phone || fallbackPhone.length > entry.phone.length)
-    ) {
+    if (fallbackPhone && (!entry.phone || fallbackPhone.length > entry.phone.length)) {
       entry.phone = fallbackPhone;
     }
     if (fallbackDate && (!entry.lastPurchaseInRange || fallbackDate > entry.lastPurchaseInRange)) {
@@ -1051,17 +1058,16 @@ const buildCustomersForDateRange = (
     const fallback = fallbackMap.get(key);
     const phone = entry.phone || key;
     const total = Number.isFinite(entry.totalSpentInRange) ? entry.totalSpentInRange : 0;
-    const name =
-      entry.name?.trim() ||
-      (phone ? `Customer ${maskPhoneNumber(phone)}` : 'Customer');
-    const lastPurchase = entry.lastPurchaseInRange
-      ? entry.lastPurchaseInRange.toISOString()
-      : null;
+    const name = entry.name?.trim() || (phone ? `Customer ${maskPhoneNumber(phone)}` : 'Customer');
+    const lastPurchase = entry.lastPurchaseInRange ? entry.lastPurchaseInRange.toISOString() : null;
     const totalForType = total || Number(fallback?.totalSpent ?? 0);
     const resolvedType =
       fallback?.customerType ?? determineCustomerType(totalForType, customerTypeConfig);
-    const resolvedLifecycleSegment =
-      entry.isAnonymous ? 'anonymous' : entry.invoiceCountInRange <= 1 ? 'new' : 'returning';
+    const resolvedLifecycleSegment = entry.isAnonymous
+      ? 'anonymous'
+      : entry.invoiceCountInRange <= 1
+      ? 'new'
+      : 'returning';
 
     return {
       phone,
@@ -1069,7 +1075,7 @@ const buildCustomersForDateRange = (
       totalSpent: total,
       customerType: resolvedType,
       lastPurchase,
-      lifecycleSegment: resolvedLifecycleSegment
+      lifecycleSegment: resolvedLifecycleSegment,
     } as Customer;
   });
 
@@ -1093,7 +1099,7 @@ const Campaigns: React.FC<CampaignsProps> = ({
   recentCampaigns,
   onRecentCampaignsChange,
   preselectedRecipients,
-  onRecipientsConsumed
+  onRecipientsConsumed,
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -1106,7 +1112,7 @@ const Campaigns: React.FC<CampaignsProps> = ({
       {
         pathname: location.pathname,
         search: searchString ? `?${searchString}` : '',
-        hash: '#customer-type-section'
+        hash: '#customer-type-section',
       },
       { replace: false }
     );
@@ -1121,7 +1127,11 @@ const Campaigns: React.FC<CampaignsProps> = ({
     }
     const contacts = await loadImportedRecipients();
     if (!contacts || contacts.length === 0) {
-      toast({ title: 'No imported contacts found', description: 'Import contacts first, then try again.', variant: 'destructive' });
+      toast({
+        title: 'No imported contacts found',
+        description: 'Import contacts first, then try again.',
+        variant: 'destructive',
+      });
       return;
     }
     setIncludeImported(true);
@@ -1148,9 +1158,10 @@ const Campaigns: React.FC<CampaignsProps> = ({
   const [quotaPreviewLoading, setQuotaPreviewLoading] = useState(false);
   const quotaExceededRef = useRef(false);
   const [campaignHistory, setCampaignHistory] = useState<Campaign[]>([]);
-  const [selectedCampaignDetails, setSelectedCampaignDetails] = useState<CampaignDetails | null>(null);
-  const [campaignsTableTab, setCampaignsTableTab] =
-    useState<'completed' | 'ongoing'>('completed');
+  const [selectedCampaignDetails, setSelectedCampaignDetails] = useState<CampaignDetails | null>(
+    null
+  );
+  const [campaignsTableTab, setCampaignsTableTab] = useState<'completed' | 'ongoing'>('completed');
   const [modalRecipients, setModalRecipients] = useState<CampaignRecipient[]>([]);
   const [modalRecipientsLoading, setModalRecipientsLoading] = useState(false);
   const [modalRecipientsError, setModalRecipientsError] = useState<string | null>(null);
@@ -1181,11 +1192,10 @@ const Campaigns: React.FC<CampaignsProps> = ({
     }
     const payload: StoredCampaignDateFilter = {
       dateRange,
-      preset: selectedRangePreset
+      preset: selectedRangePreset,
     };
     window.localStorage.setItem(CAMPAIGNS_DATE_FILTER_STORAGE_KEY, JSON.stringify(payload));
   }, [dateRange, selectedRangePreset]);
-
 
   const shouldPollCampaignProgress = useMemo(() => {
     return campaignsTableTab === 'ongoing';
@@ -1207,7 +1217,7 @@ const Campaigns: React.FC<CampaignsProps> = ({
           return;
         }
         const response = await fetch('/api/whatsapp/campaigns/active/progress', {
-          headers: { Authorization: `Bearer ${token}` }
+          headers: { Authorization: `Bearer ${token}` },
         });
         const data = await response.json().catch(() => ({}));
         if (response.status === 404) {
@@ -1269,7 +1279,9 @@ const Campaigns: React.FC<CampaignsProps> = ({
   const [imageUploadError, setImageUploadError] = useState<string | null>(null);
   const [imageUploading, setImageUploading] = useState(false);
   const [imageInputKey, setImageInputKey] = useState<number>(0);
-  const [carouselRuntimeInputs, setCarouselRuntimeInputs] = useState<Record<string, CarouselCardRuntimeInput>>({});
+  const [carouselRuntimeInputs, setCarouselRuntimeInputs] = useState<
+    Record<string, CarouselCardRuntimeInput>
+  >({});
   const [carouselUploadBusyCardId, setCarouselUploadBusyCardId] = useState<string | null>(null);
   const [previewTheme, setPreviewTheme] = useState<'android' | 'ios'>('android');
   const [previewCarouselIndex, setPreviewCarouselIndex] = useState(0);
@@ -1284,7 +1296,9 @@ const Campaigns: React.FC<CampaignsProps> = ({
   const storedWhatsAppConfig = useMemo(() => getStoredWhatsAppConfig(), []);
   const [selectedRecipients, setSelectedRecipients] = useState<Customer[]>([]);
   const [selectedCustomerTypes, setSelectedCustomerTypes] = useState<CustomerType[]>([]);
-  const [selectedLifecycleSegments, setSelectedLifecycleSegments] = useState<LifecycleSegmentFilter[]>([]);
+  const [selectedLifecycleSegments, setSelectedLifecycleSegments] = useState<
+    LifecycleSegmentFilter[]
+  >([]);
   const [importedContacts, setImportedContacts] = useState<Customer[]>([]);
   const [includeImported, setIncludeImported] = useState(false);
   const selectedTemplateIsCarousel = selectedTemplate?.templateKind === 'carousel';
@@ -1323,7 +1337,7 @@ const Campaigns: React.FC<CampaignsProps> = ({
         const response = await fetch('/api/whatsapp/campaigns/quota-check', {
           method: 'POST',
           headers: buildAuthHeaders(true),
-          body: JSON.stringify({ requested: selectedRecipients.length })
+          body: JSON.stringify({ requested: selectedRecipients.length }),
         });
         const payload = await response.json().catch(() => ({}));
         if (!response.ok) {
@@ -1334,7 +1348,7 @@ const Campaigns: React.FC<CampaignsProps> = ({
           used: Number(payload.used ?? 0),
           remaining: Number(payload.remaining ?? 0),
           requested: Number(payload.requested ?? selectedRecipients.length),
-          allowed: Number(payload.allowed ?? 0)
+          allowed: Number(payload.allowed ?? 0),
         };
         setQuotaPreview(preview);
       } catch (error) {
@@ -1360,7 +1374,7 @@ const Campaigns: React.FC<CampaignsProps> = ({
     () => ({
       Premium: `â‚¹${customerTypeConfig.premium.min.toLocaleString()}+`,
       Standard: `â‚¹${customerTypeConfig.standard.min.toLocaleString()} - â‚¹${customerTypeConfig.standard.max.toLocaleString()}`,
-      Basic: `Below â‚¹${customerTypeConfig.basic.max.toLocaleString()}`
+      Basic: `Below â‚¹${customerTypeConfig.basic.max.toLocaleString()}`,
     }),
     [customerTypeConfig]
   );
@@ -1368,7 +1382,7 @@ const Campaigns: React.FC<CampaignsProps> = ({
     const counts: Record<CustomerType, number> = {
       Premium: 0,
       Standard: 0,
-      Basic: 0
+      Basic: 0,
     };
     const source =
       selectedLifecycleSegments.length > 0
@@ -1390,11 +1404,11 @@ const Campaigns: React.FC<CampaignsProps> = ({
     });
     return counts;
   }, [effectiveFilteredCustomers, customerTypeConfig, selectedLifecycleSegments]);
-  
+
   const lifecycleCategoryCounts = useMemo(() => {
     const counts: Record<'new' | 'returning', number> = {
       new: 0,
-      returning: 0
+      returning: 0,
     };
     const source =
       selectedCustomerTypes.length > 0
@@ -1434,20 +1448,20 @@ const Campaigns: React.FC<CampaignsProps> = ({
     navigate(
       {
         pathname: location.pathname,
-        search: search ? `?${search}` : ''
+        search: search ? `?${search}` : '',
       },
       { replace: true }
     );
   }, [location.pathname, location.search, navigate]);
   const [templateVariableValues, setTemplateVariableValues] = useState<Record<string, string>>({});
-  const [recipientStatusFilter, setRecipientStatusFilter] =
-    useState<RecipientStatusFilter>('all');
+  const [recipientStatusFilter, setRecipientStatusFilter] = useState<RecipientStatusFilter>('all');
   const campaignHistoryRef = useRef<Campaign[]>([]);
   const statusPollRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const isMountedRef = useRef(true);
 
   const messageTokens = useMemo(() => {
-    const tokens: Array<{ type: 'text'; value: string } | { type: 'placeholder'; value: string }> = [];
+    const tokens: Array<{ type: 'text'; value: string } | { type: 'placeholder'; value: string }> =
+      [];
     if (!campaignMessage) {
       return tokens;
     }
@@ -1472,15 +1486,15 @@ const Campaigns: React.FC<CampaignsProps> = ({
     return tokens;
   }, [campaignMessage]);
 
-const templatePlaceholders = useMemo<TemplatePlaceholder[]>(() => {
-  if (selectedTemplate && selectedTemplate.placeholders) {
-    return selectedTemplate.placeholders;
-  }
-  if (!campaignMessage) {
-    return [];
-  }
-  return parseTemplatePlaceholders(campaignMessage, 'BODY');
-}, [campaignMessage, selectedTemplate]);
+  const templatePlaceholders = useMemo<TemplatePlaceholder[]>(() => {
+    if (selectedTemplate && selectedTemplate.placeholders) {
+      return selectedTemplate.placeholders;
+    }
+    if (!campaignMessage) {
+      return [];
+    }
+    return parseTemplatePlaceholders(campaignMessage, 'BODY');
+  }, [campaignMessage, selectedTemplate]);
 
   const footerTemplatePlaceholders = useMemo(
     () => templatePlaceholders.filter(placeholder => placeholder.component === 'FOOTER'),
@@ -1493,9 +1507,7 @@ const templatePlaceholders = useMemo<TemplatePlaceholder[]>(() => {
   );
 
   const bodyPlaceholderOrder = useMemo(() => {
-    return messageTokens
-      .filter(token => token.type === 'placeholder')
-      .map(token => token.value);
+    return messageTokens.filter(token => token.type === 'placeholder').map(token => token.value);
   }, [messageTokens]);
 
   const previewMessage = useMemo(() => {
@@ -1537,14 +1549,17 @@ const templatePlaceholders = useMemo<TemplatePlaceholder[]>(() => {
     }
 
     const replaceTemplateVariables = (input: string, values: Record<string, string>) =>
-      input.replace(/{{\s*([\w.-]+)\s*}}/g, (_, key: string) => values[key]?.trim() || `{{${key}}}`);
+      input.replace(
+        /{{\s*([\w.-]+)\s*}}/g,
+        (_, key: string) => values[key]?.trim() || `{{${key}}}`
+      );
 
     return selectedTemplate.carouselCards.map(card => {
       const runtime = carouselRuntimeInputs[card.id];
       const bodyValueMap = runtime?.bodyValues || {};
       const bodyText = replaceTemplateVariables(card.body || '', {
         ...templateVariableValues,
-        ...bodyValueMap
+        ...bodyValueMap,
       });
       const approvedMediaPreviewUrl =
         typeof card.mediaRef === 'string' && /^https?:\/\//i.test(card.mediaRef.trim())
@@ -1563,16 +1578,16 @@ const templatePlaceholders = useMemo<TemplatePlaceholder[]>(() => {
             typeof button.index === 'number' ? runtime?.buttonValues?.[button.index] || '' : '';
           return {
             label: button.text || button.type,
-            value: dynamicValue
+            value: dynamicValue,
           };
-        })
+        }),
       };
     });
   }, [
     selectedTemplateIsCarousel,
     selectedTemplate?.carouselCards,
     carouselRuntimeInputs,
-    templateVariableValues
+    templateVariableValues,
   ]);
 
   useEffect(() => {
@@ -1590,12 +1605,13 @@ const templatePlaceholders = useMemo<TemplatePlaceholder[]>(() => {
         ? {
             headerColor: '#075E54',
             fontFamily: 'Roboto, "Segoe UI", sans-serif',
-            bubbleRadius: 'rounded-2xl rounded-tl-none'
+            bubbleRadius: 'rounded-2xl rounded-tl-none',
           }
         : {
             headerColor: '#128C7E',
-            fontFamily: '"SF Pro Text", "SF Pro Display", -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif',
-            bubbleRadius: 'rounded-[22px]'
+            fontFamily:
+              '"SF Pro Text", "SF Pro Display", -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif',
+            bubbleRadius: 'rounded-[22px]',
           },
     [previewTheme]
   );
@@ -1612,7 +1628,13 @@ const templatePlaceholders = useMemo<TemplatePlaceholder[]>(() => {
       .trim();
 
     return (baseName && baseName.length > 0 ? baseName : fallback) || 'Campaign Preview';
-  }, [storedWhatsAppConfig.verifiedName, storedWhatsAppConfig.vendorName, storedWhatsAppConfig.storeName, selectedTemplate?.name, campaignName]);
+  }, [
+    storedWhatsAppConfig.verifiedName,
+    storedWhatsAppConfig.vendorName,
+    storedWhatsAppConfig.storeName,
+    selectedTemplate?.name,
+    campaignName,
+  ]);
 
   const previewInitials = useMemo(() => {
     const normalized = previewDisplayName.replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
@@ -1648,9 +1670,16 @@ const templatePlaceholders = useMemo<TemplatePlaceholder[]>(() => {
 
   const templateParameterPayload = useMemo<TemplateParameterPayload | undefined>(() => {
     const buttonDefaults = selectedTemplate?.buttonDefaults || [];
-    const defaultComponents = buildDefaultTemplateComponents(selectedTemplate, carouselRuntimeInputs);
+    const defaultComponents = buildDefaultTemplateComponents(
+      selectedTemplate,
+      carouselRuntimeInputs
+    );
     const defaultHeaderParameters = buildDefaultHeaderParameters(selectedTemplate);
-    if (!templatePlaceholders.length && buttonDefaults.length === 0 && defaultComponents.length === 0) {
+    if (
+      !templatePlaceholders.length &&
+      buttonDefaults.length === 0 &&
+      defaultComponents.length === 0
+    ) {
       return defaultHeaderParameters.length > 0 ? { header: defaultHeaderParameters } : undefined;
     }
 
@@ -1715,7 +1744,7 @@ const templatePlaceholders = useMemo<TemplatePlaceholder[]>(() => {
       grouped.buttons.push({
         index: buttonDefault.index,
         subType: buttonDefault.subType || null,
-        parameters: [couponCode]
+        parameters: [couponCode],
       });
     });
 
@@ -1811,7 +1840,14 @@ const templatePlaceholders = useMemo<TemplatePlaceholder[]>(() => {
       customerTypeConfig
     );
     setAllCustomers(computedCustomers);
-  }, [selectedStore, customerInvoices, customerDetails, customerTypeConfig, dateRange.start, dateRange.end]);
+  }, [
+    selectedStore,
+    customerInvoices,
+    customerDetails,
+    customerTypeConfig,
+    dateRange.start,
+    dateRange.end,
+  ]);
 
   useEffect(() => {
     setFilteredCustomers(allCustomers);
@@ -1843,7 +1879,7 @@ const templatePlaceholders = useMemo<TemplatePlaceholder[]>(() => {
             name: prefill.name || `Customer ${maskPhoneNumber(prefill.phone)}`,
             totalSpent: prefill.totalSpent ?? 0,
             customerType: determineCustomerType(prefill.totalSpent ?? 0, customerTypeConfig),
-            lastPurchase: null
+            lastPurchase: null,
           };
       if (prefill.lifecycleSegment) {
         record.lifecycleSegment = prefill.lifecycleSegment;
@@ -1860,7 +1896,13 @@ const templatePlaceholders = useMemo<TemplatePlaceholder[]>(() => {
     createCampaignRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     skipNextRecipientsPruneRef.current = true;
     onRecipientsConsumed?.();
-  }, [preselectedRecipients, allCustomers, filteredCustomers, customerTypeConfig, onRecipientsConsumed]);
+  }, [
+    preselectedRecipients,
+    allCustomers,
+    filteredCustomers,
+    customerTypeConfig,
+    onRecipientsConsumed,
+  ]);
 
   useEffect(() => {
     if (skipNextRecipientsPruneRef.current) {
@@ -1871,12 +1913,15 @@ const templatePlaceholders = useMemo<TemplatePlaceholder[]>(() => {
       return;
     }
     const allowed = new Set(
-      effectiveFilteredCustomers.map(customer => normalizePhoneNumber(customer.phone) || customer.phone)
+      effectiveFilteredCustomers.map(
+        customer => normalizePhoneNumber(customer.phone) || customer.phone
+      )
     );
     setSelectedRecipients(prev =>
       prev.filter(
         recipient =>
-          allowed.has(normalizePhoneNumber(recipient.phone) || recipient.phone) || recipient.imported
+          allowed.has(normalizePhoneNumber(recipient.phone) || recipient.phone) ||
+          recipient.imported
       )
     );
   }, [effectiveFilteredCustomers]);
@@ -1926,7 +1971,7 @@ const templatePlaceholders = useMemo<TemplatePlaceholder[]>(() => {
       throw new Error('Missing authentication token. Please log in again.');
     }
     const headers: Record<string, string> = {
-      Authorization: `Bearer ${token}`
+      Authorization: `Bearer ${token}`,
     };
     if (includeJson) {
       headers['Content-Type'] = 'application/json';
@@ -1944,14 +1989,14 @@ const templatePlaceholders = useMemo<TemplatePlaceholder[]>(() => {
       campaignName,
       templateName: templateLabel,
       start: sentDate,
-      end: sentDate
+      end: sentDate,
     });
 
     const pendingRecipients = selectedRecipients.map(recipient => ({
       phone: recipient.phone,
       name: recipient.name,
       status: 'processing',
-      sentDate
+      sentDate,
     }));
 
     const pendingCampaign: Campaign = {
@@ -1968,7 +2013,7 @@ const templatePlaceholders = useMemo<TemplatePlaceholder[]>(() => {
       overallCampaignStatus: 'ONGOING',
       resendSettings: {
         enabled: resendSettingsEnabled,
-        delayOption: resendSettingsDelay
+        delayOption: resendSettingsDelay,
       },
     };
 
@@ -2009,7 +2054,7 @@ const templatePlaceholders = useMemo<TemplatePlaceholder[]>(() => {
 
     setDateRange({
       start: formatDateInput(start),
-      end: formatDateInput(today)
+      end: formatDateInput(today),
     });
   };
 
@@ -2065,7 +2110,7 @@ const templatePlaceholders = useMemo<TemplatePlaceholder[]>(() => {
       toast({
         title: 'Unable to stop',
         description: 'Campaign id is missing.',
-        variant: 'destructive'
+        variant: 'destructive',
       });
       return;
     }
@@ -2076,7 +2121,7 @@ const templatePlaceholders = useMemo<TemplatePlaceholder[]>(() => {
     try {
       const response = await fetch(`/api/whatsapp/campaigns/${campaignId}/stop`, {
         method: 'POST',
-        headers: buildAuthHeaders()
+        headers: buildAuthHeaders(),
       });
       const payload = await response.json().catch(() => ({}));
       if (!response.ok) {
@@ -2094,8 +2139,8 @@ const templatePlaceholders = useMemo<TemplatePlaceholder[]>(() => {
             resendSettings: {
               ...(item.resendSettings || { enabled: false }),
               enabled: false,
-              stopped: true
-            }
+              stopped: true,
+            },
           };
         })
       );
@@ -2104,7 +2149,7 @@ const templatePlaceholders = useMemo<TemplatePlaceholder[]>(() => {
       toast({
         title: 'Unable to stop',
         description: error instanceof Error ? error.message : 'Unable to stop campaign.',
-        variant: 'destructive'
+        variant: 'destructive',
       });
     } finally {
       setStopCampaignLoading(prev => ({ ...prev, [campaignId]: false }));
@@ -2188,7 +2233,7 @@ const templatePlaceholders = useMemo<TemplatePlaceholder[]>(() => {
             return {
               ...recipient,
               status: match.status,
-              lastStatusUpdate: match.timestamp
+              lastStatusUpdate: match.timestamp,
             };
           }
 
@@ -2220,13 +2265,15 @@ const templatePlaceholders = useMemo<TemplatePlaceholder[]>(() => {
           recipients: updatedRecipients,
           deliveredCount,
           seenCount,
-          status: campaignStatus
+          status: campaignStatus,
         };
       });
 
       onRecentCampaignsChange(updatedCampaigns);
       if (selectedCampaignDetails) {
-        const refreshed = updatedCampaigns.find(campaign => campaign.id === selectedCampaignDetails.id);
+        const refreshed = updatedCampaigns.find(
+          campaign => campaign.id === selectedCampaignDetails.id
+        );
         if (refreshed) {
           setSelectedCampaignDetails(refreshed);
         }
@@ -2248,7 +2295,7 @@ const templatePlaceholders = useMemo<TemplatePlaceholder[]>(() => {
       if (!campaignHistoryRef.current.length) return;
       try {
         const response = await fetch('/api/whatsapp/events?format=json', {
-          headers: buildAuthHeaders()
+          headers: buildAuthHeaders(),
         });
         if (!response.ok) return;
         const payload = await response.json();
@@ -2279,7 +2326,7 @@ const templatePlaceholders = useMemo<TemplatePlaceholder[]>(() => {
     setRecipientsLoading(true);
     try {
       const response = await fetch(`/api/analytics/invoices?storeId=${selectedStore}`, {
-        headers: buildAuthHeaders()
+        headers: buildAuthHeaders(),
       });
 
       if (!response.ok) {
@@ -2305,7 +2352,6 @@ const templatePlaceholders = useMemo<TemplatePlaceholder[]>(() => {
     }
   };
 
-  
   const loadImportedRecipients = async (force = false) => {
     if (!force && importedContacts.length > 0) {
       return importedContacts;
@@ -2314,7 +2360,7 @@ const templatePlaceholders = useMemo<TemplatePlaceholder[]>(() => {
     setImportedContactsLoading(true);
     try {
       const response = await fetch('/api/whatsapp/contacts', {
-        headers: buildAuthHeaders()
+        headers: buildAuthHeaders(),
       });
       const result = await response.json().catch(() => ({}));
       if (!response.ok) {
@@ -2336,8 +2382,11 @@ const templatePlaceholders = useMemo<TemplatePlaceholder[]>(() => {
         if (unique.has(normalized)) {
           return;
         }
-        const rawName = (contact?.display_name || contact?.customer_name || contact?.name || '').toString().trim();
-        const safeName = rawName || `Customer ${maskPhoneNumber(contact?.phone || rawPhone || normalized)}`;
+        const rawName = (contact?.display_name || contact?.customer_name || contact?.name || '')
+          .toString()
+          .trim();
+        const safeName =
+          rawName || `Customer ${maskPhoneNumber(contact?.phone || rawPhone || normalized)}`;
         unique.set(normalized, {
           phone: normalized,
           name: safeName,
@@ -2345,7 +2394,7 @@ const templatePlaceholders = useMemo<TemplatePlaceholder[]>(() => {
           customerType: determineCustomerType(0, customerTypeConfig),
           lastPurchase: null,
           lifecycleSegment: 'anonymous',
-          imported: true
+          imported: true,
         });
       });
 
@@ -2354,7 +2403,11 @@ const templatePlaceholders = useMemo<TemplatePlaceholder[]>(() => {
       return recipients;
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unable to load imported contacts.';
-      toast({ title: 'Failed to load imported contacts', description: message, variant: 'destructive' });
+      toast({
+        title: 'Failed to load imported contacts',
+        description: message,
+        variant: 'destructive',
+      });
       return [];
     } finally {
       setImportedContactsLoading(false);
@@ -2366,7 +2419,7 @@ const templatePlaceholders = useMemo<TemplatePlaceholder[]>(() => {
     try {
       const response = await fetch(`/api/whatsapp/contacts?ts=${Date.now()}`, {
         headers: buildAuthHeaders(),
-        cache: 'no-store'
+        cache: 'no-store',
       });
       const result = await response.json().catch(() => ({}));
       if (!response.ok) {
@@ -2384,13 +2437,13 @@ const templatePlaceholders = useMemo<TemplatePlaceholder[]>(() => {
     }
   };
 
-const loadRecentCampaigns = async () => {
+  const loadRecentCampaigns = async () => {
     if (!selectedStore) return;
 
     setCampaignLoading(true);
     try {
       const response = await fetch(`/api/analytics/campaign-history?storeId=${selectedStore}`, {
-        headers: buildAuthHeaders()
+        headers: buildAuthHeaders(),
       });
 
       if (!response.ok) {
@@ -2456,7 +2509,7 @@ const loadRecentCampaigns = async () => {
           messageId: recipient.messageId || null,
           lastStatusUpdate: recipient.lastStatusUpdate || target.sentDate,
           error: recipient.error ?? null,
-          errorCode: recipient.errorCode ?? null
+          errorCode: recipient.errorCode ?? null,
         });
         target.totalRecipients += 1;
         if (['delivered', 'read', 'seen'].includes(status.toLowerCase())) {
@@ -2501,10 +2554,8 @@ const loadRecentCampaigns = async () => {
             timeWindowStart: sentDateValue || null,
             timeWindowEnd: sentDateValue || null,
             campaignId: canonicalCampaignId,
-            resendSettings:
-              campaign.resendSettings ||
-              campaign.resend_settings ||
-              {
+            resendSettings: campaign.resendSettings ||
+              campaign.resend_settings || {
                 enabled: Boolean(campaign.resendEnabled ?? campaign.resend_enabled ?? false),
                 delayOption: campaign.resendDelayOption || campaign.resend_delay_option || null,
                 maxAttempts: campaign.resendMaxAttempts || campaign.resend_max_attempts || null,
@@ -2512,11 +2563,12 @@ const loadRecentCampaigns = async () => {
                   campaign.resendStopped ??
                   campaign.resend_stopped ??
                   campaign.resendSettings?.stopped ??
-                  false
+                  false,
               },
-            latestResendAttempt: campaign.latestResendAttempt || campaign.latest_resend_attempt || null,
+            latestResendAttempt:
+              campaign.latestResendAttempt || campaign.latest_resend_attempt || null,
             overallCampaignStatus:
-              campaign.overallCampaignStatus || campaign.overall_campaign_status || null
+              campaign.overallCampaignStatus || campaign.overall_campaign_status || null,
           });
         }
 
@@ -2528,10 +2580,8 @@ const loadRecentCampaigns = async () => {
           existing.templateName = templateNameValue;
         }
         if (!existing.resendSettings) {
-          existing.resendSettings =
-            campaign.resendSettings ||
-            campaign.resend_settings ||
-            {
+          existing.resendSettings = campaign.resendSettings ||
+            campaign.resend_settings || {
               enabled: Boolean(campaign.resendEnabled ?? campaign.resend_enabled ?? false),
               delayOption: campaign.resendDelayOption || campaign.resend_delay_option || null,
               maxAttempts: campaign.resendMaxAttempts || campaign.resend_max_attempts || null,
@@ -2539,7 +2589,7 @@ const loadRecentCampaigns = async () => {
                 campaign.resendStopped ??
                 campaign.resend_stopped ??
                 campaign.resendSettings?.stopped ??
-                false
+                false,
             };
         } else if (!existing.resendSettings.maxAttempts) {
           existing.resendSettings.maxAttempts =
@@ -2587,15 +2637,9 @@ const loadRecentCampaigns = async () => {
               sentDate: recipient.sentDate || recipient.sent_at || sentDateValue,
               messageId: recipient.messageId || recipient.message_id || messageId,
               lastStatusUpdate:
-                recipient.lastStatusUpdate ||
-                recipient.last_status_update ||
-                lastStatusUpdate,
-              error:
-                recipient.error ||
-                recipient.errorReason ||
-                recipient.error_reason ||
-                null,
-              errorCode: recipient.errorCode ?? recipient.error_code ?? null
+                recipient.lastStatusUpdate || recipient.last_status_update || lastStatusUpdate,
+              error: recipient.error || recipient.errorReason || recipient.error_reason || null,
+              errorCode: recipient.errorCode ?? recipient.error_code ?? null,
             })
           );
         } else {
@@ -2629,12 +2673,8 @@ const loadRecentCampaigns = async () => {
               sentDate: sentDateValue,
               messageId,
               lastStatusUpdate,
-              error:
-                campaign.errorReason ||
-                campaign.error_reason ||
-                campaign.error ||
-                null,
-              errorCode: campaign.errorCode ?? campaign.error_code ?? null
+              error: campaign.errorReason || campaign.error_reason || campaign.error || null,
+              errorCode: campaign.errorCode ?? campaign.error_code ?? null,
             });
           }
         }
@@ -2650,16 +2690,14 @@ const loadRecentCampaigns = async () => {
           campaignName: entry.campaignName,
           templateName: entry.templateName || null,
           start: entry.timeWindowStart || entry.sentDate || null,
-          end: entry.timeWindowEnd || entry.sentDate || null
+          end: entry.timeWindowEnd || entry.sentDate || null,
         };
         return {
           ...entry,
-          id: buildCampaignIdentifier(identifierPayload)
+          id: buildCampaignIdentifier(identifierPayload),
         };
       });
-      campaigns.sort(
-        (a, b) => new Date(b.sentDate).getTime() - new Date(a.sentDate).getTime()
-      );
+      campaigns.sort((a, b) => new Date(b.sentDate).getTime() - new Date(a.sentDate).getTime());
 
       setCampaignHistory(campaigns);
       onRecentCampaignsChange(campaigns);
@@ -2678,7 +2716,6 @@ const loadRecentCampaigns = async () => {
     }
   };
 
-
   const loadQuickTemplates = async () => {
     if (!selectedStore) {
       setQuickTemplates([]);
@@ -2690,7 +2727,7 @@ const loadRecentCampaigns = async () => {
     setQuickTemplatesError(null);
     try {
       const response = await fetch('/api/whatsapp/templates?limit=50', {
-        headers: buildAuthHeaders()
+        headers: buildAuthHeaders(),
       });
 
       if (!response.ok) {
@@ -2699,8 +2736,9 @@ const loadRecentCampaigns = async () => {
 
       const payload = await response.json();
       const rawTemplates = Array.isArray(payload) ? payload : payload?.templates || [];
-      const approved = rawTemplates.filter((template: any) =>
-        (template.status || template.Status || '').toString().toLowerCase() === 'approved'
+      const approved = rawTemplates.filter(
+        (template: any) =>
+          (template.status || template.Status || '').toString().toLowerCase() === 'approved'
       );
 
       const parseDate = (value: any) => {
@@ -2709,20 +2747,23 @@ const loadRecentCampaigns = async () => {
         return Number.isNaN(date.getTime()) ? 0 : date.getTime();
       };
 
-      approved.sort((a: any, b: any) =>
-        parseDate(b.last_updated_time || b.updatedAt || b.updated_at) -
-        parseDate(a.last_updated_time || a.updatedAt || a.updated_at)
+      approved.sort(
+        (a: any, b: any) =>
+          parseDate(b.last_updated_time || b.updatedAt || b.updated_at) -
+          parseDate(a.last_updated_time || a.updatedAt || a.updated_at)
       );
 
       const preferredTemplate = (localStorage.getItem('bb_template_name') || '').toLowerCase();
 
       const mapped: QuickTemplate[] = approved.map((template: any) => {
         const components = template.components || [];
-        const headerComponent = components.find((component: any) =>
-          (component.type || component.Type || '').toString().toUpperCase() === 'HEADER'
+        const headerComponent = components.find(
+          (component: any) =>
+            (component.type || component.Type || '').toString().toUpperCase() === 'HEADER'
         );
-        const bodyComponent = components.find((component: any) =>
-          (component.type || component.Type || '').toString().toUpperCase() === 'BODY'
+        const bodyComponent = components.find(
+          (component: any) =>
+            (component.type || component.Type || '').toString().toUpperCase() === 'BODY'
         );
         const bodyText = bodyComponent?.text || '';
         const preview = bodyText
@@ -2731,14 +2772,14 @@ const loadRecentCampaigns = async () => {
             : bodyText
           : 'Template body unavailable';
         const name: string = template.name || template.TemplateName || 'Template';
-        const headerFormat = (headerComponent?.format || headerComponent?.Format || '').toString().toUpperCase();
+        const headerFormat = (headerComponent?.format || headerComponent?.Format || '')
+          .toString()
+          .toUpperCase();
         const headerText = headerComponent?.text || null;
         const headerMedia = headerComponent?.example?.header_handle?.[0] || null;
         const carouselCards = extractCarouselCardsFromComponents(components) || [];
         const hasCarousel = carouselCards.length > 0;
-        const requiresMedia =
-          hasCarousel ||
-          ['IMAGE', 'VIDEO', 'DOCUMENT'].includes(headerFormat);
+        const requiresMedia = hasCarousel || ['IMAGE', 'VIDEO', 'DOCUMENT'].includes(headerFormat);
         const placeholders = parseTemplatePlaceholders(bodyText || '', 'BODY')
           .concat(
             headerFormat === 'TEXT' && headerComponent?.text
@@ -2763,7 +2804,7 @@ const loadRecentCampaigns = async () => {
           rawComponents: components,
           templateKind: hasCarousel ? 'carousel' : 'standard',
           requiresMedia,
-          carouselCards
+          carouselCards,
         };
       });
 
@@ -2810,10 +2851,7 @@ const loadRecentCampaigns = async () => {
     setSelectedRecipients([]);
   };
 
-  const applyPillSelections = (
-    types: CustomerType[],
-    segments: LifecycleSegmentFilter[]
-  ) => {
+  const applyPillSelections = (types: CustomerType[], segments: LifecycleSegmentFilter[]) => {
     const typeSet = new Set<CustomerType>(types);
     const segmentSet = new Set<LifecycleSegmentFilter>(segments);
     const recipients = effectiveFilteredCustomers.filter(customer => {
@@ -2878,7 +2916,7 @@ const loadRecentCampaigns = async () => {
       delivered: 0,
       seen: 0,
       failed: 0,
-      limited: 0
+      limited: 0,
     };
 
     recipients.forEach(recipient => {
@@ -2904,7 +2942,7 @@ const loadRecentCampaigns = async () => {
       { key: 'all', label: 'All', count: recipients.length },
       { key: 'sent', label: 'Sent', count: totals.sent },
       { key: 'delivered', label: 'Delivered', count: totals.delivered },
-      { key: 'seen', label: 'Seen', count: totals.seen }
+      { key: 'seen', label: 'Seen', count: totals.seen },
     ];
 
     if (totals.failed > 0) {
@@ -2938,7 +2976,9 @@ const loadRecentCampaigns = async () => {
       const normalizedPhoneText = customer.phone.toLowerCase();
       const phoneDigits = customer.phone.replace(/\D/g, '');
       const nameMatch = normalizedName.includes(searchValue);
-      const phoneMatch = digitsQuery ? phoneDigits.includes(digitsQuery) : normalizedPhoneText.includes(searchValue);
+      const phoneMatch = digitsQuery
+        ? phoneDigits.includes(digitsQuery)
+        : normalizedPhoneText.includes(searchValue);
       return nameMatch || phoneMatch;
     });
   }, [showOnlySelected, selectedRecipients, effectiveFilteredCustomers, recipientSearch]);
@@ -3029,28 +3069,33 @@ const loadRecentCampaigns = async () => {
         })();
         let legacyCriteria: Partial<CampaignIdentifierPayload> = {};
         try {
-          const parsedId = JSON.parse(selectedCampaignDetails.id || '{}') as Partial<CampaignIdentifierPayload>;
+          const parsedId = JSON.parse(
+            selectedCampaignDetails.id || '{}'
+          ) as Partial<CampaignIdentifierPayload>;
           if (parsedId && typeof parsedId === 'object') {
             legacyCriteria = parsedId;
           }
         } catch {
           legacyCriteria = {};
         }
-        const legacySentDate = legacyCriteria.start || legacyCriteria.end || (legacyCriteria as any).sentDate || null;
+        const legacySentDate =
+          legacyCriteria.start || legacyCriteria.end || (legacyCriteria as any).sentDate || null;
         const criteria = {
           ...legacyCriteria,
           campaignId: selectedCampaignDetails.campaignId || legacyCriteria.campaignId || null,
           campaignName: selectedCampaignDetails.campaignName || legacyCriteria.campaignName || null,
           templateName: selectedCampaignDetails.templateName || legacyCriteria.templateName || null,
           start: hasCampaignId ? null : startOfDayIso || legacyCriteria.start || legacySentDate,
-          end: hasCampaignId ? null : endOfDayIso || legacyCriteria.end || legacySentDate
+          end: hasCampaignId ? null : endOfDayIso || legacyCriteria.end || legacySentDate,
         };
         const recipientLookupId = encodeURIComponent(JSON.stringify(criteria));
         const response = await fetch(
-          `/api/analytics/campaign-history/${recipientLookupId}/recipients?storeId=${encodeURIComponent(selectedStore)}`,
+          `/api/analytics/campaign-history/${recipientLookupId}/recipients?storeId=${encodeURIComponent(
+            selectedStore
+          )}`,
           {
             headers: buildAuthHeaders(),
-            signal: controller.signal
+            signal: controller.signal,
           }
         );
 
@@ -3074,7 +3119,10 @@ const loadRecentCampaigns = async () => {
 
               return {
                 phone,
-                name: getRecipientDisplayName(recipient.name || recipient.customerName || null, phone),
+                name: getRecipientDisplayName(
+                  recipient.name || recipient.customerName || null,
+                  phone
+                ),
                 status: recipient.status || 'sent',
                 sentDate: recipient.sentDate || recipient.sent_at || data.sentDate || null,
                 messageId: recipient.messageId || recipient.message_id || null,
@@ -3084,12 +3132,8 @@ const loadRecentCampaigns = async () => {
                   recipient.sentDate ||
                   data.sentDate ||
                   null,
-                error:
-                  recipient.error ||
-                  recipient.errorReason ||
-                  recipient.error_reason ||
-                  null,
-                errorCode: recipient.errorCode ?? recipient.error_code ?? null
+                error: recipient.error || recipient.errorReason || recipient.error_reason || null,
+                errorCode: recipient.errorCode ?? recipient.error_code ?? null,
               };
             })
           : [];
@@ -3138,8 +3182,11 @@ const loadRecentCampaigns = async () => {
       return;
     }
     loadResendHistory(campaignId);
-  }, [selectedCampaignDetails?.id, selectedCampaignDetails?.campaignId, selectedCampaignDetails?.source]);
-
+  }, [
+    selectedCampaignDetails?.id,
+    selectedCampaignDetails?.campaignId,
+    selectedCampaignDetails?.source,
+  ]);
 
   const livePreviewLines = useMemo(() => {
     if (!previewMessage) {
@@ -3175,7 +3222,9 @@ const loadRecentCampaigns = async () => {
         segments.push(<span className="line-through text-gray-500">{core}</span>);
       } else if (token.startsWith('`')) {
         segments.push(
-          <code className="rounded bg-gray-200 px-1 py-0.5 text-[0.75rem] text-gray-700">{core}</code>
+          <code className="rounded bg-gray-200 px-1 py-0.5 text-[0.75rem] text-gray-700">
+            {core}
+          </code>
         );
       }
 
@@ -3192,7 +3241,7 @@ const loadRecentCampaigns = async () => {
   const handleTemplateVariableChange = (id: string, value: string) => {
     setTemplateVariableValues(prev => ({
       ...prev,
-      [id]: value
+      [id]: value,
     }));
   };
 
@@ -3218,7 +3267,7 @@ const loadRecentCampaigns = async () => {
         mediaRef: '',
         mediaPreviewUrl: '',
         bodyValues: {},
-        buttonValues: initialButtonValues
+        buttonValues: initialButtonValues,
       };
     });
 
@@ -3230,10 +3279,15 @@ const loadRecentCampaigns = async () => {
     updater: (current: CarouselCardRuntimeInput) => CarouselCardRuntimeInput
   ) => {
     setCarouselRuntimeInputs(prev => {
-      const current = prev[cardId] || { mediaRef: '', mediaPreviewUrl: '', bodyValues: {}, buttonValues: {} };
+      const current = prev[cardId] || {
+        mediaRef: '',
+        mediaPreviewUrl: '',
+        bodyValues: {},
+        buttonValues: {},
+      };
       return {
         ...prev,
-        [cardId]: updater(current)
+        [cardId]: updater(current),
       };
     });
   };
@@ -3259,7 +3313,8 @@ const loadRecentCampaigns = async () => {
       toast({
         variant: 'destructive',
         title: 'Media template selected',
-        description: 'This approved template requires media, so Campaign Content Type must stay on Image Template.'
+        description:
+          'This approved template requires media, so Campaign Content Type must stay on Image Template.',
       });
       return;
     }
@@ -3328,23 +3383,27 @@ const loadRecentCampaigns = async () => {
     const fileName = file.name.toLowerCase();
     if (mediaType === 'IMAGE') {
       const mimeAllowed = file.type ? ALLOWED_HEADER_IMAGE_MIME_TYPES.includes(file.type) : false;
-      const extensionAllowed = ALLOWED_HEADER_IMAGE_EXTENSIONS.some(ext => fileName.endsWith(`.${ext}`));
+      const extensionAllowed = ALLOWED_HEADER_IMAGE_EXTENSIONS.some(ext =>
+        fileName.endsWith(`.${ext}`)
+      );
       if (!mimeAllowed && !extensionAllowed) {
         toast({
           variant: 'destructive',
           title: 'Unsupported media type',
-          description: 'Carousel image headers support JPG, PNG, or WEBP files.'
+          description: 'Carousel image headers support JPG, PNG, or WEBP files.',
         });
         return;
       }
     } else if (mediaType === 'VIDEO') {
       const mimeAllowed = file.type ? ALLOWED_CAROUSEL_VIDEO_MIME_TYPES.includes(file.type) : false;
-      const extensionAllowed = ALLOWED_CAROUSEL_VIDEO_EXTENSIONS.some(ext => fileName.endsWith(`.${ext}`));
+      const extensionAllowed = ALLOWED_CAROUSEL_VIDEO_EXTENSIONS.some(ext =>
+        fileName.endsWith(`.${ext}`)
+      );
       if (!mimeAllowed && !extensionAllowed) {
         toast({
           variant: 'destructive',
           title: 'Unsupported media type',
-          description: 'Carousel video headers support MP4 files.'
+          description: 'Carousel video headers support MP4 files.',
         });
         return;
       }
@@ -3364,7 +3423,7 @@ const loadRecentCampaigns = async () => {
       const response = await fetch('/api/whatsapp/media/upload-message', {
         method: 'POST',
         headers,
-        body: formData
+        body: formData,
       });
 
       const result = await response.json().catch(() => ({}));
@@ -3376,13 +3435,16 @@ const loadRecentCampaigns = async () => {
       updateCarouselRuntimeCard(cardId, current => ({
         ...current,
         mediaPreviewUrl: previewUrl,
-        mediaRef: result.mediaId !== undefined && result.mediaId !== null ? String(result.mediaId).trim() : ''
+        mediaRef:
+          result.mediaId !== undefined && result.mediaId !== null
+            ? String(result.mediaId).trim()
+            : '',
       }));
     } catch (error: any) {
       toast({
         variant: 'destructive',
         title: 'Carousel media upload failed',
-        description: error?.message || 'Unable to upload carousel media.'
+        description: error?.message || 'Unable to upload carousel media.',
       });
     } finally {
       setCarouselUploadBusyCardId(null);
@@ -3409,7 +3471,6 @@ const loadRecentCampaigns = async () => {
     });
   };
 
-
   const sendCampaign = async (
     recipientsToSend: Customer[] | React.MouseEvent = selectedRecipients,
     options: { clearAfterSend?: boolean; remainingRecipients?: Customer[] } = {}
@@ -3430,7 +3491,7 @@ const loadRecentCampaigns = async () => {
         toast({
           variant: 'destructive',
           title: 'Carousel media required',
-          description: 'Upload card header media for every carousel card before sending.'
+          description: 'Upload card header media for every carousel card before sending.',
         });
       }
       return;
@@ -3445,7 +3506,8 @@ const loadRecentCampaigns = async () => {
         (templateParameters.buttons?.some(button => button.parameters.length > 0) ?? false) ||
         (templateParameters.components?.length ?? 0) > 0);
     const templateNameValue = (templateNameOverride || selectedTemplate?.name || '').trim();
-    const isUploadDrivenImageTemplate = sendMode === 'image-template' && !selectedTemplateIsCarousel;
+    const isUploadDrivenImageTemplate =
+      sendMode === 'image-template' && !selectedTemplateIsCarousel;
 
     if (isUploadDrivenImageTemplate) {
       if (!imageFile) {
@@ -3456,7 +3518,7 @@ const loadRecentCampaigns = async () => {
         toast({
           variant: 'destructive',
           title: 'Template missing',
-          description: 'Template name is required to send image template campaigns.'
+          description: 'Template name is required to send image template campaigns.',
         });
         return;
       }
@@ -3464,7 +3526,7 @@ const loadRecentCampaigns = async () => {
         toast({
           variant: 'destructive',
           title: 'Template language missing',
-          description: 'Select a template language before sending the campaign.'
+          description: 'Select a template language before sending the campaign.',
         });
         return;
       }
@@ -3478,7 +3540,7 @@ const loadRecentCampaigns = async () => {
         'resendSettings',
         JSON.stringify({
           enabled: resendSettingsEnabled,
-          delayOption: resendSettingsDelay
+          delayOption: resendSettingsDelay,
         })
       );
       formData.append('templateName', templateNameValue);
@@ -3488,7 +3550,7 @@ const loadRecentCampaigns = async () => {
         JSON.stringify(
           resolvedRecipients.map(recipient => ({
             phone: recipient.phone,
-            name: recipient.name
+            name: recipient.name,
           }))
         )
       );
@@ -3502,18 +3564,21 @@ const loadRecentCampaigns = async () => {
         const response = await fetch('/api/whatsapp/campaigns/send-image-template', {
           method: 'POST',
           headers: buildAuthHeaders(),
-          body: formData
+          body: formData,
         });
         const responseBody = await response.json().catch(() => ({}));
 
         if (!response.ok || !responseBody?.success) {
           const errorMessage =
-            responseBody?.error || responseBody?.details || responseBody?.message || 'Unknown error';
+            responseBody?.error ||
+            responseBody?.details ||
+            responseBody?.message ||
+            'Unknown error';
           console.error('Failed to send image template campaign:', responseBody);
           toast({
             variant: 'destructive',
             title: 'Failed to send campaign',
-            description: errorMessage
+            description: errorMessage,
           });
           return;
         }
@@ -3530,7 +3595,7 @@ const loadRecentCampaigns = async () => {
 
         toast({
           title: 'Campaign initiated',
-          description: `We started sending ${resolvedRecipients.length} messages. Track progress from the campaign progress page.`
+          description: `We started sending ${resolvedRecipients.length} messages. Track progress from the campaign progress page.`,
         });
 
         if (clearAfterSend) {
@@ -3552,7 +3617,7 @@ const loadRecentCampaigns = async () => {
         toast({
           variant: 'destructive',
           title: 'Failed to send campaign',
-          description: 'Check the console for more details.'
+          description: 'Check the console for more details.',
         });
       } finally {
         setCampaignLoading(false);
@@ -3569,12 +3634,12 @@ const loadRecentCampaigns = async () => {
         campaignId: draftCampaignId,
         resendSettings: {
           enabled: resendSettingsEnabled,
-          delayOption: resendSettingsDelay
+          delayOption: resendSettingsDelay,
         },
         recipients: resolvedRecipients.map(recipient => ({
           phone: recipient.phone,
-          name: recipient.name
-        }))
+          name: recipient.name,
+        })),
       };
 
       if (hasTemplateParameters && templateParameters) {
@@ -3588,7 +3653,7 @@ const loadRecentCampaigns = async () => {
       const response = await fetch('/api/whatsapp/campaigns/send', {
         method: 'POST',
         headers: buildAuthHeaders(true),
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
       });
 
       const responseBody = await response.json().catch(() => ({}));
@@ -3600,7 +3665,7 @@ const loadRecentCampaigns = async () => {
         toast({
           variant: 'destructive',
           title: 'Failed to send campaign',
-          description: errorMessage
+          description: errorMessage,
         });
         return;
       }
@@ -3613,7 +3678,7 @@ const loadRecentCampaigns = async () => {
 
       toast({
         title: 'Campaign initiated',
-        description: `We started sending ${resolvedRecipients.length} messages. Track progress from the campaign progress page.`
+        description: `We started sending ${resolvedRecipients.length} messages. Track progress from the campaign progress page.`,
       });
 
       if (clearAfterSend) {
@@ -3635,7 +3700,7 @@ const loadRecentCampaigns = async () => {
       toast({
         variant: 'destructive',
         title: 'Failed to send campaign',
-        description: 'Check the console for more details.'
+        description: 'Check the console for more details.',
       });
     } finally {
       setCampaignLoading(false);
@@ -3655,14 +3720,15 @@ const loadRecentCampaigns = async () => {
         toast({
           variant: 'destructive',
           title: 'Carousel media required',
-          description: 'Upload card header media for every carousel card before sending.'
+          description: 'Upload card header media for every carousel card before sending.',
         });
       }
       return;
     }
 
     const templateNameValue = (templateNameOverride || selectedTemplate?.name || '').trim();
-    const isUploadDrivenImageTemplate = sendMode === 'image-template' && !selectedTemplateIsCarousel;
+    const isUploadDrivenImageTemplate =
+      sendMode === 'image-template' && !selectedTemplateIsCarousel;
 
     if (isUploadDrivenImageTemplate) {
       if (!imageFile) {
@@ -3673,7 +3739,7 @@ const loadRecentCampaigns = async () => {
         toast({
           variant: 'destructive',
           title: 'Template missing',
-          description: 'Template name is required to send image template campaigns.'
+          description: 'Template name is required to send image template campaigns.',
         });
         return;
       }
@@ -3681,7 +3747,7 @@ const loadRecentCampaigns = async () => {
         toast({
           variant: 'destructive',
           title: 'Template language missing',
-          description: 'Select a template language before sending the campaign.'
+          description: 'Select a template language before sending the campaign.',
         });
         return;
       }
@@ -3696,7 +3762,7 @@ const loadRecentCampaigns = async () => {
       const response = await fetch('/api/whatsapp/campaigns/quota-check', {
         method: 'POST',
         headers: buildAuthHeaders(true),
-        body: JSON.stringify({ requested: selectedRecipients.length })
+        body: JSON.stringify({ requested: selectedRecipients.length }),
       });
       const payload = await response.json().catch(() => ({}));
       if (!response.ok) {
@@ -3707,7 +3773,7 @@ const loadRecentCampaigns = async () => {
         used: Number(payload.used ?? 0),
         remaining: Number(payload.remaining ?? 0),
         requested: Number(payload.requested ?? selectedRecipients.length),
-        allowed: Number(payload.allowed ?? 0)
+        allowed: Number(payload.allowed ?? 0),
       };
 
       setQuotaWithinLimit(quota.remaining >= quota.requested);
@@ -3717,7 +3783,7 @@ const loadRecentCampaigns = async () => {
       toast({
         variant: 'destructive',
         title: 'Unable to send campaign',
-        description: error instanceof Error ? error.message : 'Unable to check campaign quota.'
+        description: error instanceof Error ? error.message : 'Unable to check campaign quota.',
       });
     } finally {
       setQuotaChecking(false);
@@ -3812,7 +3878,9 @@ const loadRecentCampaigns = async () => {
     const ongoingIds = new Set(
       ongoingCampaigns.map(campaign => campaign.campaignId || campaign.id)
     );
-    return campaignsToDisplay.filter(campaign => !ongoingIds.has(campaign.campaignId || campaign.id));
+    return campaignsToDisplay.filter(
+      campaign => !ongoingIds.has(campaign.campaignId || campaign.id)
+    );
   }, [campaignsToDisplay, ongoingCampaigns]);
 
   const templateNameToUse = (templateNameOverride || selectedTemplate?.name || '').trim();
@@ -3871,7 +3939,7 @@ const loadRecentCampaigns = async () => {
     return {
       total,
       delivered: Math.min(deliveredCount, total),
-      seen: Math.min(seenCount, total)
+      seen: Math.min(seenCount, total),
     };
   };
 
@@ -3914,13 +3982,13 @@ const loadRecentCampaigns = async () => {
     const datePart = date.toLocaleDateString('en-GB', {
       day: '2-digit',
       month: 'short',
-      year: 'numeric'
+      year: 'numeric',
     });
     const timePart = date
       .toLocaleTimeString('en-GB', {
         hour: 'numeric',
         minute: '2-digit',
-        hour12: true
+        hour12: true,
       })
       .toUpperCase();
     return `${datePart}, ${timePart}`;
@@ -3939,7 +4007,7 @@ const loadRecentCampaigns = async () => {
       scheduled: 'ðŸ•’',
       processing: 'â³',
       queued: 'ðŸ•’',
-      draft: 'ðŸ“'
+      draft: 'ðŸ“',
     };
     const icon = iconMap[normalized] ?? 'â„¹ï¸';
     const label = normalized
@@ -4023,14 +4091,21 @@ const loadRecentCampaigns = async () => {
               <p className="text-2xl font-bold text-gray-900">
                 {(() => {
                   const unique = new Set(
-                    campaignsToDisplay.map(campaign => `${campaign.campaignName}-${campaign.sentDate?.split('T')[0]}`)
+                    campaignsToDisplay.map(
+                      campaign => `${campaign.campaignName}-${campaign.sentDate?.split('T')[0]}`
+                    )
                   );
                   return unique.size;
                 })()}
               </p>
             </div>
             <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-              <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg
+                className="w-4 h-4 text-blue-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -4048,13 +4123,19 @@ const loadRecentCampaigns = async () => {
               <p className="text-sm font-medium text-gray-600">Messages Sent</p>
               <p className="text-2xl font-bold text-gray-900">
                 {campaignsToDisplay.reduce(
-                  (total, campaign) => total + (campaign.totalRecipients || campaign.recipients?.length || 0),
+                  (total, campaign) =>
+                    total + (campaign.totalRecipients || campaign.recipients?.length || 0),
                   0
                 )}
               </p>
             </div>
             <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-              <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg
+                className="w-4 h-4 text-green-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -4075,7 +4156,12 @@ const loadRecentCampaigns = async () => {
               </p>
             </div>
             <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
-              <svg className="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg
+                className="w-4 h-4 text-purple-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -4142,7 +4228,10 @@ const loadRecentCampaigns = async () => {
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-4">
-        <div ref={createCampaignRef} className="bg-white rounded-lg shadow p-6 min-w-0 lg:col-span-3">
+        <div
+          ref={createCampaignRef}
+          className="bg-white rounded-lg shadow p-6 min-w-0 lg:col-span-3"
+        >
           <div className="mb-6 flex items-start justify-between gap-4">
             <div>
               <h2 className="text-xl font-semibold text-[#343a40]">Create Campaign</h2>
@@ -4172,7 +4261,8 @@ const loadRecentCampaigns = async () => {
                     </button>
                   </TooltipTrigger>
                   <TooltipContent side="bottom" className="max-w-[280px]">
-                    Select customer categories in the Customers tab (New/Returning + Premium/Standard/Basic), then click â€œUse in Campaignâ€ to bring them here.
+                    Select customer categories in the Customers tab (New/Returning +
+                    Premium/Standard/Basic), then click â€œUse in Campaignâ€ to bring them here.
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
@@ -4215,10 +4305,10 @@ const loadRecentCampaigns = async () => {
                       onClick={() => toggleCustomerTypeSelection(type)}
                       disabled={count === 0}
                       className={`inline-flex items-center space-x-2 rounded-full border px-3 py-1 text-sm font-medium transition-colors ${typeStyles} ${
-                        count > 0 ? 'hover:brightness-95 cursor-pointer' : 'opacity-60 cursor-not-allowed'
-                      } ${
-                        isSelected ? 'ring-2 ring-offset-1 ring-slate-400' : ''
-                      }`}
+                        count > 0
+                          ? 'hover:brightness-95 cursor-pointer'
+                          : 'opacity-60 cursor-not-allowed'
+                      } ${isSelected ? 'ring-2 ring-offset-1 ring-slate-400' : ''}`}
                     >
                       <span>{type}</span>
                       <span className="text-xs font-semibold text-gray-700">
@@ -4247,7 +4337,9 @@ const loadRecentCampaigns = async () => {
                         type="button"
                         onClick={() => toggleLifecycleSegmentSelection(segment)}
                         className={`inline-flex items-center space-x-2 rounded-full border px-3 py-1 text-xs font-semibold transition-colors ${style} ${
-                          count > 0 ? 'hover:brightness-95 cursor-pointer' : 'opacity-60 cursor-pointer'
+                          count > 0
+                            ? 'hover:brightness-95 cursor-pointer'
+                            : 'opacity-60 cursor-pointer'
                         } ${isSelected ? 'ring-2 ring-offset-1 ring-slate-400' : ''}`}
                       >
                         <span>{label}</span>
@@ -4259,59 +4351,67 @@ const loadRecentCampaigns = async () => {
               </div>
             </div>
 
-      <div className="mt-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Import Contacts</label>
-          <p className="mt-1 text-xs text-gray-500">Include imported contacts in this campaign.</p>
-        </div>
-        <div className="mt-3 flex flex-wrap gap-2">
-          <button
-            type="button"
-            onClick={handleImportContacts}
-            className="inline-flex items-center space-x-2 rounded-full border px-4 py-1.5 text-sm font-semibold border-blue-500 bg-blue-50 text-blue-700 hover:bg-blue-100 transition-colors"
-          >
-            <span>Import Contacts</span>
-          </button>
-          <button
-            type="button"
-            onClick={handleViewContacts}
-            className="inline-flex items-center space-x-2 rounded-full border px-4 py-1.5 text-sm font-semibold border-blue-500 bg-blue-50 text-blue-700 hover:bg-blue-100 transition-colors"
-          >
-            <span>View contacts</span>
-            <span className="text-xs font-semibold text-blue-700">
-              (
-              {totalContactsCountLoading || totalContactsCount === null
-                ? '...'
-                : totalContactsCount.toLocaleString()}
-              )
-            </span>
-          </button>
-          <button
-            type="button"
-            onClick={handleToggleImported}
-            className={`inline-flex items-center space-x-2 rounded-full border px-4 py-1.5 text-sm font-semibold transition-colors ${
-              includeImported
-                ? 'border-blue-600 bg-blue-600 text-white hover:bg-blue-700'
-                : 'border-blue-500 bg-blue-50 text-blue-700 hover:bg-blue-100'
-            }`}
-          >
-            <span>Select Imported</span>
-            <span className={`text-xs font-semibold ${includeImported ? 'text-white' : 'text-blue-700'}`}>
-              ({importedContacts.length.toLocaleString()})
-            </span>
-          </button>
-        </div>
-      </div>
+            <div className="mt-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Import Contacts</label>
+                <p className="mt-1 text-xs text-gray-500">
+                  Include imported contacts in this campaign.
+                </p>
+              </div>
+              <div className="mt-3 flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={handleImportContacts}
+                  className="inline-flex items-center space-x-2 rounded-full border px-4 py-1.5 text-sm font-semibold border-blue-500 bg-blue-50 text-blue-700 hover:bg-blue-100 transition-colors"
+                >
+                  <span>Import Contacts</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={handleViewContacts}
+                  className="inline-flex items-center space-x-2 rounded-full border px-4 py-1.5 text-sm font-semibold border-blue-500 bg-blue-50 text-blue-700 hover:bg-blue-100 transition-colors"
+                >
+                  <span>View contacts</span>
+                  <span className="text-xs font-semibold text-blue-700">
+                    (
+                    {totalContactsCountLoading || totalContactsCount === null
+                      ? '...'
+                      : totalContactsCount.toLocaleString()}
+                    )
+                  </span>
+                </button>
+                <button
+                  type="button"
+                  onClick={handleToggleImported}
+                  className={`inline-flex items-center space-x-2 rounded-full border px-4 py-1.5 text-sm font-semibold transition-colors ${
+                    includeImported
+                      ? 'border-blue-600 bg-blue-600 text-white hover:bg-blue-700'
+                      : 'border-blue-500 bg-blue-50 text-blue-700 hover:bg-blue-100'
+                  }`}
+                >
+                  <span>Select Imported</span>
+                  <span
+                    className={`text-xs font-semibold ${
+                      includeImported ? 'text-white' : 'text-blue-700'
+                    }`}
+                  >
+                    ({importedContacts.length.toLocaleString()})
+                  </span>
+                </button>
+              </div>
+            </div>
 
-      <div className="relative" ref={recipientsDropdownRef}>
+            <div className="relative" ref={recipientsDropdownRef}>
               <div className="flex items-center justify-between mb-1 gap-2">
                 <label className="block text-sm font-medium text-gray-700">
-                  Send To ({selectedRecipients.length.toLocaleString()} {selectedRecipients.length === 1 ? 'customer' : 'customers'})
+                  Send To ({selectedRecipients.length.toLocaleString()}{' '}
+                  {selectedRecipients.length === 1 ? 'customer' : 'customers'})
                 </label>
               </div>
               {quotaPreview && quotaPreview.remaining < quotaPreview.requested && (
                 <div className="mb-2 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">
-                  Free trial limit exceeded. Remaining {quotaPreview.remaining.toLocaleString()} messages, selected {quotaPreview.requested.toLocaleString()}.
+                  Free trial limit exceeded. Remaining {quotaPreview.remaining.toLocaleString()}{' '}
+                  messages, selected {quotaPreview.requested.toLocaleString()}.
                 </div>
               )}
               <button
@@ -4329,7 +4429,9 @@ const loadRecentCampaigns = async () => {
               {showRecipientsDropdown && (
                 <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto">
                   {recipientsLoading ? (
-                    <div className="p-4 text-center text-gray-500 bg-white">Loading customers...</div>
+                    <div className="p-4 text-center text-gray-500 bg-white">
+                      Loading customers...
+                    </div>
                   ) : effectiveFilteredCustomers.length === 0 ? (
                     <div className="p-4 text-center text-gray-500 bg-white">
                       No customers match selected filters
@@ -4393,10 +4495,7 @@ const loadRecentCampaigns = async () => {
                               key={customer.phone}
                               className="p-2 hover:bg-gray-50 cursor-pointer"
                             >
-                              <label
-                                htmlFor={checkboxId}
-                                className="flex items-center gap-3"
-                              >
+                              <label htmlFor={checkboxId} className="flex items-center gap-3">
                                 <input
                                   id={checkboxId}
                                   type="checkbox"
@@ -4405,7 +4504,9 @@ const loadRecentCampaigns = async () => {
                                   className="h-4 w-4 text-blue-600 border-gray-300 rounded"
                                 />
                                 <div>
-                                  <p className="text-sm font-medium text-gray-900">{customer.name}</p>
+                                  <p className="text-sm font-medium text-gray-900">
+                                    {customer.name}
+                                  </p>
                                   <p className="text-xs text-gray-500">
                                     {maskPhoneNumber(customer.phone)}
                                   </p>
@@ -4460,25 +4561,28 @@ const loadRecentCampaigns = async () => {
             </div>
 
             <div>
-              {selectedTemplate && selectedTemplate.placeholders?.some(ph => ph.component === 'HEADER') && (
-                <div className="mb-4">
-                  <p className="text-xs font-semibold uppercase text-gray-500">Header values</p>
-                  <div className="mt-2 flex flex-wrap items-center gap-2">
-                    {selectedTemplate.placeholders
-                      ?.filter(ph => ph.component === 'HEADER')
-                      .map(ph => (
-                        <input
-                          key={`header-${ph.key}`}
-                          type="text"
-                          value={templateVariableValues[ph.key] || ''}
-                          onChange={event => handleTemplateVariableChange(ph.key, event.target.value)}
-                          placeholder={ph.key}
-                          className="inline-flex min-w-[72px] rounded border border-gray-300 bg-white px-2 py-1 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/40"
-                        />
-                      ))}
+              {selectedTemplate &&
+                selectedTemplate.placeholders?.some(ph => ph.component === 'HEADER') && (
+                  <div className="mb-4">
+                    <p className="text-xs font-semibold uppercase text-gray-500">Header values</p>
+                    <div className="mt-2 flex flex-wrap items-center gap-2">
+                      {selectedTemplate.placeholders
+                        ?.filter(ph => ph.component === 'HEADER')
+                        .map(ph => (
+                          <input
+                            key={`header-${ph.key}`}
+                            type="text"
+                            value={templateVariableValues[ph.key] || ''}
+                            onChange={event =>
+                              handleTemplateVariableChange(ph.key, event.target.value)
+                            }
+                            placeholder={ph.key}
+                            className="inline-flex min-w-[72px] rounded border border-gray-300 bg-white px-2 py-1 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/40"
+                          />
+                        ))}
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
 
               {selectedTemplate && footerTemplatePlaceholders.length > 0 && (
                 <div className="mb-4">
@@ -4508,7 +4612,9 @@ const loadRecentCampaigns = async () => {
                         type="text"
                         value={templateVariableValues[ph.key] || ''}
                         onChange={event => handleTemplateVariableChange(ph.key, event.target.value)}
-                        placeholder={`Button ${typeof ph.buttonIndex === 'number' ? ph.buttonIndex + 1 : 1}: ${ph.key}`}
+                        placeholder={`Button ${
+                          typeof ph.buttonIndex === 'number' ? ph.buttonIndex + 1 : 1
+                        }: ${ph.key}`}
                         className="inline-flex min-w-[180px] rounded border border-gray-300 bg-white px-2 py-1 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/40"
                       />
                     ))}
@@ -4532,7 +4638,9 @@ const loadRecentCampaigns = async () => {
                             key={`placeholder-${index}-${token.value}`}
                             type="text"
                             value={templateVariableValues[token.value] || ''}
-                            onChange={event => handleTemplateVariableChange(token.value, event.target.value)}
+                            onChange={event =>
+                              handleTemplateVariableChange(token.value, event.target.value)
+                            }
                             placeholder={token.value}
                             className="mx-1 inline-block min-w-[72px] rounded border border-gray-300 bg-white px-2 py-1 text-sm font-medium text-gray-800 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/40"
                           />
@@ -4604,17 +4712,23 @@ const loadRecentCampaigns = async () => {
                     </label>
                     <div className="mt-1 rounded-md border border-dashed border-blue-200 bg-white p-4">
                       <p className="text-xs text-blue-500">
-                        Upload card header media where needed. Body/button fields appear when the selected template card needs runtime values.
+                        Upload card header media where needed. Body/button fields appear when the
+                        selected template card needs runtime values.
                       </p>
                       <div className="mt-4 grid gap-3 md:grid-cols-2">
                         {(selectedTemplate.carouselCards || []).map((card, index) => (
-                          <div key={card.id} className="rounded-md border border-blue-100 bg-blue-50 p-3">
+                          <div
+                            key={card.id}
+                            className="rounded-md border border-blue-100 bg-blue-50 p-3"
+                          >
                             <p className="text-sm font-semibold text-blue-900">Card {index + 1}</p>
                             <p className="mt-1 text-xs text-blue-600">Media: {card.mediaType}</p>
                             <div className="mt-2 flex flex-col gap-2">
                               <label
                                 className={`inline-flex w-fit cursor-pointer items-center justify-center rounded-md border border-blue-300 px-3 py-2 text-xs font-semibold text-blue-700 ${
-                                  carouselUploadBusyCardId === card.id ? 'cursor-not-allowed opacity-60' : 'hover:bg-blue-100'
+                                  carouselUploadBusyCardId === card.id
+                                    ? 'cursor-not-allowed opacity-60'
+                                    : 'hover:bg-blue-100'
                                 }`}
                               >
                                 <input
@@ -4650,21 +4764,27 @@ const loadRecentCampaigns = async () => {
                                 Media ref: {carouselRuntimeInputs[card.id]?.mediaRef || 'Not set'}
                               </p>
                             </div>
-                            <p className="mt-2 text-sm text-blue-900">{card.body || 'No card body text'}</p>
+                            <p className="mt-2 text-sm text-blue-900">
+                              {card.body || 'No card body text'}
+                            </p>
                             {(card.bodyPlaceholderKeys || []).length > 0 && (
                               <div className="mt-2 space-y-2">
                                 {(card.bodyPlaceholderKeys || []).map(placeholderKey => (
                                   <input
                                     key={`${card.id}-body-${placeholderKey}`}
                                     type="text"
-                                    value={carouselRuntimeInputs[card.id]?.bodyValues?.[placeholderKey] || ''}
+                                    value={
+                                      carouselRuntimeInputs[card.id]?.bodyValues?.[
+                                        placeholderKey
+                                      ] || ''
+                                    }
                                     onChange={event =>
                                       updateCarouselRuntimeCard(card.id, current => ({
                                         ...current,
                                         bodyValues: {
                                           ...current.bodyValues,
-                                          [placeholderKey]: event.target.value
-                                        }
+                                          [placeholderKey]: event.target.value,
+                                        },
                                       }))
                                     }
                                     placeholder={`Body variable ${placeholderKey}`}
@@ -4702,7 +4822,9 @@ const loadRecentCampaigns = async () => {
                         </div>
                         <label
                           className={`inline-flex items-center justify-center rounded-md border border-blue-500 px-4 py-2 text-sm font-medium text-blue-600 transition-colors ${
-                            imageUploading ? 'cursor-not-allowed opacity-60' : 'cursor-pointer hover:bg-blue-50'
+                            imageUploading
+                              ? 'cursor-not-allowed opacity-60'
+                              : 'cursor-pointer hover:bg-blue-50'
                           }`}
                         >
                           <input
@@ -4750,7 +4872,8 @@ const loadRecentCampaigns = async () => {
                         </div>
                       ) : (
                         <p className="text-xs text-blue-500">
-                          No image selected yet. Attach the image you want to send with the template.
+                          No image selected yet. Attach the image you want to send with the
+                          template.
                         </p>
                       )}
                     </div>
@@ -4822,10 +4945,13 @@ const loadRecentCampaigns = async () => {
                   className="relative h-[660px] overflow-hidden rounded-[2.25rem] bg-[#ece5dd]"
                   style={{
                     backgroundImage: WHATSAPP_CHAT_WALLPAPER,
-                    fontFamily: previewThemeConfig.fontFamily
+                    fontFamily: previewThemeConfig.fontFamily,
                   }}
                 >
-                  <div className="pb-2 text-white shadow" style={{ backgroundColor: previewThemeConfig.headerColor }}>
+                  <div
+                    className="pb-2 text-white shadow"
+                    style={{ backgroundColor: previewThemeConfig.headerColor }}
+                  >
                     <div className="flex items-center justify-between px-5 pt-3 text-[0.7rem] text-white/70">
                       <span>{dayjs().format('h:mm')}</span>
                       <div className="flex items-center gap-1">
@@ -4858,7 +4984,10 @@ const loadRecentCampaigns = async () => {
                         {previewDateLabel}
                       </div>
                       <div className="flex flex-col gap-4">
-                        {previewHeaderImage || previewHeaderText || livePreviewLines.length > 0 || carouselPreviewCards.length > 0 ? (
+                        {previewHeaderImage ||
+                        previewHeaderText ||
+                        livePreviewLines.length > 0 ||
+                        carouselPreviewCards.length > 0 ? (
                           <div className="flex justify-start">
                             <div
                               className={`relative max-w-[85%] ${previewThemeConfig.bubbleRadius} bg-white/95 px-4 py-3 text-[0.95rem] leading-relaxed text-[#263238] shadow-md`}
@@ -4876,7 +5005,9 @@ const loadRecentCampaigns = async () => {
                                 </div>
                               )}
                               {previewHeaderText && (
-                                <p className="mb-3 text-sm font-semibold text-gray-800">{previewHeaderText}</p>
+                                <p className="mb-3 text-sm font-semibold text-gray-800">
+                                  {previewHeaderText}
+                                </p>
                               )}
                               {livePreviewLines.map((line, index) => (
                                 <p
@@ -4935,7 +5066,9 @@ const loadRecentCampaigns = async () => {
                                   <div className="mt-2 flex items-center justify-between">
                                     <button
                                       type="button"
-                                      onClick={() => setPreviewCarouselIndex(prev => Math.max(prev - 1, 0))}
+                                      onClick={() =>
+                                        setPreviewCarouselIndex(prev => Math.max(prev - 1, 0))
+                                      }
                                       disabled={previewCarouselIndex <= 0}
                                       className="rounded-full border border-gray-300 p-1 text-gray-500 disabled:opacity-40"
                                     >
@@ -4948,7 +5081,9 @@ const loadRecentCampaigns = async () => {
                                           type="button"
                                           onClick={() => setPreviewCarouselIndex(dotIndex)}
                                           className={`h-1.5 rounded-full ${
-                                            dotIndex === previewCarouselIndex ? 'w-4 bg-gray-700' : 'w-1.5 bg-gray-300'
+                                            dotIndex === previewCarouselIndex
+                                              ? 'w-4 bg-gray-700'
+                                              : 'w-1.5 bg-gray-300'
                                           }`}
                                         />
                                       ))}
@@ -4960,7 +5095,9 @@ const loadRecentCampaigns = async () => {
                                           Math.min(prev + 1, carouselPreviewCards.length - 1)
                                         )
                                       }
-                                      disabled={previewCarouselIndex >= carouselPreviewCards.length - 1}
+                                      disabled={
+                                        previewCarouselIndex >= carouselPreviewCards.length - 1
+                                      }
                                       className="rounded-full border border-gray-300 p-1 text-gray-500 disabled:opacity-40"
                                     >
                                       <ChevronRight className="h-3 w-3" />
@@ -4968,7 +5105,9 @@ const loadRecentCampaigns = async () => {
                                   </div>
                                 </div>
                               )}
-                              <div className="mt-3 text-[11px] font-medium text-gray-500">by billbox</div>
+                              <div className="mt-3 text-[11px] font-medium text-gray-500">
+                                by billbox
+                              </div>
                               <div className="mt-1 flex items-center justify-end gap-1 text-[11px] uppercase tracking-wide text-gray-400">
                                 {previewTimeLabel}
                                 <CheckCheck className="h-3 w-3 text-[#4fc3f7]" />
@@ -4977,7 +5116,9 @@ const loadRecentCampaigns = async () => {
                           </div>
                         ) : (
                           <div className="flex justify-start">
-                            <div className={`max-w-[85%] ${previewThemeConfig.bubbleRadius} bg-white/80 px-4 py-4 text-sm text-gray-500 shadow`}>
+                            <div
+                              className={`max-w-[85%] ${previewThemeConfig.bubbleRadius} bg-white/80 px-4 py-4 text-sm text-gray-500 shadow`}
+                            >
                               Your WhatsApp message preview will appear here.
                             </div>
                           </div>
@@ -4988,7 +5129,9 @@ const loadRecentCampaigns = async () => {
                       <div className="flex items-center gap-2">
                         <div className="flex flex-1 items-center gap-2 rounded-full bg-white px-3 py-2 text-sm text-gray-500 shadow-sm">
                           <Smile className="h-5 w-5 text-gray-400" />
-                          <span className="flex-1 text-[0.85rem] text-gray-500">Type a message</span>
+                          <span className="flex-1 text-[0.85rem] text-gray-500">
+                            Type a message
+                          </span>
                           <Paperclip className="h-5 w-5 text-gray-400" />
                           <Camera className="h-5 w-5 text-gray-400" />
                           <Mic className="h-5 w-5 text-gray-400" />
@@ -5076,9 +5219,7 @@ const loadRecentCampaigns = async () => {
                       <tr
                         key={campaign.id || index}
                         className="cursor-pointer hover:bg-gray-50"
-                        onClick={() =>
-                          openCampaignDetails({ ...campaign, source: 'completed' })
-                        }
+                        onClick={() => openCampaignDetails({ ...campaign, source: 'completed' })}
                       >
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                           <span className="block max-w-[220px] truncate">
@@ -5133,7 +5274,9 @@ const loadRecentCampaigns = async () => {
                   const campaignId = campaign.campaignId || null;
                   const activeProgress = campaignId ? activeCampaignProgress[campaignId] : null;
                   const resendStatus = campaign.latestResendAttempt?.status || null;
-                  const overallStatus = (campaign.overallCampaignStatus || '').toString().toLowerCase();
+                  const overallStatus = (campaign.overallCampaignStatus || '')
+                    .toString()
+                    .toLowerCase();
                   const statusLabel = overallStatus
                     ? overallStatus === 'ongoing'
                       ? 'In Progress'
@@ -5152,10 +5295,12 @@ const loadRecentCampaigns = async () => {
                     : '--';
                   const details: CampaignDetails = {
                     ...campaign,
-                    source: 'completed'
+                    source: 'completed',
                   };
                   const stopDisabled =
-                    !campaignId || stopCampaignLoading[campaignId] || campaign.resendSettings?.stopped;
+                    !campaignId ||
+                    stopCampaignLoading[campaignId] ||
+                    campaign.resendSettings?.stopped;
                   return (
                     <tr
                       key={campaign.id}
@@ -5163,7 +5308,9 @@ const loadRecentCampaigns = async () => {
                       onClick={() => openCampaignDetails(details)}
                     >
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                        <span className="block max-w-[220px] truncate">{campaign.campaignName}</span>
+                        <span className="block max-w-[220px] truncate">
+                          {campaign.campaignName}
+                        </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         <span className="block max-w-[200px] truncate">{templateLabel}</span>
@@ -5234,7 +5381,12 @@ const loadRecentCampaigns = async () => {
                 className="text-gray-400 hover:text-gray-600"
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
                 </svg>
               </button>
             </div>
@@ -5284,20 +5436,20 @@ const loadRecentCampaigns = async () => {
                     <div>
                       <h5 className="text-sm font-semibold text-gray-900">Re-send Settings</h5>
                       <p className="text-xs text-gray-500">
-                        Enabled:{' '}
-                        {selectedCampaignDetails.resendSettings?.enabled ? 'Yes' : 'No'}
+                        Enabled: {selectedCampaignDetails.resendSettings?.enabled ? 'Yes' : 'No'}
                       </p>
                       <p className="text-xs text-gray-500">
                         Re-send After:{' '}
                         {selectedCampaignDetails.resendSettings?.delayOption
-                          ? RESEND_DELAY_LABELS[selectedCampaignDetails.resendSettings.delayOption] ||
-                            selectedCampaignDetails.resendSettings.delayOption
+                          ? RESEND_DELAY_LABELS[
+                              selectedCampaignDetails.resendSettings.delayOption
+                            ] || selectedCampaignDetails.resendSettings.delayOption
                           : '-'}
                       </p>
                     </div>
                   </div>
 
-                    <div className="mt-4 border-t border-gray-100 pt-3">
+                  <div className="mt-4 border-t border-gray-100 pt-3">
                     <div className="flex items-center justify-between">
                       <h6 className="text-xs font-semibold text-gray-700">Re-send History</h6>
                       {resendHistoryLoading && (
@@ -5341,9 +5493,9 @@ const loadRecentCampaigns = async () => {
                             <div className="flex flex-col text-right">
                               <span>Eligible: {attempt.eligibleCount ?? 0}</span>
                               <span>
-                                Sent: {attempt.sentCount ?? attempt.attemptedCount ?? 0} / Delivered:{' '}
-                                {attempt.deliveredCount ?? attempt.successCount ?? 0} / Failed:{' '}
-                                {attempt.failedCount ?? 0}
+                                Sent: {attempt.sentCount ?? attempt.attemptedCount ?? 0} /
+                                Delivered: {attempt.deliveredCount ?? attempt.successCount ?? 0} /
+                                Failed: {attempt.failedCount ?? 0}
                               </span>
                               {attempt.limitedByMetaCount ? (
                                 <span>Limited: {attempt.limitedByMetaCount}</span>
@@ -5374,16 +5526,15 @@ const loadRecentCampaigns = async () => {
                       const rawStatus = (recipient.status || 'sent').toString();
                       const status = rawStatus.toLowerCase();
                       const isLimited = isMetaLimitedStatus(recipient) || status === 'limited';
-                      const statusClass =
-                        isLimited
-                          ? 'bg-amber-100 text-amber-800'
-                          : status === 'delivered'
-                          ? 'bg-green-100 text-green-800'
-                          : status === 'failed'
-                          ? 'bg-red-100 text-red-800'
-                          : status === 'read' || status === 'seen'
-                          ? 'bg-blue-100 text-blue-800'
-                          : 'bg-gray-100 text-gray-600';
+                      const statusClass = isLimited
+                        ? 'bg-amber-100 text-amber-800'
+                        : status === 'delivered'
+                        ? 'bg-green-100 text-green-800'
+                        : status === 'failed'
+                        ? 'bg-red-100 text-red-800'
+                        : status === 'read' || status === 'seen'
+                        ? 'bg-blue-100 text-blue-800'
+                        : 'bg-gray-100 text-gray-600';
 
                       const statusLabelBase = isLimited
                         ? 'limited'
@@ -5402,7 +5553,9 @@ const loadRecentCampaigns = async () => {
                         >
                           <div className="flex-1">
                             <p className="text-sm font-medium text-gray-900">{recipient.name}</p>
-                            <p className="text-xs text-gray-500">{maskPhoneNumber(recipient.phone)}</p>
+                            <p className="text-xs text-gray-500">
+                              {maskPhoneNumber(recipient.phone)}
+                            </p>
                             {recipient.error && (
                               <p className="mt-1 text-xs text-red-600">
                                 Reason: {recipient.error}
@@ -5410,7 +5563,9 @@ const loadRecentCampaigns = async () => {
                               </p>
                             )}
                           </div>
-                          <span className={`inline-flex px-2 py-0.5 rounded text-xs font-medium ${statusClass}`}>
+                          <span
+                            className={`inline-flex px-2 py-0.5 rounded text-xs font-medium ${statusClass}`}
+                          >
                             {statusLabel || 'sent'}
                           </span>
                         </div>
@@ -5457,14 +5612,11 @@ const loadRecentCampaigns = async () => {
               </p>
             )}
             <div className="mt-4 rounded-xl border border-gray-100 bg-gray-50 px-4 py-3 text-sm text-gray-600">
-              For any queries contact our team via <span className="font-semibold">sales@billbox.co.in</span>.
+              For any queries contact our team via{' '}
+              <span className="font-semibold">sales@billbox.co.in</span>.
             </div>
             <div className="mt-6 flex items-center justify-end gap-3">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setQuotaModalOpen(false)}
-              >
+              <Button type="button" variant="outline" onClick={() => setQuotaModalOpen(false)}>
                 Close
               </Button>
               {quotaWithinLimit && (

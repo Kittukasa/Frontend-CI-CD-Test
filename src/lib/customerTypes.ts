@@ -9,7 +9,7 @@ export type CustomerTypeConfig = {
 export const DEFAULT_CUSTOMER_TYPE_CONFIG: CustomerTypeConfig = {
   premium: { min: 10000 },
   standard: { min: 5000, max: 9999 },
-  basic: { max: 4999 }
+  basic: { max: 4999 },
 };
 
 export const CUSTOMER_TYPE_STORAGE_KEY = 'bb_customer_type_config';
@@ -37,8 +37,7 @@ export const sanitizeCustomerTypeConfig = (
   }
 
   let standardMax =
-    clampNumber(input?.standard?.max) !== null &&
-    clampNumber(input?.standard?.max)! >= standardMin
+    clampNumber(input?.standard?.max) !== null && clampNumber(input?.standard?.max)! >= standardMin
       ? clampNumber(input?.standard?.max)!
       : premiumMin - 1;
   if (standardMax >= premiumMin) {
@@ -59,7 +58,7 @@ export const sanitizeCustomerTypeConfig = (
   return {
     premium: { min: premiumMin },
     standard: { min: standardMin, max: standardMax },
-    basic: { max: basicMax }
+    basic: { max: basicMax },
   };
 };
 
