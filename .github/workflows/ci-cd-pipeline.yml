@@ -9,16 +9,14 @@ on:
 
 env:
   NODE_VERSION: "20"
-  S3_ARTIFACT_PREFIX: "ci-artifacts/${{ github.repository }}"
 
 jobs:
 
 # ============================================================
-# STAGE 1 — PRETTIER (feature → dev)
-# Stores formatted code artifact to S3
+# STAGE 1 — (feature → dev)
 # ============================================================
-  prettier-check:
-    name: "Stage 1 · Prettier Check & Format"
+  stage-1:
+    name: "Stage 1 · Prettier + ESLint + Coverage"
     if: github.base_ref == 'dev'
     runs-on: ubuntu-latest
     permissions:
@@ -51,284 +49,105 @@ jobs:
             git commit -m "style: auto-format with Prettier"
             git push origin HEAD:${{ github.head_ref }}
           else
-            echo "No changes to commit"
+            echo "No formatting changes"
           fi
-
-      - name: Configure AWS
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ vars.AWS_REGION }}
-
-      - name: Package & upload artifact to S3
-        run: |
-          ARTIFACT_NAME="prettier-dev.tar.gz"
-          echo "📦 Packaging formatted code as $ARTIFACT_NAME..."
-
-          tar --exclude='.git' \
-              --exclude='node_modules' \
-              --exclude='coverage' \
-              -czf /tmp/$ARTIFACT_NAME .
-
-          echo "⬆️  Uploading to S3..."
-          aws s3 cp /tmp/$ARTIFACT_NAME \
-            s3://${{ vars.S3_ARTIFACT_BUCKET }}/${{ env.S3_ARTIFACT_PREFIX }}/$ARTIFACT_NAME
-
-          echo "✅ Artifact stored at:"
-          echo "   s3://${{ vars.S3_ARTIFACT_BUCKET }}/${{ env.S3_ARTIFACT_PREFIX }}/$ARTIFACT_NAME"
-
-# ============================================================
-# STAGE 2 — ESLINT & COVERAGE (dev → test)
-# Pulls artifact from S3, runs checks, uploads new artifact
-# ============================================================
-  eslint-and-coverage:
-    name: "Stage 2 · ESLint & Code Coverage"
-    needs: prettier-check
-    if: |
-      always() &&
-      github.base_ref == 'test' &&
-      (needs.prettier-check.result == 'success' || needs.prettier-check.result == 'skipped')
-    runs-on: ubuntu-latest
-    steps:
-      - name: Configure AWS
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ vars.AWS_REGION }}
-
-      - name: Download artifact from S3
-        run: |
-          ARTIFACT_NAME="prettier-dev.tar.gz"
-          echo "⬇️  Downloading $ARTIFACT_NAME from S3..."
-
-          if aws s3 ls s3://${{ vars.S3_ARTIFACT_BUCKET }}/${{ env.S3_ARTIFACT_PREFIX }}/$ARTIFACT_NAME 2>/dev/null; then
-            aws s3 cp \
-              s3://${{ vars.S3_ARTIFACT_BUCKET }}/${{ env.S3_ARTIFACT_PREFIX }}/$ARTIFACT_NAME \
-              /tmp/$ARTIFACT_NAME
-            tar -xzf /tmp/$ARTIFACT_NAME -C .
-            echo "✅ Artifact restored: $ARTIFACT_NAME"
-          else
-            echo "⚠️  No Stage 1 artifact found — falling back to checkout"
-            exit 1
-          fi
-
-      - name: Fallback — checkout if no S3 artifact
-        if: failure()
-        uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: npm
-
-      - name: Install dependencies
-        run: npm ci
 
       - name: Run ESLint
         id: eslint
         continue-on-error: true
         run: |
-          echo "Running ESLint..."
-
-          npx eslint "**/*.{ts,tsx}" \
-            --format json \
-            --output-file eslint-report.json || true
-
+          npx eslint "**/*.{ts,tsx}" --format json --output-file eslint-report.json || true
           if grep -q '"errorCount":[^0]' eslint-report.json; then
-            echo "⚠️ ESLint errors detected"
             echo "eslint_passed=false" >> $GITHUB_OUTPUT
           else
-            echo "✅ ESLint passed"
             echo "eslint_passed=true" >> $GITHUB_OUTPUT
           fi
 
       - name: Run tests with coverage
-        id: coverage
         continue-on-error: true
         run: npx vitest run --coverage
 
-      # ── SUCCESS — upload eslint-coverage artifact to S3 ───
-      - name: Package & upload validated artifact to S3
-        if: steps.eslint.outputs.eslint_passed == 'true'
+      - name: Generate ESLint HTML Report
+        if: always()
         run: |
-          ARTIFACT_NAME="eslint-coverage-test.tar.gz"
-          echo "📦 Packaging validated code as $ARTIFACT_NAME..."
-
-          tar --exclude='.git' \
-              --exclude='node_modules' \
-              --exclude='coverage' \
-              -czf /tmp/$ARTIFACT_NAME .
-
-          echo "⬆️  Uploading to S3..."
-          aws s3 cp /tmp/$ARTIFACT_NAME \
-            s3://${{ vars.S3_ARTIFACT_BUCKET }}/${{ env.S3_ARTIFACT_PREFIX }}/$ARTIFACT_NAME
-
-          echo "✅ Validated artifact stored at:"
-          echo "   s3://${{ vars.S3_ARTIFACT_BUCKET }}/${{ env.S3_ARTIFACT_PREFIX }}/$ARTIFACT_NAME"
-
-      # ── FAILURE — generate HTML report & upload to GitHub Artifacts ──
-      - name: Generate HTML ESLint Report
-        if: steps.eslint.outputs.eslint_passed == 'false'
-        run: |
-          node << 'SCRIPT'
+          node -e "
           const fs = require('fs');
-          const raw = fs.readFileSync('eslint-report.json', 'utf8');
-          const data = JSON.parse(raw);
-
-          const totalErrors   = data.reduce((s, f) => s + f.errorCount, 0);
-          const totalWarnings = data.reduce((s, f) => s + f.warningCount, 0);
-          const filesWithIssues = data.filter(f => f.messages.length > 0);
-          const generatedAt = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
-
-          const severityBadge = (sev) => sev === 2
-            ? '<span class="badge error">Error</span>'
-            : '<span class="badge warning">Warning</span>';
-
-          const fileBlocks = filesWithIssues.map(file => {
-            const shortPath = file.filePath.replace(/.*\/src\//, 'src/');
-            const rows = file.messages.map(m => `
-              <tr>
-                <td>${m.line}:${m.column}</td>
-                <td>${severityBadge(m.severity)}</td>
-                <td>${m.message.replace(/</g, '&lt;')}</td>
-                <td><code>${m.ruleId || 'N/A'}</code></td>
-              </tr>`).join('');
-
-            return `
-              <div class="file-block">
-                <div class="file-header">
-                  <span class="file-icon">📄</span>
-                  <span class="file-path">${shortPath}</span>
-                  <span class="file-counts">
-                    <span class="badge error">${file.errorCount} errors</span>
-                    <span class="badge warning">${file.warningCount} warnings</span>
-                  </span>
-                </div>
-                <table>
-                  <thead>
-                    <tr><th>Location</th><th>Severity</th><th>Message</th><th>Rule</th></tr>
-                  </thead>
-                  <tbody>${rows}</tbody>
-                </table>
-              </div>`;
+          if (!fs.existsSync('eslint-report.json')) process.exit(0);
+          const data = JSON.parse(fs.readFileSync('eslint-report.json','utf8'));
+          const errors = data.reduce((s,f)=>s+f.errorCount,0);
+          const warnings = data.reduce((s,f)=>s+f.warningCount,0);
+          const files = data.filter(f=>f.messages.length>0);
+          const rows = files.map(f=>{
+            const path = f.filePath.replace(/.*src\//,'src/');
+            const msgs = f.messages.map(m=>
+              '<tr><td>'+path+'</td><td>'+m.line+':'+m.column+'</td><td>'+(m.severity===2?'Error':'Warning')+'</td><td>'+m.message.replace(/</g,'&lt;')+'</td><td>'+(m.ruleId||'N/A')+'</td></tr>'
+            ).join('');
+            return msgs;
           }).join('');
+          const html = '<!DOCTYPE html><html><head><meta charset=UTF-8><title>ESLint Report - Stage 1</title>'
+            +'<style>body{font-family:sans-serif;padding:20px}h1{margin-bottom:10px}'
+            +'.summary{margin-bottom:20px;font-size:16px}'
+            +'table{border-collapse:collapse;width:100%}'
+            +'th,td{border:1px solid #ddd;padding:8px;text-align:left;font-size:13px}'
+            +'th{background:#f2f2f2}tr:nth-child(even){background:#fafafa}'
+            +'tr:hover{background:#f0f0f0}</style></head>'
+            +'<body><h1>ESLint Report — Stage 1</h1>'
+            +'<div class=summary>Total Errors: <b style=color:red>'+errors+'</b> &nbsp; Warnings: <b style=color:orange>'+warnings+'</b> &nbsp; Files with issues: <b>'+files.length+'</b></div>'
+            +(rows ? '<table><thead><tr><th>File</th><th>Location</th><th>Severity</th><th>Message</th><th>Rule</th></tr></thead><tbody>'+rows+'</tbody></table>'
+            : '<p style=color:green>✅ No ESLint issues found!</p>')
+            +'</body></html>';
+          fs.mkdirSync('reports',{recursive:true});
+          fs.writeFileSync('reports/eslint-report.html',html);
+          "
 
-          const html = `<!DOCTYPE html>
-          <html lang="en">
-          <head>
-            <meta charset="UTF-8"/>
-            <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-            <title>ESLint Report</title>
-            <style>
-              * { box-sizing: border-box; margin: 0; padding: 0; }
-              body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0d1117; color: #e6edf3; min-height: 100vh; }
-              .header { background: linear-gradient(135deg, #161b22 0%, #1c2128 100%); border-bottom: 1px solid #30363d; padding: 32px 40px; }
-              .header h1 { font-size: 28px; font-weight: 700; display: flex; align-items: center; gap: 12px; }
-              .header p { color: #8b949e; margin-top: 8px; font-size: 14px; }
-              .summary { display: flex; gap: 20px; padding: 24px 40px; flex-wrap: wrap; }
-              .card { background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 20px 28px; flex: 1; min-width: 160px; }
-              .card .label { font-size: 12px; color: #8b949e; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
-              .card .value { font-size: 36px; font-weight: 700; }
-              .card.red .value { color: #f85149; }
-              .card.yellow .value { color: #d29922; }
-              .card.blue .value { color: #388bfd; }
-              .card.purple .value { color: #bc8cff; }
-              .content { padding: 0 40px 40px; }
-              .section-title { font-size: 18px; font-weight: 600; margin: 24px 0 16px; color: #e6edf3; border-left: 3px solid #388bfd; padding-left: 12px; }
-              .file-block { background: #161b22; border: 1px solid #30363d; border-radius: 10px; margin-bottom: 16px; overflow: hidden; }
-              .file-header { display: flex; align-items: center; gap: 10px; padding: 14px 18px; background: #1c2128; border-bottom: 1px solid #30363d; flex-wrap: wrap; gap: 8px; }
-              .file-icon { font-size: 16px; }
-              .file-path { font-family: monospace; font-size: 13px; color: #79c0ff; flex: 1; word-break: break-all; }
-              .file-counts { display: flex; gap: 6px; }
-              table { width: 100%; border-collapse: collapse; font-size: 13px; }
-              th { background: #1c2128; color: #8b949e; font-weight: 600; text-align: left; padding: 10px 16px; border-bottom: 1px solid #30363d; }
-              td { padding: 10px 16px; border-bottom: 1px solid #21262d; vertical-align: top; }
-              tr:last-child td { border-bottom: none; }
-              tr:hover td { background: #1c2128; }
-              td:first-child { color: #8b949e; white-space: nowrap; font-family: monospace; }
-              td:last-child code { background: #1c2128; padding: 2px 8px; border-radius: 4px; font-size: 11px; color: #79c0ff; border: 1px solid #30363d; }
-              .badge { display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
-              .badge.error { background: rgba(248,81,73,0.15); color: #f85149; border: 1px solid rgba(248,81,73,0.3); }
-              .badge.warning { background: rgba(210,153,34,0.15); color: #d29922; border: 1px solid rgba(210,153,34,0.3); }
-              .no-issues { text-align: center; padding: 60px; color: #8b949e; font-size: 16px; }
-              .footer { text-align: center; padding: 20px; color: #484f58; font-size: 12px; border-top: 1px solid #21262d; margin-top: 20px; }
-            </style>
-          </head>
-          <body>
-            <div class="header">
-              <h1>🔍 ESLint Report</h1>
-              <p>Generated at ${generatedAt} · PR #${{ github.event.pull_request.number }} · <code style="color:#79c0ff">${{ github.head_ref }}</code> → <code style="color:#79c0ff">${{ github.base_ref }}</code></p>
-            </div>
-            <div class="summary">
-              <div class="card red"><div class="label">Total Errors</div><div class="value">${totalErrors}</div></div>
-              <div class="card yellow"><div class="label">Total Warnings</div><div class="value">${totalWarnings}</div></div>
-              <div class="card blue"><div class="label">Files Scanned</div><div class="value">${data.length}</div></div>
-              <div class="card purple"><div class="label">Files with Issues</div><div class="value">${filesWithIssues.length}</div></div>
-            </div>
-            <div class="content">
-              <div class="section-title">Issues by File</div>
-              ${filesWithIssues.length > 0 ? fileBlocks : '<div class="no-issues">✅ No issues found!</div>'}
-            </div>
-            <div class="footer">Generated by CI/CD Pipeline · GitHub Actions</div>
-          </body>
-          </html>`;
-
-          fs.mkdirSync('eslint-html-report', { recursive: true });
-          fs.writeFileSync('eslint-html-report/index.html', html);
-          console.log('✅ HTML report generated: eslint-html-report/index.html');
-          SCRIPT
-
-      - name: Upload HTML report to GitHub Artifacts
-        if: steps.eslint.outputs.eslint_passed == 'false'
+      - name: Upload reports
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: eslint-report-PR${{ github.event.pull_request.number }}
-          path: eslint-html-report/
+          name: stage-1-reports-PR${{ github.event.pull_request.number }}
+          path: |
+            reports/
+            coverage/
+          retention-days: 7
+
+      - name: Package & upload code
+        run: |
+          tar --exclude='.git' --exclude='node_modules' --exclude='coverage' --exclude='reports' \
+            -czf /tmp/stage-1-code.tar.gz .
+
+      - name: Upload code artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: stage-1-code-PR${{ github.event.pull_request.number }}
+          path: /tmp/stage-1-code.tar.gz
           retention-days: 7
 
 # ============================================================
-# STAGE 3 — DEPLOY TO S3 (test → main)
-# Pulls eslint-coverage artifact from S3, builds, deploys
+# STAGE 2 — (dev → test)
 # ============================================================
-  deploy-to-s3:
-    name: "Stage 3 · Deploy to AWS S3"
-    needs: eslint-and-coverage
+  stage-2:
+    name: "Stage 2 · Prettier + ESLint + Coverage"
+    needs: stage-1
     if: |
       always() &&
-      github.base_ref == 'main' &&
-      (needs.eslint-and-coverage.result == 'success' || needs.eslint-and-coverage.result == 'skipped')
+      github.base_ref == 'test' &&
+      (needs.stage-1.result == 'success' || needs.stage-1.result == 'skipped')
     runs-on: ubuntu-latest
-    environment:
-      name: prod
     steps:
-      - name: Configure AWS
-        uses: aws-actions/configure-aws-credentials@v4
+      - name: Download Stage 1 code
+        id: download
+        continue-on-error: true
+        uses: actions/download-artifact@v4
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ vars.AWS_REGION }}
+          name: stage-1-code-PR${{ github.event.pull_request.number }}
+          path: /tmp
 
-      - name: Download validated artifact from S3
-        run: |
-          ARTIFACT_NAME="eslint-coverage-test.tar.gz"
-          echo "⬇️  Downloading $ARTIFACT_NAME from S3..."
+      - name: Extract artifact
+        if: steps.download.outcome == 'success'
+        run: tar -xzf /tmp/stage-1-code.tar.gz -C .
 
-          if aws s3 ls s3://${{ vars.S3_ARTIFACT_BUCKET }}/${{ env.S3_ARTIFACT_PREFIX }}/$ARTIFACT_NAME 2>/dev/null; then
-            aws s3 cp \
-              s3://${{ vars.S3_ARTIFACT_BUCKET }}/${{ env.S3_ARTIFACT_PREFIX }}/$ARTIFACT_NAME \
-              /tmp/$ARTIFACT_NAME
-            tar -xzf /tmp/$ARTIFACT_NAME -C .
-            echo "✅ Artifact restored: $ARTIFACT_NAME"
-          else
-            echo "⚠️  No Stage 2 artifact found — falling back to checkout"
-            exit 1
-          fi
-
-      - name: Fallback — checkout if no S3 artifact
-        if: failure()
+      - name: Fallback checkout
+        if: steps.download.outcome != 'success'
         uses: actions/checkout@v4
 
       - name: Setup Node
@@ -339,28 +158,193 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Run Prettier check
+        run: npx prettier --check "**/*.{js,jsx,ts,tsx,css,scss,json,md}" || true
+
+      - name: Run ESLint
+        id: eslint
+        continue-on-error: true
+        run: |
+          npx eslint "**/*.{ts,tsx}" --format json --output-file eslint-report.json || true
+          if grep -q '"errorCount":[^0]' eslint-report.json; then
+            echo "eslint_passed=false" >> $GITHUB_OUTPUT
+          else
+            echo "eslint_passed=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Run tests with coverage
+        continue-on-error: true
+        run: npx vitest run --coverage
+
+      - name: Generate ESLint HTML Report
+        if: always()
+        run: |
+          node -e "
+          const fs = require('fs');
+          if (!fs.existsSync('eslint-report.json')) process.exit(0);
+          const data = JSON.parse(fs.readFileSync('eslint-report.json','utf8'));
+          const errors = data.reduce((s,f)=>s+f.errorCount,0);
+          const warnings = data.reduce((s,f)=>s+f.warningCount,0);
+          const files = data.filter(f=>f.messages.length>0);
+          const rows = files.map(f=>{
+            const path = f.filePath.replace(/.*src\//,'src/');
+            const msgs = f.messages.map(m=>
+              '<tr><td>'+path+'</td><td>'+m.line+':'+m.column+'</td><td>'+(m.severity===2?'Error':'Warning')+'</td><td>'+m.message.replace(/</g,'&lt;')+'</td><td>'+(m.ruleId||'N/A')+'</td></tr>'
+            ).join('');
+            return msgs;
+          }).join('');
+          const html = '<!DOCTYPE html><html><head><meta charset=UTF-8><title>ESLint Report - Stage 2</title>'
+            +'<style>body{font-family:sans-serif;padding:20px}h1{margin-bottom:10px}'
+            +'.summary{margin-bottom:20px;font-size:16px}'
+            +'table{border-collapse:collapse;width:100%}'
+            +'th,td{border:1px solid #ddd;padding:8px;text-align:left;font-size:13px}'
+            +'th{background:#f2f2f2}tr:nth-child(even){background:#fafafa}'
+            +'tr:hover{background:#f0f0f0}</style></head>'
+            +'<body><h1>ESLint Report — Stage 2</h1>'
+            +'<div class=summary>Total Errors: <b style=color:red>'+errors+'</b> &nbsp; Warnings: <b style=color:orange>'+warnings+'</b> &nbsp; Files with issues: <b>'+files.length+'</b></div>'
+            +(rows ? '<table><thead><tr><th>File</th><th>Location</th><th>Severity</th><th>Message</th><th>Rule</th></tr></thead><tbody>'+rows+'</tbody></table>'
+            : '<p style=color:green>✅ No ESLint issues found!</p>')
+            +'</body></html>';
+          fs.mkdirSync('reports',{recursive:true});
+          fs.writeFileSync('reports/eslint-report.html',html);
+          "
+
+      - name: Upload reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stage-2-reports-PR${{ github.event.pull_request.number }}
+          path: |
+            reports/
+            coverage/
+          retention-days: 7
+
+      - name: Package & upload code
+        if: steps.eslint.outputs.eslint_passed == 'true'
+        run: |
+          tar --exclude='.git' --exclude='node_modules' --exclude='coverage' --exclude='reports' \
+            -czf /tmp/stage-2-code.tar.gz .
+
+      - name: Upload code artifact
+        if: steps.eslint.outputs.eslint_passed == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: stage-2-code-PR${{ github.event.pull_request.number }}
+          path: /tmp/stage-2-code.tar.gz
+          retention-days: 7
+
+# ============================================================
+# STAGE 3 — (test → main)
+# ============================================================
+  stage-3:
+    name: "Stage 3 · Prettier + ESLint + Coverage + Deploy"
+    needs: stage-2
+    if: |
+      always() &&
+      github.base_ref == 'main' &&
+      (needs.stage-2.result == 'success' || needs.stage-2.result == 'skipped')
+    runs-on: ubuntu-latest
+    environment:
+      name: prod
+    steps:
+      - name: Download Stage 2 code
+        id: download
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          name: stage-2-code-PR${{ github.event.pull_request.number }}
+          path: /tmp
+
+      - name: Extract artifact
+        if: steps.download.outcome == 'success'
+        run: tar -xzf /tmp/stage-2-code.tar.gz -C .
+
+      - name: Fallback checkout
+        if: steps.download.outcome != 'success'
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Prettier check
+        run: npx prettier --check "**/*.{js,jsx,ts,tsx,css,scss,json,md}" || true
+
+      - name: Run ESLint
+        id: eslint
+        continue-on-error: true
+        run: |
+          npx eslint "**/*.{ts,tsx}" --format json --output-file eslint-report.json || true
+          if grep -q '"errorCount":[^0]' eslint-report.json; then
+            echo "eslint_passed=false" >> $GITHUB_OUTPUT
+          else
+            echo "eslint_passed=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Run tests with coverage
+        continue-on-error: true
+        run: npx vitest run --coverage
+
+      - name: Generate ESLint HTML Report
+        if: always()
+        run: |
+          node -e "
+          const fs = require('fs');
+          if (!fs.existsSync('eslint-report.json')) process.exit(0);
+          const data = JSON.parse(fs.readFileSync('eslint-report.json','utf8'));
+          const errors = data.reduce((s,f)=>s+f.errorCount,0);
+          const warnings = data.reduce((s,f)=>s+f.warningCount,0);
+          const files = data.filter(f=>f.messages.length>0);
+          const rows = files.map(f=>{
+            const path = f.filePath.replace(/.*src\//,'src/');
+            const msgs = f.messages.map(m=>
+              '<tr><td>'+path+'</td><td>'+m.line+':'+m.column+'</td><td>'+(m.severity===2?'Error':'Warning')+'</td><td>'+m.message.replace(/</g,'&lt;')+'</td><td>'+(m.ruleId||'N/A')+'</td></tr>'
+            ).join('');
+            return msgs;
+          }).join('');
+          const html = '<!DOCTYPE html><html><head><meta charset=UTF-8><title>ESLint Report - Stage 3</title>'
+            +'<style>body{font-family:sans-serif;padding:20px}h1{margin-bottom:10px}'
+            +'.summary{margin-bottom:20px;font-size:16px}'
+            +'table{border-collapse:collapse;width:100%}'
+            +'th,td{border:1px solid #ddd;padding:8px;text-align:left;font-size:13px}'
+            +'th{background:#f2f2f2}tr:nth-child(even){background:#fafafa}'
+            +'tr:hover{background:#f0f0f0}</style></head>'
+            +'<body><h1>ESLint Report — Stage 3</h1>'
+            +'<div class=summary>Total Errors: <b style=color:red>'+errors+'</b> &nbsp; Warnings: <b style=color:orange>'+warnings+'</b> &nbsp; Files with issues: <b>'+files.length+'</b></div>'
+            +(rows ? '<table><thead><tr><th>File</th><th>Location</th><th>Severity</th><th>Message</th><th>Rule</th></tr></thead><tbody>'+rows+'</tbody></table>'
+            : '<p style=color:green>✅ No ESLint issues found!</p>')
+            +'</body></html>';
+          fs.mkdirSync('reports',{recursive:true});
+          fs.writeFileSync('reports/eslint-report.html',html);
+          "
+
+      - name: Upload reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stage-3-reports-PR${{ github.event.pull_request.number }}
+          path: |
+            reports/
+            coverage/
+          retention-days: 7
+
+      - name: Configure AWS
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ vars.AWS_REGION }}
 
       - name: Build project
         run: npm run build
 
       - name: Deploy to S3
         run: |
-          echo "🚀 Deploying to S3..."
           aws s3 sync ./dist s3://${{ vars.S3_BUCKET_NAME }} --delete
-          echo "✅ Deployment complete!"
-          echo "   Bucket : s3://${{ vars.S3_BUCKET_NAME }}"
-          echo "   Region : ${{ vars.AWS_REGION }}"
-          echo "   Commit : ${{ github.sha }}"
-
-      - name: Upload production build artifact to S3
-        run: |
-          ARTIFACT_NAME="production-build-main.tar.gz"
-          echo "📦 Archiving production build as $ARTIFACT_NAME..."
-
-          tar -czf /tmp/$ARTIFACT_NAME ./dist
-
-          aws s3 cp /tmp/$ARTIFACT_NAME \
-            s3://${{ vars.S3_ARTIFACT_BUCKET }}/${{ env.S3_ARTIFACT_PREFIX }}/$ARTIFACT_NAME
-
-          echo "✅ Production build archived at:"
-          echo "   s3://${{ vars.S3_ARTIFACT_BUCKET }}/${{ env.S3_ARTIFACT_PREFIX }}/$ARTIFACT_NAME"
+          echo "✅ Deployed to s3://${{ vars.S3_BUCKET_NAME }}"
