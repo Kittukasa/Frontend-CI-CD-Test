@@ -24,6 +24,8 @@ jobs:
     name: "Stage 1 · Prettier Check & Format"
     if: github.base_ref == 'dev'
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout feature branch
@@ -32,6 +34,7 @@ jobs:
           ref: ${{ github.head_ref }}       # Check out the feature branch
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
+          persist-credentials: true
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
