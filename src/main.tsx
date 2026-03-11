@@ -16,7 +16,7 @@ if (typeof window !== 'undefined' && typeof window.fetch === 'function') {
       '/api/auth/send-otp',
       '/api/auth/reset-password',
       '/api/auth/franchise',
-      '/api/auth/revenue-pin/verify'
+      '/api/auth/revenue-pin/verify',
     ];
     return skipEndpoints.some(endpoint => normalized.includes(endpoint));
   };
@@ -30,15 +30,10 @@ if (typeof window !== 'undefined' && typeof window.fetch === 'function') {
         typeof requestInfo === 'string'
           ? requestInfo
           : requestInfo instanceof Request
-            ? requestInfo.url
-            : '';
+          ? requestInfo.url
+          : '';
 
-      if (
-        response?.status === 401 &&
-        hasToken &&
-        requestUrl &&
-        !shouldSkipRedirect(requestUrl)
-      ) {
+      if (response?.status === 401 && hasToken && requestUrl && !shouldSkipRedirect(requestUrl)) {
         let message: string | undefined;
         try {
           const contentType = response.headers.get('content-type') || '';

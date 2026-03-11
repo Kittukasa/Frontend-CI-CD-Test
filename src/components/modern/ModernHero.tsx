@@ -1,7 +1,16 @@
 import { Button } from '@/components/ui/button';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Play, Zap, TrendingUp, Users, Building2, FileText, MessageCircle } from 'lucide-react';
+import {
+  ArrowRight,
+  Play,
+  Zap,
+  TrendingUp,
+  Users,
+  Building2,
+  FileText,
+  MessageCircle,
+} from 'lucide-react';
 
 const ModernHero = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -12,9 +21,15 @@ const ModernHero = () => {
 
   return (
     <>
-      <section className="relative min-h-[100svh] lg:min-h-screen flex items-center justify-center overflow-hidden pt-0 sm:pt-4 lg:pt-6" style={{ backgroundColor: '#0B1020' }}>
+      <section
+        className="relative min-h-[100svh] lg:min-h-screen flex items-center justify-center overflow-hidden pt-0 sm:pt-4 lg:pt-6"
+        style={{ backgroundColor: '#0B1020' }}
+      >
         {/* Maze Bank Breathing Light-Wave Aura Background */}
-        <div className="absolute inset-0 overflow-hidden" style={{ background: 'linear-gradient(180deg,#0B1020 0%,#0E1328 55%,#0B1020 100%)' }}>
+        <div
+          className="absolute inset-0 overflow-hidden"
+          style={{ background: 'linear-gradient(180deg,#0B1020 0%,#0E1328 55%,#0B1020 100%)' }}
+        >
           {/* Base breathing glow - White to soft pink luminous wave */}
           <div
             className="absolute right-[25%] top-[40%] w-[60rem] h-[60rem] rounded-full blur-[300px] animate-breath-glow mix-blend-screen"
@@ -28,7 +43,8 @@ const ModernHero = () => {
           <div
             className="absolute right-[20%] top-[35%] w-[65rem] h-[65rem] rounded-full blur-[320px] animate-breath-glow-slow mix-blend-lighten"
             style={{
-              background: 'radial-gradient(circle at center, rgba(255, 102, 255, 0.08) 0%, rgba(11, 15, 29, 0) 70%)',
+              background:
+                'radial-gradient(circle at center, rgba(255, 102, 255, 0.08) 0%, rgba(11, 15, 29, 0) 70%)',
             }}
           />
 
@@ -54,7 +70,9 @@ const ModernHero = () => {
               {/* Badge */}
               <div className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-500/20 mb-6">
                 <Zap className="w-4 h-4 text-blue-400 mr-2" />
-                <span className="text-sm font-medium text-blue-300">Transform Your Business Today</span>
+                <span className="text-sm font-medium text-blue-300">
+                  Transform Your Business Today
+                </span>
               </div>
 
               {/* Main Headline */}
@@ -72,8 +90,8 @@ const ModernHero = () => {
 
               {/* Subheadline */}
               <p className="text-xl lg:text-2xl text-gray-300 mb-4 leading-relaxed">
-                The AI-powered platform that transforms paper bills into digital experiences, customer insights, and
-                revenue growth for modern businesses.
+                The AI-powered platform that transforms paper bills into digital experiences,
+                customer insights, and revenue growth for modern businesses.
               </p>
 
               {/* USP Badges */}
@@ -142,11 +160,17 @@ const ModernHero = () => {
               <div className="absolute inset-0 pointer-events-none">
                 <div
                   className="absolute right-[35%] top-[20%] w-[600px] h-[600px] rounded-full blur-[170px] opacity-30 animate-hero-glow"
-                  style={{ background: 'radial-gradient(circle, rgba(255,255,255,0.25), rgba(255,192,203,0.08))' }}
+                  style={{
+                    background:
+                      'radial-gradient(circle, rgba(255,255,255,0.25), rgba(255,192,203,0.08))',
+                  }}
                 />
                 <div
                   className="absolute right-[25%] top-[30%] w-[500px] h-[500px] rounded-full blur-[200px] opacity-40 animate-hero-glow"
-                  style={{ background: 'radial-gradient(circle, rgba(255,102,255,0.08), transparent)', animationDelay: '1s' }}
+                  style={{
+                    background: 'radial-gradient(circle, rgba(255,102,255,0.08), transparent)',
+                    animationDelay: '1s',
+                  }}
                 />
               </div>
 
@@ -204,8 +228,8 @@ const ModernHero = () => {
                 </div>
 
                 {/* Center Phone - Analytics Dashboard */}
-              <div className="relative z-20 scale-100 sm:scale-105 animate-floatPhone w-[72vw] max-w-[320px] sm:w-[52vw] sm:max-w-[360px] lg:w-[30vw] lg:max-w-[320px]">
-                <div className="w-full bg-gradient-to-br from-[#16192B] to-[#101425] rounded-[3rem] border-[3px] border-white/15 shadow-2xl overflow-hidden">
+                <div className="relative z-20 scale-100 sm:scale-105 animate-floatPhone w-[72vw] max-w-[320px] sm:w-[52vw] sm:max-w-[360px] lg:w-[30vw] lg:max-w-[320px]">
+                  <div className="w-full bg-gradient-to-br from-[#16192B] to-[#101425] rounded-[3rem] border-[3px] border-white/15 shadow-2xl overflow-hidden">
                     <div className="absolute top-0 left-1/2 -translate-x-1/2 w-36 h-7 bg-black rounded-b-[2rem] z-30" />
                     <div className="relative pt-10 px-6 pb-4 bg-gradient-to-b from-[#1F2437] to-transparent">
                       <div className="flex items-center justify-between text-white/60 text-xs">
@@ -230,7 +254,9 @@ const ModernHero = () => {
                       </div>
                       <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-green-500/20 border border-green-500/30 rounded-full">
                         <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
-                        <span className="text-green-400 text-xs font-semibold">Delivered on WhatsApp</span>
+                        <span className="text-green-400 text-xs font-semibold">
+                          Delivered on WhatsApp
+                        </span>
                       </div>
                       <div className="bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10 p-4 space-y-3">
                         <div className="flex justify-between items-center">
@@ -267,10 +293,10 @@ const ModernHero = () => {
                       </div>
                       <div className="space-y-2.5">
                         <button className="w-full py-3 rounded-xl border-2 border-[#25D366]/50 text-[#25D366] font-semibold text-sm flex items-center justify-center gap-2">
-                           Download Bill
+                          Download Bill
                         </button>
                         <button className="w-full py-3 rounded-xl bg-gradient-to-r from-[#4E9FFF] to-[#37EDB2] text-white font-semibold text-sm flex items-center justify-center gap-2 shadow-lg">
-                           View Offers
+                          View Offers
                         </button>
                       </div>
                       <div className="flex items-center justify-center gap-3 text-xs text-gray-500 pt-1">
@@ -381,7 +407,10 @@ const ModernHero = () => {
                     'logo9.png',
                     'logo10.png',
                   ].map((file, idx) => (
-                    <div key={`${loopIdx}-${file}-${idx}`} className="flex items-center justify-center">
+                    <div
+                      key={`${loopIdx}-${file}-${idx}`}
+                      className="flex items-center justify-center"
+                    >
                       <img
                         src={`/logos/${file}`}
                         alt="Trusted brand logo"

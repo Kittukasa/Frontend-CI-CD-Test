@@ -1,21 +1,12 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { cn } from '@/lib/utils';
-import {
-  Search,
-  Plus,
-  X,
-  Image,
-  Video,
-  Trash2,
-  Edit,
-  MessageSquare
-} from 'lucide-react';
+import { Search, Plus, X, Image, Video, Trash2, Edit, MessageSquare } from 'lucide-react';
 import { templateService, Template, CreateTemplateRequest } from '../services/templateService';
 import TemplateCreationModal from '@/components/templates/TemplateCreationModal';
 import {
   TEMPLATE_CATEGORY_OPTIONS,
   TemplateCategoryValue,
-  TemplateEditFormData
+  TemplateEditFormData,
 } from '@/types/templateEditor';
 import { toast } from '@/components/ui/use-toast';
 
@@ -45,7 +36,7 @@ const buildAuthHeaders = (includeJson = false) => {
     throw new Error('Missing authentication token. Please log in again.');
   }
   const headers: Record<string, string> = {
-    Authorization: `Bearer ${token}`
+    Authorization: `Bearer ${token}`,
   };
   if (includeJson) {
     headers['Content-Type'] = 'application/json';
@@ -82,7 +73,7 @@ const normalizePlaceholders = (input: string) => {
   if (!input) {
     return {
       text: input,
-      order: [] as string[]
+      order: [] as string[],
     };
   }
 
@@ -129,7 +120,7 @@ const normalizePlaceholders = (input: string) => {
 
   return {
     text: processed,
-    order
+    order,
   };
 };
 
@@ -163,11 +154,7 @@ const reorderVariables = (order: string[], variables: string[]) => {
 };
 
 const generateSampleValue = (token: string, index: number) => {
-  const cleaned = token
-    .toString()
-    .replace(/[_-]+/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
+  const cleaned = token.toString().replace(/[_-]+/g, ' ').replace(/\s+/g, ' ').trim();
   if (!cleaned) {
     return `Value ${index + 1}`;
   }
@@ -225,7 +212,9 @@ const buildFormDataFromTemplate = (template: Template): TemplateEditFormData => 
   return {
     name: template.name,
     category: normalizeTemplateCategory(template.category),
-    buttonType: template.buttonType || (template.buttons?.length ? 'Copy Code, URL, Quick Replies etc' : 'None'),
+    buttonType:
+      template.buttonType ||
+      (template.buttons?.length ? 'Copy Code, URL, Quick Replies etc' : 'None'),
     language: template.language || 'en_US',
     headerType: template.headerType,
     headerText: denormalizePlaceholders(template.headerText || '', variables),
@@ -241,7 +230,7 @@ const buildFormDataFromTemplate = (template: Template): TemplateEditFormData => 
     bodyExampleText,
     footerExampleText,
     limitedTimeOffer: template.limitedTimeOffer,
-    carousel: template.carousel
+    carousel: template.carousel,
   };
 };
 
@@ -314,22 +303,32 @@ const extractHeaderData = (item: WhatsAppTemplateListItem) => {
   if (!header) return {};
 
   const format = typeof header.format === 'string' ? header.format.toUpperCase() : undefined;
-  const allowedHeaderTypes = new Set<Template['headerType']>(['TEXT', 'IMAGE', 'VIDEO', 'DOCUMENT']);
-  const headerType = format && allowedHeaderTypes.has(format as Template['headerType'])
-    ? (format as Template['headerType'])
-    : undefined;
+  const allowedHeaderTypes = new Set<Template['headerType']>([
+    'TEXT',
+    'IMAGE',
+    'VIDEO',
+    'DOCUMENT',
+  ]);
+  const headerType =
+    format && allowedHeaderTypes.has(format as Template['headerType'])
+      ? (format as Template['headerType'])
+      : undefined;
 
-  const headerText = headerType === 'TEXT' && typeof header.text === 'string' ? header.text : undefined;
+  const headerText =
+    headerType === 'TEXT' && typeof header.text === 'string' ? header.text : undefined;
   const mediaUrl =
-    headerType === 'IMAGE' ? header.sample_url || header.sampleUrl || headerExampleToUrl(header) :
-    headerType === 'VIDEO' ? header.sample_url || header.sampleUrl || headerExampleToUrl(header) :
-    headerType === 'DOCUMENT' ? header.sample_url || header.sampleUrl || headerExampleToUrl(header) :
-    undefined;
+    headerType === 'IMAGE'
+      ? header.sample_url || header.sampleUrl || headerExampleToUrl(header)
+      : headerType === 'VIDEO'
+      ? header.sample_url || header.sampleUrl || headerExampleToUrl(header)
+      : headerType === 'DOCUMENT'
+      ? header.sample_url || header.sampleUrl || headerExampleToUrl(header)
+      : undefined;
 
   return {
     headerType,
     headerText,
-    headerMediaUrl: mediaUrl
+    headerMediaUrl: mediaUrl,
   };
 };
 
@@ -370,7 +369,7 @@ const extractButtons = (item: WhatsAppTemplateListItem) => {
           type: 'URL' as const,
           text: button.text || '',
           url: button.url || button?.example?.[0] || '',
-          phone_number: undefined
+          phone_number: undefined,
         };
       }
       if (type === 'PHONE_NUMBER') {
@@ -378,14 +377,14 @@ const extractButtons = (item: WhatsAppTemplateListItem) => {
           type: 'PHONE_NUMBER' as const,
           text: button.text || '',
           url: undefined,
-          phone_number: button.phone_number || button.phoneNumber || ''
+          phone_number: button.phone_number || button.phoneNumber || '',
         };
       }
       return {
         type: 'QUICK_REPLY' as const,
         text: button.text || '',
         url: undefined,
-        phone_number: undefined
+        phone_number: undefined,
       };
     })
     .filter(button => button.text);
@@ -399,13 +398,13 @@ const extractLimitedTimeOffer = (item: WhatsAppTemplateListItem) => {
   const ltoComponent = item.components.find(component => component?.type === 'LIMITED_TIME_OFFER');
   const buttonComponent = item.components.find(component => component?.type === 'BUTTONS');
   const buttons = Array.isArray(buttonComponent?.buttons) ? buttonComponent.buttons : [];
-  const urlButton = buttons.find((button: any) => String(button?.type || '').toUpperCase() === 'URL');
-  const copyCodeButton = buttons.find(
-    (button: any) => {
-      const normalizedType = String(button?.type || '').toUpperCase();
-      return normalizedType === 'COPY_CODE' || normalizedType === 'COPY-CODE';
-    }
+  const urlButton = buttons.find(
+    (button: any) => String(button?.type || '').toUpperCase() === 'URL'
   );
+  const copyCodeButton = buttons.find((button: any) => {
+    const normalizedType = String(button?.type || '').toUpperCase();
+    return normalizedType === 'COPY_CODE' || normalizedType === 'COPY-CODE';
+  });
 
   const offerHeading =
     coerceTemplateTextValue(ltoComponent?.limited_time_offer?.text) ||
@@ -425,7 +424,7 @@ const extractLimitedTimeOffer = (item: WhatsAppTemplateListItem) => {
     offerCode,
     urlType: (urlButton?.url_type || 'Static') as 'Static' | 'Dynamic',
     url,
-    buttonLabel
+    buttonLabel,
   };
 };
 
@@ -467,8 +466,8 @@ const extractCarousel = (item: WhatsAppTemplateListItem) => {
         text: coerceTemplateTextValue(button?.text),
         url: coerceTemplateTextValue(button?.url),
         urlType: (button?.url_type || 'Static') as 'Static' | 'Dynamic',
-        phone_number: coerceTemplateTextValue(button?.phone_number)
-      }))
+        phone_number: coerceTemplateTextValue(button?.phone_number),
+      })),
     };
   });
 
@@ -490,7 +489,7 @@ const extractCarousel = (item: WhatsAppTemplateListItem) => {
   return {
     mediaType,
     buttonLayout,
-    cards: normalizedCards
+    cards: normalizedCards,
   };
 };
 
@@ -499,7 +498,7 @@ const extractExamples = (item: WhatsAppTemplateListItem) => {
     return {
       body: Array.isArray(item.examples.body) ? item.examples.body : undefined,
       headerText: Array.isArray(item.examples.headerText) ? item.examples.headerText : undefined,
-      footerText: Array.isArray(item.examples.footerText) ? item.examples.footerText : undefined
+      footerText: Array.isArray(item.examples.footerText) ? item.examples.footerText : undefined,
     };
   }
   return undefined;
@@ -522,9 +521,7 @@ const extractPreviewImage = (item: WhatsAppTemplateListItem, headerMediaUrl?: st
 const collectVariables = (bodyText: string) => {
   if (!bodyText) return [];
   const matches = bodyText.match(/{{\s*([\w.-]+)\s*}}/g) || [];
-  return matches
-    .map(token => token.replace(/[{}]/g, '').trim())
-    .filter(Boolean);
+  return matches.map(token => token.replace(/[{}]/g, '').trim()).filter(Boolean);
 };
 
 const mapToTemplate = (item: WhatsAppTemplateListItem): Template => {
@@ -533,17 +530,13 @@ const mapToTemplate = (item: WhatsAppTemplateListItem): Template => {
   const status = normalizeStatus(item.status);
   const category = normalizeTemplateCategory(item.category);
   const industryCategoryRaw =
-    (item as any).industryCategory ??
-    (item as any).industry_category ??
-    null;
+    (item as any).industryCategory ?? (item as any).industry_category ?? null;
   const industryCategory =
     typeof industryCategoryRaw === 'string' && industryCategoryRaw.trim()
       ? industryCategoryRaw.trim()
       : null;
   const occasionCategoryRaw =
-    (item as any).occasionCategory ??
-    (item as any).occasion_category ??
-    null;
+    (item as any).occasionCategory ?? (item as any).occasion_category ?? null;
   const occasionCategory =
     typeof occasionCategoryRaw === 'string' && occasionCategoryRaw.trim()
       ? occasionCategoryRaw.trim()
@@ -564,10 +557,7 @@ const mapToTemplate = (item: WhatsAppTemplateListItem): Template => {
     item.updatedAt ||
     (item as any).lastUpdatedAt ||
     new Date().toISOString();
-  const createdAt =
-    item.createdAt ||
-    (item as any).created_at ||
-    new Date().toISOString();
+  const createdAt = item.createdAt || (item as any).created_at || new Date().toISOString();
 
   return {
     id,
@@ -605,7 +595,7 @@ const mapToTemplate = (item: WhatsAppTemplateListItem): Template => {
     rejectedAt: (item as any).rejectedAt,
     rejectedBy: (item as any).rejectedBy,
     rejectionReason: item.rejected_reason || (item as any).rejectionReason,
-    examples
+    examples,
   };
 };
 
@@ -686,7 +676,7 @@ const TemplateLibrary: React.FC = () => {
 
       const params = new URLSearchParams({ limit: '50' });
       const response = await fetch(`/api/whatsapp/templates?${params.toString()}`, {
-        headers: buildAuthHeaders()
+        headers: buildAuthHeaders(),
       });
 
       if (!response.ok) {
@@ -707,9 +697,7 @@ const TemplateLibrary: React.FC = () => {
     } catch (error) {
       console.error('Error loading templates:', error);
       const message =
-        error instanceof Error
-          ? error.message
-          : 'Unable to load templates. Please try again.';
+        error instanceof Error ? error.message : 'Unable to load templates. Please try again.';
       setTemplatesError(message);
       setTemplates([]);
       setFilteredTemplates([]);
@@ -733,7 +721,7 @@ const TemplateLibrary: React.FC = () => {
         {
           method: 'PUT',
           headers: buildAuthHeaders(true),
-          body: JSON.stringify(graphPayload)
+          body: JSON.stringify(graphPayload),
         }
       );
 
@@ -754,7 +742,8 @@ const TemplateLibrary: React.FC = () => {
       alert('Template updated successfully.');
     } catch (error) {
       console.error('Error updating template:', error);
-      const message = error instanceof Error ? error.message : 'Failed to update template. Please try again.';
+      const message =
+        error instanceof Error ? error.message : 'Failed to update template. Please try again.';
       alert(message);
     } finally {
       setSavingTemplate(false);
@@ -769,7 +758,7 @@ const TemplateLibrary: React.FC = () => {
       const normalized = templatesData.map(template => ({
         ...template,
         variables: template.variables || [],
-        isPredefined: true
+        isPredefined: true,
       }));
       setPredefinedTemplates(normalized);
     } catch (error) {
@@ -786,9 +775,10 @@ const TemplateLibrary: React.FC = () => {
 
     if (templateSearch) {
       const searchValue = templateSearch.toLowerCase();
-      filtered = filtered.filter(template =>
-        template.name.toLowerCase().includes(searchValue) ||
-        template.bodyText.toLowerCase().includes(searchValue)
+      filtered = filtered.filter(
+        template =>
+          template.name.toLowerCase().includes(searchValue) ||
+          template.bodyText.toLowerCase().includes(searchValue)
       );
     }
 
@@ -820,9 +810,10 @@ const TemplateLibrary: React.FC = () => {
     let filtered = templates;
 
     if (templateSearch) {
-      filtered = filtered.filter(template =>
-        template.name.toLowerCase().includes(templateSearch.toLowerCase()) ||
-        template.bodyText.toLowerCase().includes(templateSearch.toLowerCase())
+      filtered = filtered.filter(
+        template =>
+          template.name.toLowerCase().includes(templateSearch.toLowerCase()) ||
+          template.bodyText.toLowerCase().includes(templateSearch.toLowerCase())
       );
     }
 
@@ -847,7 +838,7 @@ const TemplateLibrary: React.FC = () => {
         }`,
         {
           method: 'DELETE',
-          headers: buildAuthHeaders()
+          headers: buildAuthHeaders(),
         }
       );
 
@@ -912,7 +903,7 @@ const TemplateLibrary: React.FC = () => {
     const uploadResponse = await fetch('/api/whatsapp/media/upload', {
       method: 'POST',
       headers,
-      body: formData
+      body: formData,
     });
 
     const uploadResult = await uploadResponse.json().catch(() => ({}));
@@ -927,15 +918,18 @@ const TemplateLibrary: React.FC = () => {
     const isLimitedTimeOfferButtonType = templateData.buttonType === 'Limited Time Offer';
     const isCarouselButtonType = templateData.buttonType === 'Carousel';
     const headerType =
-      templateData.headerType && templateData.headerType !== 'NONE' ? templateData.headerType : undefined;
+      templateData.headerType && templateData.headerType !== 'NONE'
+        ? templateData.headerType
+        : undefined;
 
     const normalizedHeader =
-      headerType === 'TEXT'
-        ? normalizePlaceholders((templateData.headerText || '').trim())
-        : null;
+      headerType === 'TEXT' ? normalizePlaceholders((templateData.headerText || '').trim()) : null;
 
     const normalizedBody = normalizePlaceholders(templateData.bodyText.trim());
-    const footerRaw = isLimitedTimeOfferButtonType || isCarouselButtonType ? '' : templateData.footerText?.trim() || '';
+    const footerRaw =
+      isLimitedTimeOfferButtonType || isCarouselButtonType
+        ? ''
+        : templateData.footerText?.trim() || '';
     const normalizedFooter = footerRaw ? normalizePlaceholders(footerRaw) : null;
     const footerExampleRaw = templateData.footerExampleText?.trim() || '';
     const headerExampleValues = parseExampleValues(templateData.headerExampleText || '');
@@ -950,20 +944,19 @@ const TemplateLibrary: React.FC = () => {
       if (headerType === 'TEXT') {
         headerComponent.format = 'TEXT';
         headerComponent.text = normalizedHeader?.text || '';
-        headerSamples =
-          normalizedHeader?.order?.length
-            ? normalizedHeader.order.map((token, index) => {
-                if (headerExampleValues[index] && headerExampleValues[index]?.trim()) {
-                  return headerExampleValues[index].trim();
-                }
-                return generateSampleValue(token, index);
-              })
-            : headerExampleValues.length
-            ? headerExampleValues
-            : [];
+        headerSamples = normalizedHeader?.order?.length
+          ? normalizedHeader.order.map((token, index) => {
+              if (headerExampleValues[index] && headerExampleValues[index]?.trim()) {
+                return headerExampleValues[index].trim();
+              }
+              return generateSampleValue(token, index);
+            })
+          : headerExampleValues.length
+          ? headerExampleValues
+          : [];
         if (headerSamples.length) {
           headerComponent.example = {
-            header_text: headerSamples
+            header_text: headerSamples,
           };
         }
       } else {
@@ -976,7 +969,7 @@ const TemplateLibrary: React.FC = () => {
         const mediaUrl = ensureAbsoluteUrl(mediaUrlRaw);
         const mediaHandle = await uploadHeaderMediaFromUrl(mediaUrl, headerType);
         headerComponent.example = {
-          header_handle: [mediaHandle]
+          header_handle: [mediaHandle],
         };
       }
 
@@ -985,16 +978,16 @@ const TemplateLibrary: React.FC = () => {
 
     const bodyComponent: any = {
       type: 'BODY',
-      text: normalizedBody.text
+      text: normalizedBody.text,
     };
 
     if (bodyExampleValues.length > 0) {
       bodyComponent.example = {
-        body_text: [bodyExampleValues]
+        body_text: [bodyExampleValues],
       };
     } else if (templateData.bodyExampleText && templateData.bodyExampleText.trim()) {
       bodyComponent.example = {
-        body_text: [[templateData.bodyExampleText.trim()]]
+        body_text: [[templateData.bodyExampleText.trim()]],
       };
     }
 
@@ -1003,11 +996,11 @@ const TemplateLibrary: React.FC = () => {
     if (normalizedFooter?.text) {
       const footerComponent: any = {
         type: 'FOOTER',
-        text: normalizedFooter.text
+        text: normalizedFooter.text,
       };
       if (footerExampleRaw) {
         footerComponent.example = {
-          footer_text: [footerExampleRaw]
+          footer_text: [footerExampleRaw],
         };
       }
       components.push(footerComponent);
@@ -1017,7 +1010,7 @@ const TemplateLibrary: React.FC = () => {
       const buttonsForApi = templateData.buttons.map(button => {
         const base: any = {
           type: button.type,
-          text: button.text?.trim() || ''
+          text: button.text?.trim() || '',
         };
 
         if (button.type === 'URL') {
@@ -1040,7 +1033,7 @@ const TemplateLibrary: React.FC = () => {
       if (buttonsForApi.length > 0) {
         components.push({
           type: 'BUTTONS',
-          buttons: buttonsForApi
+          buttons: buttonsForApi,
         });
       }
     }
@@ -1050,22 +1043,22 @@ const TemplateLibrary: React.FC = () => {
         type: 'LIMITED_TIME_OFFER',
         limited_time_offer: {
           text: templateData.limitedTimeOffer.offerHeading?.trim() || '',
-          has_expiration: false
-        }
+          has_expiration: false,
+        },
       });
       components.push({
         type: 'BUTTONS',
         buttons: [
           {
             type: 'copy_code',
-            example: templateData.limitedTimeOffer.offerCode?.trim() || ''
+            example: templateData.limitedTimeOffer.offerCode?.trim() || '',
           },
           {
             type: 'URL',
             text: templateData.limitedTimeOffer.buttonLabel?.trim() || '',
-            url: templateData.limitedTimeOffer.url?.trim() || ''
-          }
-        ]
+            url: templateData.limitedTimeOffer.url?.trim() || '',
+          },
+        ],
       });
     }
 
@@ -1078,12 +1071,12 @@ const TemplateLibrary: React.FC = () => {
               type: 'HEADER',
               format: templateData.carousel?.mediaType || 'IMAGE',
               example: {
-                header_handle: [card.mediaHandle || card.mediaUrl || '']
-              }
+                header_handle: [card.mediaHandle || card.mediaUrl || ''],
+              },
             },
             {
               type: 'BODY',
-              text: card.bodyText?.trim() || ''
+              text: card.bodyText?.trim() || '',
             },
             {
               type: 'BUTTONS',
@@ -1094,11 +1087,11 @@ const TemplateLibrary: React.FC = () => {
                   ? { url: button.url?.trim() || '' }
                   : button.type === 'PHONE_NUMBER'
                   ? { phone_number: button.phone_number?.trim() || '' }
-                  : {})
-              }))
-            }
-          ]
-        }))
+                  : {}),
+              })),
+            },
+          ],
+        })),
       });
     }
 
@@ -1112,11 +1105,14 @@ const TemplateLibrary: React.FC = () => {
 
     const graphPayload = {
       name: templateData.name.trim(),
-      category: (isLimitedTimeOfferButtonType || isCarouselButtonType ? 'MARKETING' : templateData.category || 'MARKETING').toUpperCase(),
+      category: (isLimitedTimeOfferButtonType || isCarouselButtonType
+        ? 'MARKETING'
+        : templateData.category || 'MARKETING'
+      ).toUpperCase(),
       buttonType:
         (typeof templateData.buttonType === 'string' && templateData.buttonType.trim()) || 'None',
       language: templateData.language || 'en_US',
-      components
+      components,
     };
 
     const localDraft: CreateTemplateRequest = {
@@ -1126,30 +1122,45 @@ const TemplateLibrary: React.FC = () => {
         (typeof templateData.buttonType === 'string' && templateData.buttonType.trim()) || 'None',
       language: templateData.language || 'en_US',
       headerType,
-      headerText: !isCarouselButtonType && headerType === 'TEXT' ? normalizedHeader?.text : undefined,
-      headerImageUrl: !isCarouselButtonType && headerType === 'IMAGE' ? templateData.headerImageUrl : undefined,
-      headerVideoUrl: !isCarouselButtonType && headerType === 'VIDEO' ? templateData.headerVideoUrl : undefined,
-      headerDocumentUrl: !isCarouselButtonType && headerType === 'DOCUMENT' ? templateData.headerDocumentUrl : undefined,
+      headerText:
+        !isCarouselButtonType && headerType === 'TEXT' ? normalizedHeader?.text : undefined,
+      headerImageUrl:
+        !isCarouselButtonType && headerType === 'IMAGE' ? templateData.headerImageUrl : undefined,
+      headerVideoUrl:
+        !isCarouselButtonType && headerType === 'VIDEO' ? templateData.headerVideoUrl : undefined,
+      headerDocumentUrl:
+        !isCarouselButtonType && headerType === 'DOCUMENT'
+          ? templateData.headerDocumentUrl
+          : undefined,
       bodyText: normalizedBody.text,
-      footerText: isLimitedTimeOfferButtonType || isCarouselButtonType ? undefined : normalizedFooter?.text,
-      buttons: isLimitedTimeOfferButtonType || isCarouselButtonType ? undefined : templateData.buttons,
+      footerText:
+        isLimitedTimeOfferButtonType || isCarouselButtonType ? undefined : normalizedFooter?.text,
+      buttons:
+        isLimitedTimeOfferButtonType || isCarouselButtonType ? undefined : templateData.buttons,
       variables: orderedVariables.map(value => value.trim()),
       limitedTimeOffer: templateData.limitedTimeOffer,
       carousel: templateData.carousel,
       examples: {
         headerText:
-          headerType === 'TEXT' && headerSamples && headerSamples.length ? headerSamples : undefined,
-        footerText: isLimitedTimeOfferButtonType || isCarouselButtonType ? undefined : footerExampleRaw ? [footerExampleRaw] : undefined,
+          headerType === 'TEXT' && headerSamples && headerSamples.length
+            ? headerSamples
+            : undefined,
+        footerText:
+          isLimitedTimeOfferButtonType || isCarouselButtonType
+            ? undefined
+            : footerExampleRaw
+            ? [footerExampleRaw]
+            : undefined,
         body:
           templateData.bodyExampleText && templateData.bodyExampleText.trim()
             ? [templateData.bodyExampleText.trim()]
-            : undefined
-      }
+            : undefined,
+      },
     };
 
     return {
       graphPayload,
-      localDraft
+      localDraft,
     };
   };
 
@@ -1166,7 +1177,7 @@ const TemplateLibrary: React.FC = () => {
       const createResponse = await fetch('/api/whatsapp/templates', {
         method: 'POST',
         headers: buildAuthHeaders(true),
-        body: JSON.stringify(graphPayload)
+        body: JSON.stringify(graphPayload),
       });
 
       const createResult = await createResponse.json().catch(() => ({}));
@@ -1188,14 +1199,14 @@ const TemplateLibrary: React.FC = () => {
       closeTemplateModal();
       toast({
         title: 'Template created',
-        description: 'Template draft saved successfully.'
+        description: 'Template draft saved successfully.',
       });
-  } catch (error) {
-    console.error('Error saving template draft:', error);
-    const rawMessage =
-      error instanceof Error ? error.message : 'Failed to save template. Please try again.';
-    alert(makeTemplateErrorMessage(rawMessage));
-  } finally {
+    } catch (error) {
+      console.error('Error saving template draft:', error);
+      const rawMessage =
+        error instanceof Error ? error.message : 'Failed to save template. Please try again.';
+      alert(makeTemplateErrorMessage(rawMessage));
+    } finally {
       setSavingTemplate(false);
     }
   };
@@ -1204,63 +1215,65 @@ const TemplateLibrary: React.FC = () => {
     <div className="h-full flex flex-col bg-gray-50">
       {/* Header */}
       {!showCreateModal && (
-      <div className="bg-white border-b border-gray-200 p-6 sticky top-0 z-40">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center">
-            <h3 className="text-xl font-semibold text-gray-900">Create &amp; Manage Campaigning Templates</h3>
-          </div>
-          <button
-            onClick={openCreateModal}
-            className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 flex items-center"
-            disabled={savingTemplate || templateActionLoading}
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            Create Template
-          </button>
-        </div>
-
-        {/* Search and Filters */}
-        <div className="flex flex-col sm:flex-row gap-4">
-          <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-            <input
-              type="text"
-              placeholder="Search templates..."
-              value={templateSearch}
-              onChange={(e) => setTemplateSearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-          </div>
-
-          <div className="flex gap-2">
-            <select
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+        <div className="bg-white border-b border-gray-200 p-6 sticky top-0 z-40">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center">
+              <h3 className="text-xl font-semibold text-gray-900">
+                Create &amp; Manage Campaigning Templates
+              </h3>
+            </div>
+            <button
+              onClick={openCreateModal}
+              className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 flex items-center"
+              disabled={savingTemplate || templateActionLoading}
             >
-              <option value="all">All Categories</option>
-              {categoryOptions.map(category => (
-                <option key={category} value={category}>
-                  {category}
-                </option>
-              ))}
-            </select>
+              <Plus className="w-4 h-4 mr-2" />
+              Create Template
+            </button>
+          </div>
 
-            <select
-              value={selectedOccasion}
-              onChange={event => setSelectedOccasion(event.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="all">All Occasions</option>
-              {occasionOptions.map(occasion => (
-                <option key={occasion} value={occasion}>
-                  {occasion}
-                </option>
-              ))}
-            </select>
+          {/* Search and Filters */}
+          <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex-1 relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <input
+                type="text"
+                placeholder="Search templates..."
+                value={templateSearch}
+                onChange={e => setTemplateSearch(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+
+            <div className="flex gap-2">
+              <select
+                value={selectedCategory}
+                onChange={e => setSelectedCategory(e.target.value)}
+                className="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="all">All Categories</option>
+                {categoryOptions.map(category => (
+                  <option key={category} value={category}>
+                    {category}
+                  </option>
+                ))}
+              </select>
+
+              <select
+                value={selectedOccasion}
+                onChange={event => setSelectedOccasion(event.target.value)}
+                className="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="all">All Occasions</option>
+                {occasionOptions.map(occasion => (
+                  <option key={occasion} value={occasion}>
+                    {occasion}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
         </div>
-      </div>
       )}
 
       {/* Content */}
@@ -1316,7 +1329,7 @@ const TemplateLibrary: React.FC = () => {
                                 src={previewImage}
                                 alt={template.name}
                                 className="w-full h-full object-cover"
-                                onError={(event) => {
+                                onError={event => {
                                   const target = event.target as HTMLImageElement;
                                   target.src =
                                     'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjEyMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjEyMCIgZmlsbD0iI2Y3ZjdmNyIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5OTk5OSI+SW1hZ2U8L3RleHQ+PC9zdmc+';
@@ -1332,12 +1345,8 @@ const TemplateLibrary: React.FC = () => {
                             <h3 className="font-semibold text-gray-900 mb-2 line-clamp-1">
                               {template.name}
                             </h3>
-                            <p className="text-sm text-gray-600 mb-2 capitalize">
-                              {categoryLabel}
-                            </p>
-                            <p className="text-xs text-gray-500 line-clamp-3">
-                              {summary}
-                            </p>
+                            <p className="text-sm text-gray-600 mb-2 capitalize">{categoryLabel}</p>
+                            <p className="text-xs text-gray-500 line-clamp-3">{summary}</p>
                           </div>
                         </div>
                       );
@@ -1442,7 +1451,8 @@ const TemplateLibrary: React.FC = () => {
                                 onClick={() => handleOpenCustomTemplateEdit(template)}
                                 className={cn(
                                   'inline-flex items-center gap-1 rounded-md bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-blue-700',
-                                  templateActionLoading && 'cursor-not-allowed opacity-60 hover:bg-blue-600'
+                                  templateActionLoading &&
+                                    'cursor-not-allowed opacity-60 hover:bg-blue-600'
                                 )}
                               >
                                 <Edit className="h-3.5 w-3.5" />
@@ -1509,7 +1519,7 @@ const TemplateLibrary: React.FC = () => {
                   toast({
                     title: 'Template stored only on WhatsApp',
                     description: message,
-                    variant: 'destructive'
+                    variant: 'destructive',
                   });
                 }
               }

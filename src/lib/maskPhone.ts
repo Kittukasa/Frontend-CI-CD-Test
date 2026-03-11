@@ -28,4 +28,3 @@ export const maskPhoneNumber = (value?: string | null): string => {
 
   return masked;
 };
-

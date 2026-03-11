@@ -24,20 +24,23 @@ const DashboardPreview = () => {
   const tabs = [
     { id: 'analytics', label: 'Analytics', icon: BarChart3 },
     { id: 'customers', label: 'Customers', icon: Users },
-    { id: 'campaigns', label: 'Campaigns', icon: Zap }
+    { id: 'campaigns', label: 'Campaigns', icon: Zap },
   ];
 
   return (
-    <section id="dashboard-preview" className="py-20 bg-gradient-to-b from-black to-slate-900 relative overflow-hidden">
+    <section
+      id="dashboard-preview"
+      className="py-20 bg-gradient-to-b from-black to-slate-900 relative overflow-hidden"
+    >
       {/* Background Elements */}
       <div className="absolute inset-0">
         <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-gradient-to-r from-blue-500/5 to-purple-500/5 rounded-full blur-3xl" />
         <div className="absolute bottom-1/4 left-1/4 w-80 h-80 bg-gradient-to-r from-purple-500/5 to-pink-500/5 rounded-full blur-3xl" />
-        
+
         {/* 3D Command Center Image */}
         <div className="absolute inset-0 flex items-center justify-center opacity-10">
-          <img 
-            src="/images/command-center-3d.svg" 
+          <img
+            src="/images/command-center-3d.svg"
             alt="3D Command Center"
             className="w-full h-full object-cover"
           />
@@ -51,31 +54,39 @@ const DashboardPreview = () => {
             <Eye className="w-4 h-4 text-blue-400 mr-2" />
             <span className="text-sm font-medium text-blue-300">Live Preview</span>
           </div>
-          
+
           <h2 className="text-4xl lg:text-6xl font-bold text-white mb-6">
             Your Business
-            <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent"> Command Center</span>
+            <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+              {' '}
+              Command Center
+            </span>
           </h2>
-          
+
           <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-            Get a complete view of your business with real-time analytics, customer insights, and campaign performance.
+            Get a complete view of your business with real-time analytics, customer insights, and
+            campaign performance.
           </p>
 
           {/* 3D Command Center Visual */}
-          <div className={`mt-12 relative transition-all duration-1000 ${isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}>
+          <div
+            className={`mt-12 relative transition-all duration-1000 ${
+              isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
+            }`}
+          >
             <div className="relative max-w-4xl mx-auto">
-              <img 
-                src="/images/command-center-3d.svg" 
+              <img
+                src="/images/command-center-3d.svg"
                 alt="3D Command Center Dashboard"
                 className="w-full h-auto rounded-2xl"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-2xl" />
-              
+
               {/* Floating Elements */}
               <div className="absolute top-4 right-4 bg-gradient-to-r from-green-500/20 to-emerald-500/20 backdrop-blur-sm rounded-lg px-3 py-2 border border-green-500/30">
                 <span className="text-green-300 text-sm font-medium">Live Data</span>
               </div>
-              
+
               <div className="absolute bottom-4 left-4 bg-gradient-to-r from-blue-500/20 to-purple-500/20 backdrop-blur-sm rounded-lg px-3 py-2 border border-blue-500/30">
                 <span className="text-blue-300 text-sm font-medium">Real-time Analytics</span>
               </div>
@@ -84,7 +95,11 @@ const DashboardPreview = () => {
         </div>
 
         {/* Dashboard Container */}
-        <div className={`max-w-6xl mx-auto transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+        <div
+          className={`max-w-6xl mx-auto transition-all duration-1000 ${
+            isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+          }`}
+        >
           {/* Browser Frame */}
           <div className="bg-gradient-to-br from-slate-800/80 to-slate-900/80 backdrop-blur-xl rounded-t-2xl p-4 border border-slate-600/30">
             <div className="flex items-center justify-between">
@@ -106,7 +121,7 @@ const DashboardPreview = () => {
           <div className="bg-gradient-to-br from-slate-900/90 to-black/90 backdrop-blur-xl rounded-b-2xl border-x border-b border-slate-600/30 overflow-hidden">
             {/* Navigation Tabs */}
             <div className="flex border-b border-slate-700/50 bg-slate-800/30">
-              {tabs.map((tab) => {
+              {tabs.map(tab => {
                 const Icon = tab.icon;
                 return (
                   <button
@@ -139,7 +154,7 @@ const DashboardPreview = () => {
                       <div className="text-2xl font-bold text-white">₹8,50,000</div>
                       <div className="text-green-400 text-sm">+23% this month</div>
                     </div>
-                    
+
                     <div className="bg-gradient-to-br from-purple-500/10 to-purple-600/10 rounded-xl p-6 border border-purple-500/20">
                       <div className="flex items-center justify-between mb-2">
                         <span className="text-gray-300 text-sm">Orders</span>
@@ -148,7 +163,7 @@ const DashboardPreview = () => {
                       <div className="text-2xl font-bold text-white">2,450</div>
                       <div className="text-purple-400 text-sm">+18% this month</div>
                     </div>
-                    
+
                     <div className="bg-gradient-to-br from-green-500/10 to-green-600/10 rounded-xl p-6 border border-green-500/20">
                       <div className="flex items-center justify-between mb-2">
                         <span className="text-gray-300 text-sm">Customers</span>
@@ -157,7 +172,7 @@ const DashboardPreview = () => {
                       <div className="text-2xl font-bold text-white">1,234</div>
                       <div className="text-green-400 text-sm">+12% this month</div>
                     </div>
-                    
+
                     <div className="bg-gradient-to-br from-orange-500/10 to-orange-600/10 rounded-xl p-6 border border-orange-500/20">
                       <div className="flex items-center justify-between mb-2">
                         <span className="text-gray-300 text-sm">Avg Order</span>
@@ -173,7 +188,7 @@ const DashboardPreview = () => {
                     <h3 className="text-white font-semibold mb-4">Revenue Trend</h3>
                     <div className="flex items-end space-x-2 h-32">
                       {[40, 45, 50, 55, 60, 62, 66, 72, 70, 78, 82, 88].map((height, i) => (
-                        <div 
+                        <div
                           key={i}
                           className="bg-gradient-to-t from-blue-500 to-purple-500 rounded-sm flex-1 transition-all duration-1000 delay-300"
                           style={{ height: `${height}%` }}
@@ -209,14 +224,37 @@ const DashboardPreview = () => {
                     </div>
                     <div className="divide-y divide-slate-600/30">
                       {[
-                        { name: 'Priya Sharma', phone: '+91 98765 43210', spent: '₹2,340', type: 'Premium' },
-                        { name: 'Rahul Kumar', phone: '+91 87654 32109', spent: '₹1,890', type: 'Regular' },
-                        { name: 'Anita Singh', phone: '+91 76543 21098', spent: '₹3,450', type: 'High Spender' }
+                        {
+                          name: 'Priya Sharma',
+                          phone: '+91 98765 43210',
+                          spent: '₹2,340',
+                          type: 'Premium',
+                        },
+                        {
+                          name: 'Rahul Kumar',
+                          phone: '+91 87654 32109',
+                          spent: '₹1,890',
+                          type: 'Regular',
+                        },
+                        {
+                          name: 'Anita Singh',
+                          phone: '+91 76543 21098',
+                          spent: '₹3,450',
+                          type: 'High Spender',
+                        },
                       ].map((customer, i) => (
-                        <div key={i} className="p-4 flex items-center justify-between hover:bg-slate-700/30 transition-colors">
+                        <div
+                          key={i}
+                          className="p-4 flex items-center justify-between hover:bg-slate-700/30 transition-colors"
+                        >
                           <div className="flex items-center space-x-4">
                             <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
-                              <span className="text-white font-semibold text-sm">{customer.name.split(' ').map(n => n[0]).join('')}</span>
+                              <span className="text-white font-semibold text-sm">
+                                {customer.name
+                                  .split(' ')
+                                  .map(n => n[0])
+                                  .join('')}
+                              </span>
                             </div>
                             <div>
                               <div className="text-white font-medium">{customer.name}</div>
@@ -225,11 +263,15 @@ const DashboardPreview = () => {
                           </div>
                           <div className="text-right">
                             <div className="text-white font-semibold">{customer.spent}</div>
-                            <div className={`text-xs px-2 py-1 rounded-full ${
-                              customer.type === 'High Spender' ? 'bg-purple-500/20 text-purple-300' :
-                              customer.type === 'Premium' ? 'bg-blue-500/20 text-blue-300' :
-                              'bg-gray-500/20 text-gray-300'
-                            }`}>
+                            <div
+                              className={`text-xs px-2 py-1 rounded-full ${
+                                customer.type === 'High Spender'
+                                  ? 'bg-purple-500/20 text-purple-300'
+                                  : customer.type === 'Premium'
+                                  ? 'bg-blue-500/20 text-blue-300'
+                                  : 'bg-gray-500/20 text-gray-300'
+                              }`}
+                            >
                               {customer.type}
                             </div>
                           </div>
@@ -269,23 +311,47 @@ const DashboardPreview = () => {
                     </div>
                     <div className="divide-y divide-slate-600/30">
                       {[
-                        { name: 'Diwali Special Offer', status: 'Active', sent: '2,340', revenue: '₹12,500' },
-                        { name: 'Weekend Sale', status: 'Completed', sent: '1,890', revenue: '₹8,900' },
-                        { name: 'New Product Launch', status: 'Scheduled', sent: '0', revenue: '₹0' }
+                        {
+                          name: 'Diwali Special Offer',
+                          status: 'Active',
+                          sent: '2,340',
+                          revenue: '₹12,500',
+                        },
+                        {
+                          name: 'Weekend Sale',
+                          status: 'Completed',
+                          sent: '1,890',
+                          revenue: '₹8,900',
+                        },
+                        {
+                          name: 'New Product Launch',
+                          status: 'Scheduled',
+                          sent: '0',
+                          revenue: '₹0',
+                        },
                       ].map((campaign, i) => (
-                        <div key={i} className="p-4 flex items-center justify-between hover:bg-slate-700/30 transition-colors">
+                        <div
+                          key={i}
+                          className="p-4 flex items-center justify-between hover:bg-slate-700/30 transition-colors"
+                        >
                           <div>
                             <div className="text-white font-medium">{campaign.name}</div>
-                            <div className="text-gray-400 text-sm">{campaign.sent} messages sent</div>
+                            <div className="text-gray-400 text-sm">
+                              {campaign.sent} messages sent
+                            </div>
                           </div>
                           <div className="flex items-center space-x-4">
                             <div className="text-right">
                               <div className="text-white font-semibold">{campaign.revenue}</div>
-                              <div className={`text-xs px-2 py-1 rounded-full ${
-                                campaign.status === 'Active' ? 'bg-green-500/20 text-green-300' :
-                                campaign.status === 'Completed' ? 'bg-blue-500/20 text-blue-300' :
-                                'bg-yellow-500/20 text-yellow-300'
-                              }`}>
+                              <div
+                                className={`text-xs px-2 py-1 rounded-full ${
+                                  campaign.status === 'Active'
+                                    ? 'bg-green-500/20 text-green-300'
+                                    : campaign.status === 'Completed'
+                                    ? 'bg-blue-500/20 text-blue-300'
+                                    : 'bg-yellow-500/20 text-yellow-300'
+                                }`}
+                              >
                                 {campaign.status}
                               </div>
                             </div>
@@ -302,9 +368,7 @@ const DashboardPreview = () => {
 
         {/* CTA Section */}
         <div className="text-center mt-16">
-          <p className="text-xl text-gray-300 mb-6">
-            Ready to see your business data like this?
-          </p>
+          <p className="text-xl text-gray-300 mb-6">Ready to see your business data like this?</p>
           <button className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl text-white font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-300 hover:scale-105 group">
             Start Your Free Trial
             <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />

@@ -48,7 +48,7 @@ const CampaignProgressPage: React.FC = () => {
           throw new Error('Authentication required. Please log in again.');
         }
         const response = await fetch(`/api/whatsapp/campaigns/${campaignId}/progress`, {
-          headers: { Authorization: `Bearer ${token}` }
+          headers: { Authorization: `Bearer ${token}` },
         });
         const data = await response.json().catch(() => ({}));
         if (!response.ok) {
@@ -136,9 +136,7 @@ const CampaignProgressPage: React.FC = () => {
                 </td>
                 <td className="px-4 py-2 capitalize text-gray-700">{recipient.status || '—'}</td>
                 <td className="px-4 py-2 text-gray-500">
-                  {recipient.updatedAt
-                    ? new Date(recipient.updatedAt).toLocaleTimeString()
-                    : '—'}
+                  {recipient.updatedAt ? new Date(recipient.updatedAt).toLocaleTimeString() : '—'}
                 </td>
                 <td className="px-4 py-2 text-sm text-rose-600">{recipient.error || '—'}</td>
               </tr>
@@ -189,9 +187,8 @@ const CampaignProgressPage: React.FC = () => {
                 <div className="flex items-center justify-between text-sm text-gray-600">
                   <span>Overall progress</span>
                   <span>
-                    {progress.completedCount + progress.failedCount}/{progress.totalRecipients} ({
-                      progressPercent
-                    }
+                    {progress.completedCount + progress.failedCount}/{progress.totalRecipients} (
+                    {progressPercent}
                     %)
                   </span>
                 </div>
@@ -206,15 +203,21 @@ const CampaignProgressPage: React.FC = () => {
               <div className="mt-6 grid gap-4 md:grid-cols-3">
                 <div className="rounded-lg border border-gray-100 bg-gray-50 p-4">
                   <p className="text-xs uppercase tracking-wide text-gray-500">Completed</p>
-                  <p className="mt-1 text-2xl font-semibold text-gray-900">{progress.completedCount}</p>
+                  <p className="mt-1 text-2xl font-semibold text-gray-900">
+                    {progress.completedCount}
+                  </p>
                 </div>
                 <div className="rounded-lg border border-gray-100 bg-gray-50 p-4">
                   <p className="text-xs uppercase tracking-wide text-gray-500">Failed</p>
-                  <p className="mt-1 text-2xl font-semibold text-gray-900">{progress.failedCount}</p>
+                  <p className="mt-1 text-2xl font-semibold text-gray-900">
+                    {progress.failedCount}
+                  </p>
                 </div>
                 <div className="rounded-lg border border-gray-100 bg-gray-50 p-4">
                   <p className="text-xs uppercase tracking-wide text-gray-500">Pending</p>
-                  <p className="mt-1 text-2xl font-semibold text-gray-900">{progress.pendingCount}</p>
+                  <p className="mt-1 text-2xl font-semibold text-gray-900">
+                    {progress.pendingCount}
+                  </p>
                 </div>
               </div>
             </div>

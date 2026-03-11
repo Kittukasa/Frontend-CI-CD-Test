@@ -20,13 +20,14 @@ import {
   ImagePlus,
   Trash2,
   UploadCloud,
-  RefreshCw
+  RefreshCw,
 } from 'lucide-react';
 
 const runtimeOnboardingLink = (
   ((import.meta.env as Record<string, string | undefined>)?.VITE_ONBOARDING_LINK ??
     (import.meta.env as Record<string, string | undefined>)?.ONBOARDING_LINK ??
-    '') || ''
+    '') ||
+  ''
 ).trim();
 
 interface AuditHistoryEntry {
@@ -132,7 +133,7 @@ const defaultOnboardingConfig: OnboardingConfig = {
   appId: '',
   verifiedName: '',
   lastUpdatedAt: null,
-  onboardingLink: runtimeOnboardingLink
+  onboardingLink: runtimeOnboardingLink,
 };
 
 const StoreProfile: React.FC = () => {
@@ -149,7 +150,7 @@ const StoreProfile: React.FC = () => {
         throw new Error('Missing authentication token. Please log in again.');
       }
       const headers: Record<string, string> = {
-        Authorization: `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       };
       if (includeJson) {
         headers['Content-Type'] = 'application/json';
@@ -166,14 +167,16 @@ const StoreProfile: React.FC = () => {
   >('profile');
   const [streetNameInput, setStreetNameInput] = useState('');
   const [streetNameSaving, setStreetNameSaving] = useState(false);
-  const [streetNameStatus, setStreetNameStatus] = useState<
-    { type: 'success' | 'error'; message: string } | null
-  >(null);
+  const [streetNameStatus, setStreetNameStatus] = useState<{
+    type: 'success' | 'error';
+    message: string;
+  } | null>(null);
   const [storeNameInput, setStoreNameInput] = useState('');
   const [storeNameSaving, setStoreNameSaving] = useState(false);
-  const [storeNameStatus, setStoreNameStatus] = useState<
-    { type: 'success' | 'error'; message: string } | null
-  >(null);
+  const [storeNameStatus, setStoreNameStatus] = useState<{
+    type: 'success' | 'error';
+    message: string;
+  } | null>(null);
   const [auditHistory, setAuditHistory] = useState<NormalizedAuditEntry[]>([]);
   const [auditLoading, setAuditLoading] = useState(true);
   const [auditError, setAuditError] = useState('');
@@ -210,7 +213,7 @@ const StoreProfile: React.FC = () => {
     businessPhone: '',
     businessId: '',
     appId: '',
-    verifiedName: ''
+    verifiedName: '',
   });
   const [onboardingLinkUrl, setOnboardingLinkUrl] = useState<string>(runtimeOnboardingLink);
   const [onboardingLoading, setOnboardingLoading] = useState(true);
@@ -219,7 +222,10 @@ const StoreProfile: React.FC = () => {
   const [pollingOnboarding, setPollingOnboarding] = useState(false);
   const [latestWebhookSnapshot, setLatestWebhookSnapshot] =
     useState<OnboardingWebhookSnapshot | null>(null);
-  const [registerStatus, setRegisterStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+  const [registerStatus, setRegisterStatus] = useState<{
+    type: 'success' | 'error';
+    message: string;
+  } | null>(null);
   const [registeringNumber, setRegisteringNumber] = useState(false);
   const onboardingPollAttemptsRef = useRef(0);
   const latestSnapshotTimestampRef = useRef<string | null>(null);
@@ -233,9 +239,10 @@ const StoreProfile: React.FC = () => {
   const [smartImages, setSmartImages] = useState<string[]>([]);
   const [headerImages, setHeaderImages] = useState<string[]>([]);
   const [bottomBanner, setBottomBanner] = useState<string | null>(null);
-  const [smartStatus, setSmartStatus] = useState<
-    { type: 'success' | 'error'; message: string } | null
-  >(null);
+  const [smartStatus, setSmartStatus] = useState<{
+    type: 'success' | 'error';
+    message: string;
+  } | null>(null);
   const [smartSaving, setSmartSaving] = useState(false);
   const [smartUploading, setSmartUploading] = useState(false);
 
@@ -246,7 +253,11 @@ const StoreProfile: React.FC = () => {
   const latestWebhookCapturedDisplay = latestWebhookSnapshot?.capturedAt
     ? new Date(latestWebhookSnapshot.capturedAt).toLocaleString()
     : null;
-  const candidateWabaIdForLookup = (onboardingForm.wabaId || latestWebhookSnapshot?.wabaId || '').trim();
+  const candidateWabaIdForLookup = (
+    onboardingForm.wabaId ||
+    latestWebhookSnapshot?.wabaId ||
+    ''
+  ).trim();
 
   const handleOpenOnboarding = () => {
     if (!hasOnboardingLink) return;
@@ -263,7 +274,7 @@ const StoreProfile: React.FC = () => {
 
     try {
       const response = await fetch('/api/whatsapp/config/onboarding', {
-        headers: buildAuthHeaders()
+        headers: buildAuthHeaders(),
       });
 
       if (!response.ok) {
@@ -284,7 +295,7 @@ const StoreProfile: React.FC = () => {
         appId: data.appId ?? '',
         verifiedName: data.verifiedName ?? '',
         lastUpdatedAt: data.lastUpdatedAt || null,
-        onboardingLink: onboardingUrl
+        onboardingLink: onboardingUrl,
       };
 
       setOnboardingConfig(nextConfig);
@@ -294,7 +305,7 @@ const StoreProfile: React.FC = () => {
         businessPhone: nextConfig.businessPhone,
         businessId: nextConfig.businessId,
         appId: nextConfig.appId,
-        verifiedName: nextConfig.verifiedName
+        verifiedName: nextConfig.verifiedName,
       });
       setOnboardingLinkUrl(onboardingUrl);
     } catch (error: any) {
@@ -308,7 +319,7 @@ const StoreProfile: React.FC = () => {
   const loadLatestOnboardingSnapshot = useCallback(async () => {
     try {
       const response = await fetch('/api/whatsapp/onboarding/latest-webhook', {
-        headers: buildAuthHeaders()
+        headers: buildAuthHeaders(),
       });
 
       if (!response.ok) {
@@ -348,7 +359,7 @@ const StoreProfile: React.FC = () => {
         webhookVerifyToken: normalize(snapshotRaw.webhookVerifyToken),
         accessToken: normalize(snapshotRaw.accessToken),
         eventType: normalize(snapshotRaw.eventType),
-        capturedAt: captureTimestamp
+        capturedAt: captureTimestamp,
       };
 
       setLatestWebhookSnapshot(normalizedSnapshot);
@@ -359,13 +370,13 @@ const StoreProfile: React.FC = () => {
         businessPhone: normalizedSnapshot.businessPhone ?? prev.businessPhone,
         businessId: normalizedSnapshot.businessId ?? prev.businessId,
         appId: normalizedSnapshot.appId ?? prev.appId,
-        verifiedName: normalizedSnapshot.verifiedName ?? prev.verifiedName
+        verifiedName: normalizedSnapshot.verifiedName ?? prev.verifiedName,
       }));
 
       if (captureTimestamp && captureTimestamp !== latestSnapshotTimestampRef.current) {
         toast({
           title: 'Meta onboarding data detected',
-          description: 'Latest webhook payload prefilled the onboarding form.'
+          description: 'Latest webhook payload prefilled the onboarding form.',
         });
         latestSnapshotTimestampRef.current = captureTimestamp;
       }
@@ -383,7 +394,7 @@ const StoreProfile: React.FC = () => {
           toast({
             title: 'WABA ID missing',
             description: 'Enter or detect a WABA ID first.',
-            variant: 'destructive'
+            variant: 'destructive',
           });
         }
         return;
@@ -398,7 +409,7 @@ const StoreProfile: React.FC = () => {
         const response = await fetch(
           `/api/whatsapp/onboarding/phone-numbers?wabaId=${encodeURIComponent(trimmedWabaId)}`,
           {
-            headers: buildAuthHeaders()
+            headers: buildAuthHeaders(),
           }
         );
 
@@ -417,7 +428,7 @@ const StoreProfile: React.FC = () => {
             ...prev,
             phoneNumberId: firstNumber.id || prev.phoneNumberId,
             businessPhone: firstNumber.display_phone_number || prev.businessPhone,
-            verifiedName: firstNumber.verified_name || prev.verifiedName
+            verifiedName: firstNumber.verified_name || prev.verifiedName,
           }));
         }
 
@@ -425,8 +436,10 @@ const StoreProfile: React.FC = () => {
           toast({
             title: 'Phone numbers retrieved',
             description: firstNumber
-              ? `Found ${payload.phoneNumbers.length} number(s); using ${firstNumber.display_phone_number || firstNumber.id}.`
-              : 'Fetched phone numbers. Review the list below.'
+              ? `Found ${payload.phoneNumbers.length} number(s); using ${
+                  firstNumber.display_phone_number || firstNumber.id
+                }.`
+              : 'Fetched phone numbers. Review the list below.',
           });
         }
       } catch (error: any) {
@@ -436,7 +449,7 @@ const StoreProfile: React.FC = () => {
           toast({
             title: 'Meta fetch failed',
             description: message,
-            variant: 'destructive'
+            variant: 'destructive',
           });
         }
       } finally {
@@ -450,7 +463,7 @@ const StoreProfile: React.FC = () => {
     (field: keyof OnboardingFormValues) => (event: React.ChangeEvent<HTMLInputElement>) => {
       setOnboardingForm(prev => ({
         ...prev,
-        [field]: event.target.value
+        [field]: event.target.value,
       }));
       setOnboardingError(null);
     };
@@ -468,7 +481,7 @@ const StoreProfile: React.FC = () => {
       toast({
         title: 'Onboarding details required',
         description: 'Both WABA ID and Phone Number ID are required to save onboarding details.',
-        variant: 'destructive'
+        variant: 'destructive',
       });
       return;
     }
@@ -486,8 +499,8 @@ const StoreProfile: React.FC = () => {
           businessPhone: trimmedBusinessPhone,
           businessId: trimmedBusinessId,
           appId: trimmedAppId,
-          verifiedName: trimmedVerifiedName
-        })
+          verifiedName: trimmedVerifiedName,
+        }),
       });
 
       const result = await response.json().catch(() => ({}));
@@ -510,7 +523,7 @@ const StoreProfile: React.FC = () => {
         appId: trimmedAppId,
         verifiedName: trimmedVerifiedName,
         lastUpdatedAt: updatedConfig.lastUpdatedAt || new Date().toISOString(),
-        onboardingLink: updatedLinkValue
+        onboardingLink: updatedLinkValue,
       };
 
       setOnboardingConfig(nextConfig);
@@ -520,13 +533,13 @@ const StoreProfile: React.FC = () => {
         businessPhone: nextConfig.businessPhone,
         businessId: nextConfig.businessId,
         appId: nextConfig.appId,
-        verifiedName: nextConfig.verifiedName
+        verifiedName: nextConfig.verifiedName,
       });
       setOnboardingLinkUrl(updatedLinkValue);
 
       toast({
         title: 'Onboarding details saved',
-        description: 'WhatsApp Business information was stored successfully.'
+        description: 'WhatsApp Business information was stored successfully.',
       });
     } catch (error: any) {
       const message = error?.message || 'Unable to save onboarding configuration';
@@ -534,7 +547,7 @@ const StoreProfile: React.FC = () => {
       toast({
         title: 'Save failed',
         description: message,
-        variant: 'destructive'
+        variant: 'destructive',
       });
     } finally {
       setOnboardingSaving(false);
@@ -547,7 +560,7 @@ const StoreProfile: React.FC = () => {
       toast({
         title: 'Phone number ID required',
         description: 'Enter and save the phone number ID before connecting.',
-        variant: 'destructive'
+        variant: 'destructive',
       });
       return;
     }
@@ -561,8 +574,8 @@ const StoreProfile: React.FC = () => {
         headers: buildAuthHeaders(true),
         body: JSON.stringify({
           phoneNumberId,
-          pin: HARD_CODED_PIN
-        })
+          pin: HARD_CODED_PIN,
+        }),
       });
 
       const result = await response.json().catch(() => ({}));
@@ -574,7 +587,7 @@ const StoreProfile: React.FC = () => {
       const successMessage = 'The WhatsApp number was registered successfully.';
       toast({
         title: 'Number connected',
-        description: successMessage
+        description: successMessage,
       });
       setRegisterStatus({ type: 'success', message: successMessage });
     } catch (error: any) {
@@ -582,7 +595,7 @@ const StoreProfile: React.FC = () => {
       toast({
         title: 'Connection failed',
         description: message,
-        variant: 'destructive'
+        variant: 'destructive',
       });
       setRegisterStatus({ type: 'error', message });
     } finally {
@@ -639,7 +652,7 @@ const StoreProfile: React.FC = () => {
     onboardingConfig.wabaId,
     onboardingConfig.businessId,
     onboardingConfig.phoneNumberId,
-    latestWebhookSnapshot
+    latestWebhookSnapshot,
   ]);
 
   useEffect(() => {
@@ -661,11 +674,10 @@ const StoreProfile: React.FC = () => {
     onboardingForm.wabaId,
     onboardingForm.phoneNumberId,
     candidateWabaIdForLookup,
-    fetchPhoneNumbersFromMeta
+    fetchPhoneNumbersFromMeta,
   ]);
   const smartFileInputRef = useRef<HTMLInputElement | null>(null);
   const [previewHeaderIndex, setPreviewHeaderIndex] = useState(0);
-
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -678,8 +690,8 @@ const StoreProfile: React.FC = () => {
         }
         const response = await fetch('/api/auth/profile', {
           headers: {
-            Authorization: `Bearer ${token}`
-          }
+            Authorization: `Bearer ${token}`,
+          },
         });
         const data = await response.json().catch(() => ({}));
         if (!response.ok) {
@@ -775,8 +787,8 @@ const StoreProfile: React.FC = () => {
         }
         const response = await fetch('/api/auth/profile/audit-history', {
           headers: {
-            Authorization: `Bearer ${token}`
-          }
+            Authorization: `Bearer ${token}`,
+          },
         });
         const data = await response.json().catch(() => ({}));
         if (!response.ok) {
@@ -789,7 +801,7 @@ const StoreProfile: React.FC = () => {
               .map((entry: AuditHistoryEntry) => ({
                 timestamp: entry.time || null,
                 location: entry.location || 'Unknown location',
-                userAgent: entry.system || 'Not recorded'
+                userAgent: entry.system || 'Not recorded',
               }))
           : [];
         setAuditHistory(normalized);
@@ -813,8 +825,8 @@ const StoreProfile: React.FC = () => {
       }
       const response = await fetch('/api/auth/revenue-pin/status', {
         headers: {
-          Authorization: `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       });
       const data = await response.json().catch(() => ({}));
       if (!response.ok) {
@@ -822,7 +834,7 @@ const StoreProfile: React.FC = () => {
       }
       setPinStatus({
         hasPin: Boolean(data?.has_pin),
-        updatedAt: typeof data?.updated_at === 'string' ? data.updated_at : null
+        updatedAt: typeof data?.updated_at === 'string' ? data.updated_at : null,
       });
     } catch (err) {
       setPinStatus(null);
@@ -900,9 +912,9 @@ const StoreProfile: React.FC = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ pin: nextPin, password })
+        body: JSON.stringify({ pin: nextPin, password }),
       });
       const data = await response.json().catch(() => ({}));
       if (!response.ok) {
@@ -916,7 +928,7 @@ const StoreProfile: React.FC = () => {
     } catch (err) {
       setPinMessage({
         type: 'error',
-        text: err instanceof Error ? err.message : 'Unable to save PIN right now.'
+        text: err instanceof Error ? err.message : 'Unable to save PIN right now.',
       });
     } finally {
       setCreatePinLoading(false);
@@ -963,9 +975,9 @@ const StoreProfile: React.FC = () => {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ currentPin: current, newPin: nextPin, password })
+        body: JSON.stringify({ currentPin: current, newPin: nextPin, password }),
       });
       const data = await response.json().catch(() => ({}));
       if (!response.ok) {
@@ -980,13 +992,12 @@ const StoreProfile: React.FC = () => {
     } catch (err) {
       setPinMessage({
         type: 'error',
-        text: err instanceof Error ? err.message : 'Unable to update PIN right now.'
+        text: err instanceof Error ? err.message : 'Unable to update PIN right now.',
       });
     } finally {
       setUpdatePinLoading(false);
     }
   };
-
 
   const handleResetRevenuePin = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -1019,9 +1030,9 @@ const StoreProfile: React.FC = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ newPin: nextPin, password })
+        body: JSON.stringify({ newPin: nextPin, password }),
       });
       const data = await response.json().catch(() => ({}));
       if (!response.ok) {
@@ -1036,7 +1047,7 @@ const StoreProfile: React.FC = () => {
     } catch (err) {
       setPinMessage({
         type: 'error',
-        text: err instanceof Error ? err.message : 'Unable to reset PIN right now.'
+        text: err instanceof Error ? err.message : 'Unable to reset PIN right now.',
       });
     } finally {
       setResetPinLoading(false);
@@ -1073,8 +1084,7 @@ const StoreProfile: React.FC = () => {
     setStreetNameSaving(true);
     setStreetNameStatus(null);
     try {
-      const token =
-        typeof window !== 'undefined' ? localStorage.getItem('bb_token') : null;
+      const token = typeof window !== 'undefined' ? localStorage.getItem('bb_token') : null;
       if (!token) {
         throw new Error('Authentication required');
       }
@@ -1082,9 +1092,9 @@ const StoreProfile: React.FC = () => {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ streetName: trimmed })
+        body: JSON.stringify({ streetName: trimmed }),
       });
       const result = await response.json().catch(() => ({}));
       if (!response.ok) {
@@ -1097,7 +1107,7 @@ const StoreProfile: React.FC = () => {
           ? {
               ...prev,
               street_name: updatedStreet,
-              updated_at: result?.updated_at || prev.updated_at
+              updated_at: result?.updated_at || prev.updated_at,
             }
           : prev
       );
@@ -1105,7 +1115,7 @@ const StoreProfile: React.FC = () => {
     } catch (err) {
       setStreetNameStatus({
         type: 'error',
-        message: err instanceof Error ? err.message : 'Unable to update street name.'
+        message: err instanceof Error ? err.message : 'Unable to update street name.',
       });
     } finally {
       setStreetNameSaving(false);
@@ -1126,14 +1136,14 @@ const StoreProfile: React.FC = () => {
     if (remainingSlots === 0) {
       setSmartStatus({
         type: 'error',
-        message: `You can upload up to ${MAX_SMART_HEADER_IMAGES} header images.`
+        message: `You can upload up to ${MAX_SMART_HEADER_IMAGES} header images.`,
       });
       return;
     }
     if (files.length > remainingSlots) {
       setSmartStatus({
         type: 'error',
-        message: `You can upload ${remainingSlots} more image${remainingSlots === 1 ? '' : 's'}.`
+        message: `You can upload ${remainingSlots} more image${remainingSlots === 1 ? '' : 's'}.`,
       });
       return;
     }
@@ -1150,9 +1160,9 @@ const StoreProfile: React.FC = () => {
       const response = await fetch('/api/auth/profile/smart-ebill/upload', {
         method: 'POST',
         headers: {
-          Authorization: `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
-        body: formData
+        body: formData,
       });
       const result = await response.json().catch(() => ({}));
       if (!response.ok) {
@@ -1169,14 +1179,14 @@ const StoreProfile: React.FC = () => {
         prev
           ? {
               ...prev,
-              smart_img_urls: nextImages
+              smart_img_urls: nextImages,
             }
           : prev
       );
     } catch (err) {
       setSmartStatus({
         type: 'error',
-        message: err instanceof Error ? err.message : 'Unable to upload Smart E-bill images.'
+        message: err instanceof Error ? err.message : 'Unable to upload Smart E-bill images.',
       });
     } finally {
       setSmartUploading(false);
@@ -1220,7 +1230,9 @@ const StoreProfile: React.FC = () => {
     setSmartImages(prev => {
       const updated = prev.filter((_, idx) => idx !== index);
       setHeaderImages(current => current.filter(url => updated.includes(url)));
-      setBottomBanner(current => (current && updated.includes(current) ? current : updated[0] || null));
+      setBottomBanner(current =>
+        current && updated.includes(current) ? current : updated[0] || null
+      );
       return updated;
     });
     setSmartStatus(null);
@@ -1243,7 +1255,7 @@ const StoreProfile: React.FC = () => {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           headerText: smartHeaderText,
@@ -1251,14 +1263,16 @@ const StoreProfile: React.FC = () => {
           addressText: smartAddressText,
           images: smartImages,
           headerImages,
-          bottomBanner
-        })
+          bottomBanner,
+        }),
       });
       const result = await response.json().catch(() => ({}));
       if (!response.ok) {
         throw new Error(result?.error || 'Unable to save Smart E-bill settings.');
       }
-      const nextImages = Array.isArray(result?.smart_img_urls) ? result.smart_img_urls : smartImages;
+      const nextImages = Array.isArray(result?.smart_img_urls)
+        ? result.smart_img_urls
+        : smartImages;
       setSmartImages(nextImages);
       setSmartStatus({ type: 'success', message: 'Smart E-bill settings saved.' });
       setProfile(prev =>
@@ -1284,14 +1298,14 @@ const StoreProfile: React.FC = () => {
                 typeof result?.smart_bottom_banner === 'string'
                   ? result.smart_bottom_banner
                   : bottomBanner,
-              smart_img_urls: nextImages
+              smart_img_urls: nextImages,
             }
           : prev
       );
     } catch (err) {
       setSmartStatus({
         type: 'error',
-        message: err instanceof Error ? err.message : 'Unable to save Smart E-bill settings.'
+        message: err instanceof Error ? err.message : 'Unable to save Smart E-bill settings.',
       });
     } finally {
       setSmartSaving(false);
@@ -1311,8 +1325,7 @@ const StoreProfile: React.FC = () => {
     setStoreNameSaving(true);
     setStoreNameStatus(null);
     try {
-      const token =
-        typeof window !== 'undefined' ? localStorage.getItem('bb_token') : null;
+      const token = typeof window !== 'undefined' ? localStorage.getItem('bb_token') : null;
       if (!token) {
         throw new Error('Authentication required');
       }
@@ -1320,9 +1333,9 @@ const StoreProfile: React.FC = () => {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ storeName: trimmed })
+        body: JSON.stringify({ storeName: trimmed }),
       });
       const result = await response.json().catch(() => ({}));
       if (!response.ok) {
@@ -1335,7 +1348,7 @@ const StoreProfile: React.FC = () => {
           ? {
               ...prev,
               store_name: updatedName,
-              updated_at: result?.updated_at || prev.updated_at
+              updated_at: result?.updated_at || prev.updated_at,
             }
           : prev
       );
@@ -1343,7 +1356,7 @@ const StoreProfile: React.FC = () => {
     } catch (err) {
       setStoreNameStatus({
         type: 'error',
-        message: err instanceof Error ? err.message : 'Unable to update store name.'
+        message: err instanceof Error ? err.message : 'Unable to update store name.',
       });
     } finally {
       setStoreNameSaving(false);
@@ -1441,7 +1454,9 @@ const StoreProfile: React.FC = () => {
             </div>
             <div>
               <form className="space-y-3" onSubmit={handleStreetNameSave}>
-                <label className="text-xs uppercase tracking-wide text-slate-500">Street name</label>
+                <label className="text-xs uppercase tracking-wide text-slate-500">
+                  Street name
+                </label>
                 <input
                   type="text"
                   value={streetNameInput}
@@ -1520,8 +1535,18 @@ const StoreProfile: React.FC = () => {
           </div>
           <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-3">
             {infoBlock('Franchise ID', profile.franchise_id, Building)}
-            {infoBlock('Onboarding status', profile.onboarding_status, AlertTriangle, 'Not recorded')}
-            {infoBlock('Verified name', profile.verified_name, CheckCircle2, 'Verification pending')}
+            {infoBlock(
+              'Onboarding status',
+              profile.onboarding_status,
+              AlertTriangle,
+              'Not recorded'
+            )}
+            {infoBlock(
+              'Verified name',
+              profile.verified_name,
+              CheckCircle2,
+              'Verification pending'
+            )}
           </div>
         </div>
       </div>
@@ -1541,8 +1566,14 @@ const StoreProfile: React.FC = () => {
       { label: 'Street name', value: profile.street_name },
       { label: 'Store name', value: profile.store_name },
       { label: 'Onboarding status', value: profile.onboarding_status },
-      { label: 'Created at', value: profile.created_at ? new Date(profile.created_at).toLocaleString() : null },
-      { label: 'Updated at', value: profile.updated_at ? new Date(profile.updated_at).toLocaleString() : null }
+      {
+        label: 'Created at',
+        value: profile.created_at ? new Date(profile.created_at).toLocaleString() : null,
+      },
+      {
+        label: 'Updated at',
+        value: profile.updated_at ? new Date(profile.updated_at).toLocaleString() : null,
+      },
     ];
     return (
       <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
@@ -1577,7 +1608,8 @@ const StoreProfile: React.FC = () => {
           <div>
             <h3 className="text-lg font-semibold text-slate-900">Security</h3>
             <p className="text-sm text-slate-600">
-              Lock or unlock revenue KPIs with a store-specific PIN shared over your registered WhatsApp number.
+              Lock or unlock revenue KPIs with a store-specific PIN shared over your registered
+              WhatsApp number.
             </p>
           </div>
           {pinStatus?.updatedAt && (
@@ -1619,9 +1651,7 @@ const StoreProfile: React.FC = () => {
               {!pinStatus?.hasPin ? (
                 <form onSubmit={handleSetRevenuePin} className="space-y-3">
                   <div>
-                    <label className="text-sm font-medium text-slate-700">
-                      Create revenue PIN
-                    </label>
+                    <label className="text-sm font-medium text-slate-700">Create revenue PIN</label>
                     <input
                       type="password"
                       inputMode="numeric"
@@ -1631,7 +1661,7 @@ const StoreProfile: React.FC = () => {
                       required
                       value={newPinInput}
                       disabled={createPinLoading}
-                      onChange={(event) => setNewPinInput(event.target.value)}
+                      onChange={event => setNewPinInput(event.target.value)}
                       className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none"
                       placeholder="Enter 4-6 digit PIN"
                     />
@@ -1649,7 +1679,7 @@ const StoreProfile: React.FC = () => {
                       required
                       value={confirmNewPinInput}
                       disabled={createPinLoading}
-                      onChange={(event) => setConfirmNewPinInput(event.target.value)}
+                      onChange={event => setConfirmNewPinInput(event.target.value)}
                       className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none"
                       placeholder="Re-enter PIN"
                     />
@@ -1663,7 +1693,7 @@ const StoreProfile: React.FC = () => {
                       required
                       value={pinPasswordInput}
                       disabled={createPinLoading}
-                      onChange={(event) => setPinPasswordInput(event.target.value)}
+                      onChange={event => setPinPasswordInput(event.target.value)}
                       className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none"
                       placeholder="Enter store login password"
                     />
@@ -1683,9 +1713,12 @@ const StoreProfile: React.FC = () => {
                 <div className="space-y-4">
                   <div className="flex flex-col gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-3 sm:flex-row sm:items-center sm:justify-between">
                     <div>
-                      <p className="text-sm font-semibold text-slate-800">Forgot the current PIN?</p>
+                      <p className="text-sm font-semibold text-slate-800">
+                        Forgot the current PIN?
+                      </p>
                       <p className="text-xs text-slate-600">
-                        Reset it using your account password. We will notify the registered WhatsApp number about the change.
+                        Reset it using your account password. We will notify the registered WhatsApp
+                        number about the change.
                       </p>
                     </div>
                     <button
@@ -1701,7 +1734,10 @@ const StoreProfile: React.FC = () => {
                   </div>
 
                   {forgotPinMode && (
-                    <form onSubmit={handleResetRevenuePin} className="space-y-3 rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+                    <form
+                      onSubmit={handleResetRevenuePin}
+                      className="space-y-3 rounded-lg border border-slate-200 bg-white p-4 shadow-sm"
+                    >
                       <div className="grid gap-3 sm:grid-cols-2">
                         <div>
                           <label className="text-sm font-medium text-slate-700">New PIN</label>
@@ -1714,13 +1750,15 @@ const StoreProfile: React.FC = () => {
                             required
                             value={forgotPinInput}
                             disabled={resetPinLoading}
-                            onChange={(event) => setForgotPinInput(event.target.value)}
+                            onChange={event => setForgotPinInput(event.target.value)}
                             className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none"
                             placeholder="Enter new PIN"
                           />
                         </div>
                         <div>
-                          <label className="text-sm font-medium text-slate-700">Confirm new PIN</label>
+                          <label className="text-sm font-medium text-slate-700">
+                            Confirm new PIN
+                          </label>
                           <input
                             type="password"
                             inputMode="numeric"
@@ -1730,20 +1768,22 @@ const StoreProfile: React.FC = () => {
                             required
                             value={confirmForgotPinInput}
                             disabled={resetPinLoading}
-                            onChange={(event) => setConfirmForgotPinInput(event.target.value)}
+                            onChange={event => setConfirmForgotPinInput(event.target.value)}
                             className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none"
                             placeholder="Re-enter new PIN"
                           />
                         </div>
                       </div>
                       <div>
-                        <label className="text-sm font-medium text-slate-700">Verify with password</label>
+                        <label className="text-sm font-medium text-slate-700">
+                          Verify with password
+                        </label>
                         <input
                           type="password"
                           required
                           value={resetPinPasswordInput}
                           disabled={resetPinLoading}
-                          onChange={(event) => setResetPinPasswordInput(event.target.value)}
+                          onChange={event => setResetPinPasswordInput(event.target.value)}
                           className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none"
                           placeholder="Enter store login password"
                         />
@@ -1754,7 +1794,10 @@ const StoreProfile: React.FC = () => {
                       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                         <p className="text-xs text-slate-500">
                           WhatsApp notifications go to{' '}
-                          {profile?.contact_phone ? `+${profile.contact_phone}` : 'your registered number'}.
+                          {profile?.contact_phone
+                            ? `+${profile.contact_phone}`
+                            : 'your registered number'}
+                          .
                         </p>
                         <button
                           type="submit"
@@ -1779,7 +1822,7 @@ const StoreProfile: React.FC = () => {
                         required
                         value={currentPinInput}
                         disabled={updatePinLoading || resetPinLoading}
-                        onChange={(event) => setCurrentPinInput(event.target.value)}
+                        onChange={event => setCurrentPinInput(event.target.value)}
                         className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none"
                         placeholder="Enter current PIN"
                       />
@@ -1796,7 +1839,7 @@ const StoreProfile: React.FC = () => {
                           required
                           value={updatedPinInput}
                           disabled={updatePinLoading || resetPinLoading}
-                          onChange={(event) => setUpdatedPinInput(event.target.value)}
+                          onChange={event => setUpdatedPinInput(event.target.value)}
                           className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none"
                           placeholder="Enter new PIN"
                         />
@@ -1814,20 +1857,22 @@ const StoreProfile: React.FC = () => {
                           required
                           value={confirmUpdatedPinInput}
                           disabled={updatePinLoading || resetPinLoading}
-                          onChange={(event) => setConfirmUpdatedPinInput(event.target.value)}
+                          onChange={event => setConfirmUpdatedPinInput(event.target.value)}
                           className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none"
                           placeholder="Re-enter new PIN"
                         />
                       </div>
                     </div>
                     <div>
-                      <label className="text-sm font-medium text-slate-700">Verify with password</label>
+                      <label className="text-sm font-medium text-slate-700">
+                        Verify with password
+                      </label>
                       <input
                         type="password"
                         required
                         value={updatePinPasswordInput}
                         disabled={updatePinLoading || resetPinLoading}
-                        onChange={(event) => setUpdatePinPasswordInput(event.target.value)}
+                        onChange={event => setUpdatePinPasswordInput(event.target.value)}
                         className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none"
                         placeholder="Enter store login password"
                       />
@@ -1838,7 +1883,10 @@ const StoreProfile: React.FC = () => {
                     <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                       <p className="text-xs text-slate-500">
                         WhatsApp notifications go to{' '}
-                        {profile?.contact_phone ? `+${profile.contact_phone}` : 'your registered number'}.
+                        {profile?.contact_phone
+                          ? `+${profile.contact_phone}`
+                          : 'your registered number'}
+                        .
                       </p>
                       <button
                         type="submit"
@@ -1854,7 +1902,8 @@ const StoreProfile: React.FC = () => {
             </>
           )}
           <p className="text-xs text-slate-500">
-            To reset your account password, log out and use the "Forgot password" option on the sign-in screen.
+            To reset your account password, log out and use the "Forgot password" option on the
+            sign-in screen.
           </p>
         </div>
       </div>
@@ -1890,11 +1939,11 @@ const StoreProfile: React.FC = () => {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="font-semibold text-slate-900">
-                      {entry.timestamp ? new Date(entry.timestamp).toLocaleString() : 'Unknown time'}
+                      {entry.timestamp
+                        ? new Date(entry.timestamp).toLocaleString()
+                        : 'Unknown time'}
                     </p>
-                    <p className="text-xs text-slate-500">
-                      {entry.location}
-                    </p>
+                    <p className="text-xs text-slate-500">{entry.location}</p>
                   </div>
                   {index === 0 && (
                     <span className="rounded-full bg-emerald-100 px-2 py-1 text-xs font-semibold text-emerald-700">
@@ -1914,7 +1963,9 @@ const StoreProfile: React.FC = () => {
             <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">
               WhatsApp onboarding
             </p>
-            <h3 className="text-lg font-semibold text-slate-900 mt-2">Connect your WhatsApp Business account</h3>
+            <h3 className="text-lg font-semibold text-slate-900 mt-2">
+              Connect your WhatsApp Business account
+            </h3>
             <p className="text-sm text-slate-600 mt-2">
               Kick off onboarding with Meta and keep the WABA details up to date for this store.
             </p>
@@ -1934,9 +1985,12 @@ const StoreProfile: React.FC = () => {
         <div className="mt-6 rounded-xl border border-slate-200 bg-slate-50 p-5">
           <div className="flex flex-col gap-2 md:flex-row md:items-start md:justify-between">
             <div>
-              <h4 className="text-base font-semibold text-slate-900">WhatsApp Business onboarding</h4>
+              <h4 className="text-base font-semibold text-slate-900">
+                WhatsApp Business onboarding
+              </h4>
               <p className="mt-1 text-sm text-slate-600">
-                Provide your Meta WhatsApp Business account identifiers so we can connect API calls for this store.
+                Provide your Meta WhatsApp Business account identifiers so we can connect API calls
+                for this store.
               </p>
             </div>
             <div className="text-sm text-slate-500">
@@ -1947,9 +2001,7 @@ const StoreProfile: React.FC = () => {
               {latestWebhookCapturedDisplay && (
                 <p className="mt-1">
                   Latest webhook:{' '}
-                  <span className="font-medium text-slate-700">
-                    {latestWebhookCapturedDisplay}
-                  </span>
+                  <span className="font-medium text-slate-700">{latestWebhookCapturedDisplay}</span>
                   {latestWebhookSnapshot?.eventType ? (
                     <span className="ml-2 rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium uppercase tracking-wide text-blue-700">
                       {latestWebhookSnapshot.eventType}
@@ -2012,7 +2064,8 @@ const StoreProfile: React.FC = () => {
                       )}
                     </Button>
                     <span>
-                      Uses the WABA ID to retrieve the connected business phone numbers and verified name.
+                      Uses the WABA ID to retrieve the connected business phone numbers and verified
+                      name.
                     </span>
                   </div>
                 </div>
@@ -2035,7 +2088,9 @@ const StoreProfile: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700">Meta Business ID</label>
+                  <label className="block text-sm font-medium text-slate-700">
+                    Meta Business ID
+                  </label>
                   <input
                     type="text"
                     value={onboardingForm.businessId}
@@ -2063,7 +2118,9 @@ const StoreProfile: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700">WhatsApp Phone Number</label>
+                  <label className="block text-sm font-medium text-slate-700">
+                    WhatsApp Phone Number
+                  </label>
                   <input
                     type="text"
                     value={onboardingForm.businessPhone}
@@ -2077,7 +2134,9 @@ const StoreProfile: React.FC = () => {
                 </div>
 
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-slate-700">Verified business name</label>
+                  <label className="block text-sm font-medium text-slate-700">
+                    Verified business name
+                  </label>
                   <input
                     type="text"
                     value={onboardingForm.verifiedName}
@@ -2123,9 +2182,12 @@ const StoreProfile: React.FC = () => {
 
               <div className="space-y-3 rounded-lg border border-dashed border-slate-200 bg-white p-4">
                 <div className="flex flex-col gap-1">
-                  <h4 className="text-sm font-semibold text-slate-900">Connect your phone number</h4>
+                  <h4 className="text-sm font-semibold text-slate-900">
+                    Connect your phone number
+                  </h4>
                   <p className="text-xs text-slate-500">
-                    After Meta onboarding completes, click connect to register your WhatsApp number with the PIN configured during onboarding.
+                    After Meta onboarding completes, click connect to register your WhatsApp number
+                    with the PIN configured during onboarding.
                   </p>
                 </div>
                 <Button type="button" onClick={handleRegisterNumber} disabled={registeringNumber}>
@@ -2209,7 +2271,9 @@ const StoreProfile: React.FC = () => {
         <form className="mt-6 space-y-6" onSubmit={handleSmartEbillSave}>
           <div className="grid gap-4 lg:grid-cols-2">
             <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">Messaging</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">
+                Messaging
+              </p>
               <div className="mt-4 space-y-4">
                 <div>
                   <label className="text-sm font-medium text-slate-700">Header text</label>
@@ -2247,7 +2311,9 @@ const StoreProfile: React.FC = () => {
             <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">Selections</p>
+                  <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">
+                    Selections
+                  </p>
                   <p className="mt-2 text-sm font-semibold text-slate-900">Header slider</p>
                 </div>
                 <span className="rounded-full bg-white px-3 py-1 text-xs font-semibold text-slate-600 shadow-sm">
@@ -2414,7 +2480,9 @@ const StoreProfile: React.FC = () => {
                   </div>
 
                   <div className="rounded-2xl bg-white px-4 py-3 text-center shadow-sm">
-                    <p className="text-sm font-semibold text-slate-900">{profile?.store_name || 'BillBox Store'}</p>
+                    <p className="text-sm font-semibold text-slate-900">
+                      {profile?.store_name || 'BillBox Store'}
+                    </p>
                     <p className="text-xs text-slate-500">
                       {smartAddressText || 'Your store address appears here'}
                     </p>
@@ -2438,7 +2506,9 @@ const StoreProfile: React.FC = () => {
                   </div>
 
                   <div className="rounded-2xl bg-white px-4 py-3 text-xs text-slate-500 shadow-sm">
-                    <p className="font-semibold text-slate-800">{profile?.brand_name || 'BillBox Store'}</p>
+                    <p className="font-semibold text-slate-800">
+                      {profile?.brand_name || 'BillBox Store'}
+                    </p>
                     <p className="mt-1">{smartFooterText || 'Smart E-bill powered by BillBox'}</p>
                   </div>
 
@@ -2476,7 +2546,9 @@ const StoreProfile: React.FC = () => {
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
                 <p className="text-sm font-semibold text-slate-900">Asset library</p>
-                <p className="text-xs text-slate-500">Tap an image to mark it as header or bottom.</p>
+                <p className="text-xs text-slate-500">
+                  Tap an image to mark it as header or bottom.
+                </p>
               </div>
               <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-500">
                 {smartImages.length} assets
@@ -2498,7 +2570,11 @@ const StoreProfile: React.FC = () => {
                       className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
                     >
                       <div className="relative h-36 w-full overflow-hidden bg-slate-100">
-                        <img src={url} alt={`Asset ${index + 1}`} className="h-full w-full object-cover" />
+                        <img
+                          src={url}
+                          alt={`Asset ${index + 1}`}
+                          className="h-full w-full object-cover"
+                        />
                         <div className="absolute left-3 top-3 flex gap-2">
                           {inHeader && (
                             <span className="rounded-full bg-slate-900 px-2 py-1 text-[11px] font-semibold text-white">
@@ -2589,7 +2665,7 @@ const StoreProfile: React.FC = () => {
     </div>
   );
 
-const renderHelp = () => (
+  const renderHelp = () => (
     <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm space-y-3 text-sm text-slate-700">
       <h3 className="text-lg font-semibold text-slate-900">Help center</h3>
       <p>
@@ -2600,7 +2676,8 @@ const renderHelp = () => (
         .
       </p>
       <p>
-        For onboarding or template issues, share your details from this profile page so we can track your request.
+        For onboarding or template issues, share your details from this profile page so we can track
+        your request.
       </p>
     </div>
   );
@@ -2627,7 +2704,7 @@ const renderHelp = () => (
     { id: 'store', label: 'Store details', icon: Store },
     { id: 'settings', label: 'Settings', icon: Settings },
     { id: 'smart-ebill', label: 'Smart E-bill', icon: UploadCloud },
-    { id: 'help', label: 'Help center', icon: HelpCircle }
+    { id: 'help', label: 'Help center', icon: HelpCircle },
   ] as const;
 
   return (
@@ -2643,9 +2720,7 @@ const renderHelp = () => (
           </button>
           <div className="text-right">
             <h1 className="text-2xl font-semibold text-slate-900">Store profile</h1>
-            {profile?.store_name && (
-              <p className="text-sm text-slate-500">{profile.store_name}</p>
-            )}
+            {profile?.store_name && <p className="text-sm text-slate-500">{profile.store_name}</p>}
           </div>
         </div>
 

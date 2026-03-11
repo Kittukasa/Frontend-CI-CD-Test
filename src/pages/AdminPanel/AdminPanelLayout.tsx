@@ -1,16 +1,16 @@
-import { useEffect, useState } from "react";
-import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
-import { BillboxLogo } from "@/components/common/BillboxLogo";
-import { clearAdminSession, getStoredAdminIdentity } from "@/utils/adminAuth";
+import { useEffect, useState } from 'react';
+import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { BillboxLogo } from '@/components/common/BillboxLogo';
+import { clearAdminSession, getStoredAdminIdentity } from '@/utils/adminAuth';
 
 const NAV_SECTIONS = [
   {
-    label: "Dashboard",
+    label: 'Dashboard',
     items: [
-      { label: "Overview", to: "/admin-panel" },
-      { label: "Stores", to: "/admin-panel/stores" },
-      { label: "Leads", to: "/admin-panel/leads" },
-      { label: "Wallets", to: "/admin-panel/wallets" },
+      { label: 'Overview', to: '/admin-panel' },
+      { label: 'Stores', to: '/admin-panel/stores' },
+      { label: 'Leads', to: '/admin-panel/leads' },
+      { label: 'Wallets', to: '/admin-panel/wallets' },
     ],
   },
 ];
@@ -30,24 +30,24 @@ const AdminPanelLayout = () => {
   const handleLogout = () => {
     clearAdminSession();
     setAdminDisplayName(null);
-    navigate("/admin/login", { replace: true });
+    navigate('/admin/login', { replace: true });
   };
 
   const renderNavLinks = () => (
     <ul className="space-y-1">
-      {NAV_SECTIONS[0].items.map((item) => (
+      {NAV_SECTIONS[0].items.map(item => (
         <li key={item.to}>
           <NavLink
             to={item.to}
-            end={item.to === "/admin-panel"}
+            end={item.to === '/admin-panel'}
             onClick={() => setIsMobileNavOpen(false)}
             className={({ isActive }) =>
               [
-                "flex items-center rounded-2xl px-4 py-3 text-sm font-semibold transition",
+                'flex items-center rounded-2xl px-4 py-3 text-sm font-semibold transition',
                 isActive
-                  ? "bg-gradient-to-r from-cyan-400/20 to-indigo-500/20 text-white shadow-[0_10px_35px_rgba(14,165,233,0.35)]"
-                  : "text-white/60 hover:text-white hover:bg-white/5",
-              ].join(" ")
+                  ? 'bg-gradient-to-r from-cyan-400/20 to-indigo-500/20 text-white shadow-[0_10px_35px_rgba(14,165,233,0.35)]'
+                  : 'text-white/60 hover:text-white hover:bg-white/5',
+              ].join(' ')
             }
           >
             {item.label}
@@ -67,10 +67,10 @@ const AdminPanelLayout = () => {
           </Link>
           <button
             type="button"
-            onClick={() => setIsMobileNavOpen((prev) => !prev)}
+            onClick={() => setIsMobileNavOpen(prev => !prev)}
             className="rounded-full border border-white/15 px-3 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-white/80 hover:bg-white/10"
           >
-            {isMobileNavOpen ? "Close" : "Menu"}
+            {isMobileNavOpen ? 'Close' : 'Menu'}
           </button>
         </div>
 
@@ -81,22 +81,27 @@ const AdminPanelLayout = () => {
               <BillboxLogo className="w-32" />
             </Link>
             <div className="flex-1 overflow-y-auto pr-1">
-              {NAV_SECTIONS.map((section) => (
+              {NAV_SECTIONS.map(section => (
                 <nav key={section.label} className="mb-10">
-                  <p className="mb-3 text-xs font-semibold uppercase tracking-[0.4em] text-white/40">{section.label}</p>
+                  <p className="mb-3 text-xs font-semibold uppercase tracking-[0.4em] text-white/40">
+                    {section.label}
+                  </p>
                   {renderNavLinks()}
                 </nav>
               ))}
               <div className="rounded-2xl border border-white/10 bg-white/5 p-4 text-xs text-white/70">
                 <p className="font-semibold uppercase tracking-[0.3em] text-white/60">Note</p>
                 <p className="mt-2">
-                  Admin tools are under active development. Overview, Stores, Leads, and Wallets are available now.
+                  Admin tools are under active development. Overview, Stores, Leads, and Wallets are
+                  available now.
                 </p>
               </div>
             </div>
             <div className="mt-6 rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-white/80">
-              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/50">Signed in as</p>
-              <p className="mt-2 text-lg font-semibold text-white">{adminDisplayName || "Admin"}</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/50">
+                Signed in as
+              </p>
+              <p className="mt-2 text-lg font-semibold text-white">{adminDisplayName || 'Admin'}</p>
               <button
                 type="button"
                 onClick={handleLogout}
@@ -123,12 +128,18 @@ const AdminPanelLayout = () => {
                 </button>
               </div>
               <div className="mt-6 flex-1 overflow-y-auto pr-1">
-                <p className="mb-3 text-xs font-semibold uppercase tracking-[0.4em] text-white/40">Dashboard</p>
+                <p className="mb-3 text-xs font-semibold uppercase tracking-[0.4em] text-white/40">
+                  Dashboard
+                </p>
                 {renderNavLinks()}
               </div>
               <div className="mt-4 rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-white/80">
-                <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/50">Signed in as</p>
-                <p className="mt-2 text-lg font-semibold text-white">{adminDisplayName || "Admin"}</p>
+                <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/50">
+                  Signed in as
+                </p>
+                <p className="mt-2 text-lg font-semibold text-white">
+                  {adminDisplayName || 'Admin'}
+                </p>
                 <button
                   type="button"
                   onClick={handleLogout}

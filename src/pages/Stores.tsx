@@ -52,9 +52,7 @@ const Stores: React.FC<StoresProps> = ({
 
   const campaignClickRate = storeDetailsData?.campaignResults.sent
     ? Math.round(
-        (storeDetailsData.campaignResults.clicked /
-          storeDetailsData.campaignResults.sent) *
-          100,
+        (storeDetailsData.campaignResults.clicked / storeDetailsData.campaignResults.sent) * 100
       )
     : 0;
 
@@ -331,7 +329,8 @@ const Stores: React.FC<StoresProps> = ({
             </p>
             <ul className="text-sm text-gray-500 space-y-1">
               <li>
-                • <strong>Pin stores:</strong> Click the pin icon to keep important stores at the top
+                • <strong>Pin stores:</strong> Click the pin icon to keep important stores at the
+                top
               </li>
               <li>
                 • <strong>Drag to reorder:</strong> Drag cards within pinned or unpinned groups to

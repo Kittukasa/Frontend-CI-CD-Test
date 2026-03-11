@@ -17,16 +17,17 @@ interface FranchiseSidebarProps {
   onLogout?: () => void;
 }
 
-const FranchiseSidebar: React.FC<FranchiseSidebarProps> = ({ tabs, activeTab, onSelectTab, onLogout }) => {
+const FranchiseSidebar: React.FC<FranchiseSidebarProps> = ({
+  tabs,
+  activeTab,
+  onSelectTab,
+  onLogout,
+}) => {
   return (
     <aside className="w-64 bg-[#03040c] border-r border-white/10 flex flex-col justify-between sticky top-0 h-screen">
       <div>
         <div className="px-5 py-6 border-b border-white/10">
-          <img
-            src="/images/logo-v1-official.png"
-            alt="Billbox"
-            className="h-10 w-auto"
-          />
+          <img src="/images/logo-v1-official.png" alt="Billbox" className="h-10 w-auto" />
           <h1 className="mt-4 text-2xl font-semibold text-white">Franchise</h1>
           <p className="text-sm text-white/60">Multi-store operations</p>
         </div>
@@ -45,8 +46,8 @@ const FranchiseSidebar: React.FC<FranchiseSidebarProps> = ({ tabs, activeTab, on
                 activeTab === tab.id
                   ? 'bg-indigo-500/20 text-white border border-indigo-400'
                   : tab.disabled
-                    ? 'text-white/30 cursor-not-allowed bg-white/5'
-                    : 'text-white/70 hover:text-white hover:bg-white/5'
+                  ? 'text-white/30 cursor-not-allowed bg-white/5'
+                  : 'text-white/70 hover:text-white hover:bg-white/5'
               }`}
             >
               <tab.icon className="h-4 w-4" />

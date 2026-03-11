@@ -11,7 +11,7 @@ const INVOICE_DATE_FORMATS = [
   'YYYY-MM-DD HH:mm:ss',
   'YYYY/MM/DD HH:mm:ss',
   'YYYY-MM-DD',
-  'YYYY/MM/DD'
+  'YYYY/MM/DD',
 ];
 
 const DATE_ONLY_FORMATS = ['YYYY-MM-DD', 'YYYY/MM/DD'];

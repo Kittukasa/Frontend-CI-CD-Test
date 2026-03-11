@@ -6,11 +6,11 @@ export const TEMPLATE_BUTTON_TYPE_OPTIONS = [
   'Copy Code, URL, Quick Replies etc',
   'Send Products',
   'Limited Time Offer',
-  'Carousel'
+  'Carousel',
 ] as const;
 
-export type TemplateCategoryValue = typeof TEMPLATE_CATEGORY_OPTIONS[number];
-export type TemplateButtonTypeValue = typeof TEMPLATE_BUTTON_TYPE_OPTIONS[number];
+export type TemplateCategoryValue = (typeof TEMPLATE_CATEGORY_OPTIONS)[number];
+export type TemplateButtonTypeValue = (typeof TEMPLATE_BUTTON_TYPE_OPTIONS)[number];
 
 export interface TemplateEditFormData {
   name: string;

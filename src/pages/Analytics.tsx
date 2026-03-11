@@ -7,7 +7,7 @@ import {
   DialogDescription,
   DialogFooter,
   DialogHeader,
-  DialogTitle
+  DialogTitle,
 } from '@/components/ui/dialog';
 import { maskPhoneNumber } from '@/lib/maskPhone';
 import { cn } from '@/lib/utils';
@@ -26,13 +26,9 @@ import CDP from './CDP';
 import dayjs, { parseInvoiceDate as parseInvoiceDateDayjs, toDateOrNull } from '@/lib/date';
 import {
   determineCustomerType as resolveCustomerType,
-  loadCustomerTypeConfig
+  loadCustomerTypeConfig,
 } from '@/lib/customerTypes';
-import {
-  clearAuthStorage,
-  clearPostLoginRedirect,
-  setSessionNotice
-} from '@/lib/session';
+import { clearAuthStorage, clearPostLoginRedirect, setSessionNotice } from '@/lib/session';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -57,9 +53,9 @@ import type {
   CustomerLifecycleRow,
 } from './analyticsTypes';
 import {
-  FileText, 
-  MessageCircle, 
-  Megaphone, 
+  FileText,
+  MessageCircle,
+  Megaphone,
   Users,
   X,
   LogOut,
@@ -86,7 +82,7 @@ import {
   Gift,
   Database,
   UserCircle2,
-  ShoppingCart
+  ShoppingCart,
 } from 'lucide-react';
 import { BillboxLogo } from '@/components/common/BillboxLogo';
 import { AppHeader } from '@/components/layout/AppHeader';
@@ -171,21 +167,18 @@ interface WindowedInvoice extends Invoice {
   isoDate: string;
 }
 
-
 const parseProcessedTimestamp = (value?: string | null): Date | null =>
   toDateOrNull(parseInvoiceDateDayjs(value ?? null));
 
 const parseInvoiceDate = (input: string | undefined | null): Date | null =>
   toDateOrNull(parseInvoiceDateDayjs(input ?? null));
 
-const normalizePhoneDigits = (phone?: string | null) =>
-  (phone || '').replace(/\D/g, '');
+const normalizePhoneDigits = (phone?: string | null) => (phone || '').replace(/\D/g, '');
 
 const ANONYMOUS_PHONE = '0000000000';
 const ANONYMOUS_KEY_PREFIX = 'anonymous:';
 
-const isAnonymousPhone = (phone?: string | null) =>
-  normalizePhoneDigits(phone) === ANONYMOUS_PHONE;
+const isAnonymousPhone = (phone?: string | null) => normalizePhoneDigits(phone) === ANONYMOUS_PHONE;
 
 const buildAnonymousCustomerKey = (invoice: {
   invoice_id?: string | number | null;
@@ -257,10 +250,10 @@ const ANALYTICS_TABS = [
   'campaigns',
   'customers',
   'loyalty',
-  'cdp'
+  'cdp',
 ] as const;
 
-type AnalyticsTab = typeof ANALYTICS_TABS[number];
+type AnalyticsTab = (typeof ANALYTICS_TABS)[number];
 
 const isAnalyticsTab = (value: string | null): value is AnalyticsTab =>
   !!value && (ANALYTICS_TABS as readonly string[]).includes(value);
@@ -295,9 +288,10 @@ const Analytics: React.FC = () => {
   }, [tabParam]);
   const [selectedStore, setSelectedStore] = useState<string>('');
   const [stores, setStores] = useState<Store[]>([]);
-  
+
   // Date range filter states (dashboard vs customers)
-  const [dashboardDateRangeFilter, setDashboardDateRangeFilter] = useState<DateRangeFilter>('today');
+  const [dashboardDateRangeFilter, setDashboardDateRangeFilter] =
+    useState<DateRangeFilter>('today');
   const [dashboardCustomStartDate, setDashboardCustomStartDate] = useState<string>('');
   const [dashboardCustomEndDate, setDashboardCustomEndDate] = useState<string>('');
   const [customerDateRangeFilter, setCustomerDateRangeFilter] = useState<DateRangeFilter>('today');
@@ -309,7 +303,7 @@ const Analytics: React.FC = () => {
   const [dailyEndReportsLoading, setDailyEndReportsLoading] = useState(false);
   const [filters, setFilters] = useState<InvoiceFiltersState>({
     searchTerm: '',
-    searchColumn: 'customer_phone'
+    searchColumn: 'customer_phone',
   });
 
   // WhatsApp state
@@ -355,29 +349,26 @@ const Analytics: React.FC = () => {
   const [walletEnabledByAdmin, setWalletEnabledByAdmin] = useState(true);
   const [walletBalanceLoading, setWalletBalanceLoading] = useState(false);
   const [walletBalanceError, setWalletBalanceError] = useState<string | null>(null);
-  const buildAuthHeaders = useCallback(
-    (includeJson = false) => {
-      const headers: Record<string, string> = {};
-      if (typeof window !== 'undefined') {
-        const token = localStorage.getItem('bb_token');
-        if (token) {
-          headers.Authorization = `Bearer ${token}`;
-        }
+  const buildAuthHeaders = useCallback((includeJson = false) => {
+    const headers: Record<string, string> = {};
+    if (typeof window !== 'undefined') {
+      const token = localStorage.getItem('bb_token');
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
       }
-      if (includeJson) {
-        headers['Content-Type'] = 'application/json';
-      }
-      return headers;
-    },
-    []
-  );
+    }
+    if (includeJson) {
+      headers['Content-Type'] = 'application/json';
+    }
+    return headers;
+  }, []);
 
   const loadWalletBalance = useCallback(async () => {
     setWalletBalanceLoading(true);
     setWalletBalanceError(null);
     try {
       const response = await fetch('/api/analytics/wallet-balance', {
-        headers: buildAuthHeaders()
+        headers: buildAuthHeaders(),
       });
       const data = await response.json().catch(() => ({}));
       if (!response.ok) {
@@ -389,7 +380,9 @@ const Analytics: React.FC = () => {
       );
       setWalletEnabledByAdmin(data.wallet_enabled !== false);
     } catch (error) {
-      setWalletBalanceError(error instanceof Error ? error.message : 'Failed to load wallet balance.');
+      setWalletBalanceError(
+        error instanceof Error ? error.message : 'Failed to load wallet balance.'
+      );
     } finally {
       setWalletBalanceLoading(false);
     }
@@ -434,7 +427,7 @@ const Analytics: React.FC = () => {
     setRevenuePinStatusError('');
     try {
       const response = await fetch('/api/auth/revenue-pin/status', {
-        headers: buildAuthHeaders()
+        headers: buildAuthHeaders(),
       });
       const data = await response.json().catch(() => ({}));
       if (!response.ok) {
@@ -512,7 +505,7 @@ const Analytics: React.FC = () => {
       const response = await fetch('/api/auth/revenue-pin/verify', {
         method: 'POST',
         headers: buildAuthHeaders(true),
-        body: JSON.stringify({ pin: trimmed })
+        body: JSON.stringify({ pin: trimmed }),
       });
       const data = await response.json().catch(() => ({}));
       if (!response.ok) {
@@ -579,76 +572,81 @@ const Analytics: React.FC = () => {
       name: 'Rajesh Kumar',
       mobile: '+91 98765 43210',
       customerType: 'Premium',
-      suggestedMessage: 'Hi Rajesh! 🌟 Your exclusive premium offer awaits - 25% off on your favorite items. Valid till midnight!',
+      suggestedMessage:
+        'Hi Rajesh! 🌟 Your exclusive premium offer awaits - 25% off on your favorite items. Valid till midnight!',
       communicationPaths: {
         email: { available: true, openRate: 78 },
         sms: { available: true, openRate: 92 },
         appNotification: { available: true, openRate: 65 },
-        whatsapp: { available: true, openRate: 89 }
+        whatsapp: { available: true, openRate: 89 },
       },
       lastActivity: '2 hours ago',
-      totalSpent: 45000
+      totalSpent: 45000,
     },
     {
       id: 'cdp002',
       name: 'Priya Sharma',
       mobile: '+91 98765 43211',
       customerType: 'Standard',
-      suggestedMessage: 'Hello Priya! 🛍️ Check out our new arrivals - perfect for the season. Free delivery on orders above ₹999!',
+      suggestedMessage:
+        'Hello Priya! 🛍️ Check out our new arrivals - perfect for the season. Free delivery on orders above ₹999!',
       communicationPaths: {
         email: { available: true, openRate: 65 },
         sms: { available: true, openRate: 88 },
         appNotification: { available: false, openRate: 0 },
-        whatsapp: { available: true, openRate: 82 }
+        whatsapp: { available: true, openRate: 82 },
       },
       lastActivity: '1 day ago',
-      totalSpent: 8500
+      totalSpent: 8500,
     },
     {
       id: 'cdp003',
       name: 'Amit Patel',
       mobile: '+91 98765 43212',
       customerType: 'Premium',
-      suggestedMessage: 'Dear Amit, 💎 Your VIP status unlocks early access to our flash sale. Shop now before it goes public!',
+      suggestedMessage:
+        'Dear Amit, 💎 Your VIP status unlocks early access to our flash sale. Shop now before it goes public!',
       communicationPaths: {
         email: { available: true, openRate: 85 },
         sms: { available: true, openRate: 95 },
         appNotification: { available: true, openRate: 72 },
-        whatsapp: { available: true, openRate: 91 }
+        whatsapp: { available: true, openRate: 91 },
       },
       lastActivity: '30 minutes ago',
-      totalSpent: 67000
+      totalSpent: 67000,
     },
     {
       id: 'cdp004',
       name: 'Sneha Reddy',
       mobile: '+91 98765 43213',
       customerType: 'Basic',
-      suggestedMessage: 'Hi Sneha! 🎉 Welcome back! Here\'s a special 15% discount just for you. Use code WELCOME15',
+      suggestedMessage:
+        "Hi Sneha! 🎉 Welcome back! Here's a special 15% discount just for you. Use code WELCOME15",
       communicationPaths: {
         email: { available: false, openRate: 0 },
         sms: { available: true, openRate: 75 },
         appNotification: { available: false, openRate: 0 },
-        whatsapp: { available: true, openRate: 68 }
+        whatsapp: { available: true, openRate: 68 },
       },
       lastActivity: '3 days ago',
-      totalSpent: 2800
+      totalSpent: 2800,
     },
     {
       id: 'cdp005',
       name: 'Vikram Singh',
       mobile: '+91 98765 43214',
       customerType: 'Standard',
-      suggestedMessage: 'Hey Vikram! 🚀 Your cart is waiting! Complete your purchase and get 10% off with code COMPLETE10',
+      suggestedMessage:
+        'Hey Vikram! 🚀 Your cart is waiting! Complete your purchase and get 10% off with code COMPLETE10',
       communicationPaths: {
         email: { available: true, openRate: 58 },
         sms: { available: true, openRate: 84 },
         appNotification: { available: true, openRate: 45 },
-        whatsapp: { available: true, openRate: 76 }
+        whatsapp: { available: true, openRate: 76 },
       },
       lastActivity: '5 hours ago',
-      totalSpent: 12400
-    }
+      totalSpent: 12400,
+    },
   ]);
   const [selectedCdpCustomer, setSelectedCdpCustomer] = useState<CDPCustomer | null>(null);
 
@@ -657,16 +655,16 @@ const Analytics: React.FC = () => {
   // Customer analytics state
   const [customerKPIs, setCustomerKPIs] = useState<CustomerKPIs | null>(null);
   const [customerDetails, setCustomerDetails] = useState<CustomerDetail[]>([]);
-const [customerLifecycleTables, setCustomerLifecycleTables] = useState<{
+  const [customerLifecycleTables, setCustomerLifecycleTables] = useState<{
     newCustomers: CustomerLifecycleRow[];
     returningCustomers: CustomerLifecycleRow[];
     anonymousCustomers: CustomerLifecycleRow[];
   }>({
     newCustomers: [],
     returningCustomers: [],
-    anonymousCustomers: []
+    anonymousCustomers: [],
   });
-const [customerSpendOverTime, setCustomerSpendOverTime] = useState<{
+  const [customerSpendOverTime, setCustomerSpendOverTime] = useState<{
     labels: string[];
     newSpend: number[];
     returningSpend: number[];
@@ -677,7 +675,7 @@ const [customerSpendOverTime, setCustomerSpendOverTime] = useState<{
     newSpend: [],
     returningSpend: [],
     anonymousSpend: [],
-    totals: []
+    totals: [],
   });
 
   const lifecycleSummary = useMemo(() => {
@@ -690,7 +688,7 @@ const [customerSpendOverTime, setCustomerSpendOverTime] = useState<{
       anonymousCount: customerLifecycleTables.anonymousCustomers.length,
       newSpend: sumSpend(customerLifecycleTables.newCustomers),
       returningSpend: sumSpend(customerLifecycleTables.returningCustomers),
-      anonymousSpend: sumSpend(customerLifecycleTables.anonymousCustomers)
+      anonymousSpend: sumSpend(customerLifecycleTables.anonymousCustomers),
     };
   }, [customerLifecycleTables]);
 
@@ -714,16 +712,22 @@ const [customerSpendOverTime, setCustomerSpendOverTime] = useState<{
     const sameMonth =
       start.getMonth() === end.getMonth() && start.getFullYear() === end.getFullYear();
     if (sameMonth) {
-      return `${start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} – ${end.toLocaleDateString('en-US', { day: 'numeric' })}`;
+      return `${start.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+      })} – ${end.toLocaleDateString('en-US', { day: 'numeric' })}`;
     }
-    return `${start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} – ${end.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
+    return `${start.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+    })} – ${end.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
   };
 
-const buildSpendBuckets = (
-  filter: string,
-  rangeStart: Date,
-  rangeEnd: Date
-): Array<{ label: string; start: Date; end: Date }> => {
+  const buildSpendBuckets = (
+    filter: string,
+    rangeStart: Date,
+    rangeEnd: Date
+  ): Array<{ label: string; start: Date; end: Date }> => {
     const buckets: Array<{ label: string; start: Date; end: Date }> = [];
     const start = new Date(rangeStart);
     const end = new Date(rangeEnd);
@@ -753,10 +757,10 @@ const buildSpendBuckets = (
         );
         const label = `${bucketStart.toLocaleTimeString('en-US', {
           hour: 'numeric',
-          minute: '2-digit'
+          minute: '2-digit',
         })} – ${labelEndDate.toLocaleTimeString('en-US', {
           hour: 'numeric',
-          minute: '2-digit'
+          minute: '2-digit',
         })}`;
         createBucket(label, bucketStart, effectiveEnd);
       });
@@ -767,10 +771,7 @@ const buildSpendBuckets = (
       return buckets;
     }
 
-    const diffDays = Math.max(
-      1,
-      Math.ceil((end.getTime() - start.getTime() + 1) / DAY_MS)
-    );
+    const diffDays = Math.max(1, Math.ceil((end.getTime() - start.getTime() + 1) / DAY_MS));
 
     if (filter === 'custom' && diffDays === 1) {
       buildFourHourBuckets();
@@ -789,7 +790,7 @@ const buildSpendBuckets = (
         const label = bucketStart.toLocaleDateString('en-US', {
           weekday: 'short',
           month: 'short',
-          day: 'numeric'
+          day: 'numeric',
         });
         createBucket(label, bucketStart, bucketEnd);
         cursor = addDays(bucketStart, 1);
@@ -861,10 +862,10 @@ const buildSpendBuckets = (
     points: {
       active: true,
       conversionRate: 1, // points per rupee (1₹ = 1 point)
-      redeemRate: 0.10, // rupees per point (1 point = ₹0.10)
+      redeemRate: 0.1, // rupees per point (1 point = ₹0.10)
       minSpend: 1,
       title: 'Loyalty Points',
-      description: 'Earn 1 point for every ₹1 spent'
+      description: 'Earn 1 point for every ₹1 spent',
     },
     cashback: {
       active: false,
@@ -872,7 +873,7 @@ const buildSpendBuckets = (
       maxAmount: 500,
       minPurchaseAmount: 1000, // minimum purchase required for cashback
       title: 'Cashback Rewards',
-      description: 'Get 10% cashback on purchases above ₹1000'
+      description: 'Get 10% cashback on purchases above ₹1000',
     },
     freeItem: {
       active: false,
@@ -880,7 +881,7 @@ const buildSpendBuckets = (
       itemName: 'Free Veg Burger',
       itemDescription: 'Complimentary item for loyal customers',
       title: 'Free Item Rewards',
-      description: 'Get a free [Item] on purchases above ₹1000'
+      description: 'Get a free [Item] on purchases above ₹1000',
     },
     appReferral: {
       active: false,
@@ -888,7 +889,7 @@ const buildSpendBuckets = (
       maxReferrals: 10,
       referralBonus: 50,
       title: 'App Referral Program',
-      description: 'Earn points by referring friends to the app'
+      description: 'Earn points by referring friends to the app',
     },
     influencerReferral: {
       active: false,
@@ -897,14 +898,14 @@ const buildSpendBuckets = (
       bonusThreshold: 20,
       bonusAmount: 1000,
       title: 'Influencer Referral Program',
-      description: 'Earn commissions by referring customers as an influencer'
-    }
+      description: 'Earn commissions by referring customers as an influencer',
+    },
   });
   const [editingLoyalty, setEditingLoyalty] = useState<LoyaltyProgramKey | null>(null);
   const [loyaltyModalOpen, setLoyaltyModalOpen] = useState(false);
   const [editFormData, setEditFormData] = useState<LoyaltyEditFormData>({
     conversionRate: 1,
-    redeemRate: 0.10,
+    redeemRate: 0.1,
     percentage: 10,
     maxAmount: 500,
     minPurchaseAmount: 1000,
@@ -917,7 +918,7 @@ const buildSpendBuckets = (
     commissionRate: 15,
     minReferrals: 5,
     bonusThreshold: 20,
-    bonusAmount: 1000
+    bonusAmount: 1000,
   });
 
   // Sidebar state
@@ -936,7 +937,10 @@ const buildSpendBuckets = (
   } | null>(null);
 
   const updateTabInUrl = useCallback(
-    (tab: AnalyticsTab, options?: { replace?: boolean; params?: Record<string, string | null> }) => {
+    (
+      tab: AnalyticsTab,
+      options?: { replace?: boolean; params?: Record<string, string | null> }
+    ) => {
       const params = new URLSearchParams(location.search);
       params.set('tab', tab);
       params.delete('openTemplateModal');
@@ -955,7 +959,7 @@ const buildSpendBuckets = (
       navigate(
         {
           pathname: location.pathname,
-          search: searchString ? `?${searchString}` : ''
+          search: searchString ? `?${searchString}` : '',
         },
         { replace: options?.replace ?? false }
       );
@@ -1008,7 +1012,6 @@ const buildSpendBuckets = (
       parsedPeriod && Number.isFinite(parsedPeriod) && parsedPeriod > 0 ? parsedPeriod : null
     );
   }, []);
-
 
   const dashboardDateRange = useMemo(() => {
     const { startDate, endDate } = getDateRange(
@@ -1070,9 +1073,10 @@ const buildSpendBuckets = (
         .filter(recipient => recipient.phone && recipient.phone.trim().length > 0)
         .map(recipient => ({
           phone: recipient.phone.trim(),
-          name: recipient.name || getMaskedDisplayName(recipient.name || '', recipient.phone.trim()),
+          name:
+            recipient.name || getMaskedDisplayName(recipient.name || '', recipient.phone.trim()),
           totalSpent: recipient.totalSpent ?? 0,
-          lifecycleSegment: recipient.lifecycleSegment
+          lifecycleSegment: recipient.lifecycleSegment,
         }));
 
       if (sanitized.length > 0) {
@@ -1104,7 +1108,7 @@ const buildSpendBuckets = (
   const {
     total: dashboardCustomerCount,
     anonymous: dashboardAnonymousCustomerCount,
-    ebill: dashboardEbillCustomerCount
+    ebill: dashboardEbillCustomerCount,
   } = useMemo(() => {
     const uniqueCustomers = new Set<string>();
     let anonymousCount = 0;
@@ -1124,7 +1128,7 @@ const buildSpendBuckets = (
     return {
       total,
       anonymous: anonymousCount,
-      ebill: Math.max(total - anonymousCount, 0)
+      ebill: Math.max(total - anonymousCount, 0),
     };
   }, [dashboardInvoices]);
 
@@ -1161,7 +1165,7 @@ const buildSpendBuckets = (
     const currentProgram = loyaltyPrograms[type];
     setEditFormData({
       conversionRate: currentProgram.conversionRate ?? 1,
-      redeemRate: currentProgram.redeemRate ?? 0.10,
+      redeemRate: currentProgram.redeemRate ?? 0.1,
       percentage: currentProgram.percentage ?? 10,
       maxAmount: currentProgram.maxAmount ?? 500,
       minPurchaseAmount: currentProgram.minPurchaseAmount ?? 1000,
@@ -1174,7 +1178,7 @@ const buildSpendBuckets = (
       commissionRate: currentProgram.commissionRate ?? 15,
       minReferrals: currentProgram.minReferrals ?? 5,
       bonusThreshold: currentProgram.bonusThreshold ?? 20,
-      bonusAmount: currentProgram.bonusAmount ?? 1000
+      bonusAmount: currentProgram.bonusAmount ?? 1000,
     });
     setLoyaltyModalOpen(true);
   };
@@ -1184,8 +1188,8 @@ const buildSpendBuckets = (
       ...prev,
       [type]: {
         ...prev[type],
-        active: !prev[type].active
-      }
+        active: !prev[type].active,
+      },
     }));
   };
 
@@ -1209,18 +1213,21 @@ const buildSpendBuckets = (
           commissionRate: editFormData.commissionRate,
           minReferrals: editFormData.minReferrals,
           bonusThreshold: editFormData.bonusThreshold,
-          bonusAmount: editFormData.bonusAmount
-        }
+          bonusAmount: editFormData.bonusAmount,
+        },
       }));
       setLoyaltyModalOpen(false);
       setEditingLoyalty(null);
     }
   };
 
-  const handleFormChange = <K extends keyof LoyaltyEditFormData,>(field: K, value: LoyaltyEditFormData[K]) => {
+  const handleFormChange = <K extends keyof LoyaltyEditFormData>(
+    field: K,
+    value: LoyaltyEditFormData[K]
+  ) => {
     setEditFormData(prev => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
   };
 
@@ -1231,71 +1238,71 @@ const buildSpendBuckets = (
       label: 'Dashboard',
       icon: BarChart3,
       active: activeTab === 'dashboard',
-      disabled: false
+      disabled: false,
     },
     {
       id: 'invoices',
       label: 'Invoices',
       icon: FileText,
       active: activeTab === 'invoices',
-      disabled: false
+      disabled: false,
     },
     {
       id: 'customers',
       label: 'Customers',
       icon: Users,
       active: activeTab === 'customers',
-      disabled: false
+      disabled: false,
     },
     {
       id: 'campaigns',
       label: 'Campaigns',
       icon: MessageSquare,
       active: activeTab === 'campaigns',
-      disabled: false
+      disabled: false,
     },
     {
       id: 'whatsapp',
       label: 'WhatsApp',
       icon: MessageCircle,
       active: activeTab === 'whatsapp',
-      disabled: false
+      disabled: false,
     },
     {
       id: 'templates',
       label: 'Template Library',
       icon: FileText,
       active: activeTab === 'templates',
-      disabled: false
+      disabled: false,
     },
     {
       id: 'automation',
       label: 'Automation',
       icon: Zap,
       active: activeTab === 'automation',
-      disabled: false
+      disabled: false,
     },
     {
       id: 'whatsapp-commerce',
       label: 'WhatsApp Commerce',
       icon: ShoppingCart,
       active: activeTab === 'whatsapp-commerce',
-      disabled: false
+      disabled: false,
     },
     {
       id: 'loyalty',
       label: 'Loyalty',
       icon: Gift,
       active: activeTab === 'loyalty',
-      disabled: !isTabFeatureEnabled('loyalty')
+      disabled: !isTabFeatureEnabled('loyalty'),
     },
     {
       id: 'cdp',
       label: 'CDP',
       icon: Database,
       active: activeTab === 'cdp',
-      disabled: !isTabFeatureEnabled('cdp')
-    }
+      disabled: !isTabFeatureEnabled('cdp'),
+    },
   ];
   const mobileNavItems = navigationItems.filter(item =>
     ['dashboard', 'invoices', 'customers', 'whatsapp', 'campaigns'].includes(item.id)
@@ -1355,7 +1362,7 @@ const buildSpendBuckets = (
   // Load authenticated store on component mount
   useEffect(() => {
     const authenticatedStoreId = localStorage.getItem('bb_store_id');
-    
+
     if (authenticatedStoreId) {
       // Use authenticated store_id
       setSelectedStore(authenticatedStoreId);
@@ -1367,8 +1374,8 @@ const buildSpendBuckets = (
           const token = localStorage.getItem('bb_token');
           const response = await fetch('/api/analytics/stores', {
             headers: {
-              'Authorization': `Bearer ${token}`
-            }
+              Authorization: `Bearer ${token}`,
+            },
           });
           if (response.ok) {
             const data = await response.json();
@@ -1402,7 +1409,7 @@ const buildSpendBuckets = (
         is_excluded: Boolean(invoiceItem.is_excluded),
         fingerprint: invoiceItem.fingerprint || null,
         customer_name: invoiceItem.customer_name || '',
-        is_daily_end_report: Boolean(invoiceItem.is_daily_end_report)
+        is_daily_end_report: Boolean(invoiceItem.is_daily_end_report),
       };
     });
   };
@@ -1421,7 +1428,7 @@ const buildSpendBuckets = (
       setLoading(true);
       try {
         const response = await fetch(`/api/analytics/invoices?storeId=${selectedStore}`, {
-          headers
+          headers,
         });
         if (response.ok) {
           const raw = await response.json().catch(() => []);
@@ -1438,7 +1445,7 @@ const buildSpendBuckets = (
       setDailyEndReportsLoading(true);
       try {
         const response = await fetch(`/api/analytics/daily-end-reports?storeId=${selectedStore}`, {
-          headers
+          headers,
         });
         if (response.ok) {
           const raw = await response.json().catch(() => []);
@@ -1460,78 +1467,81 @@ const buildSpendBuckets = (
   }, [selectedStore]);
 
   // Filter invoices client-side
-  const applyInvoiceFilters = useCallback((invoiceList: Invoice[]): Invoice[] => {
-    const term = filters.searchTerm.trim().toLowerCase();
-    if (!term) {
-      return invoiceList;
-    }
-
-    const matchesValue = (value: unknown) => {
-      if (value === undefined || value === null) return false;
-      return String(value).toLowerCase().includes(term);
-    };
-
-    return invoiceList.filter(invoice => {
-      const invoiceIdentifier = invoice.invoice_no ?? invoice.invoice_id ?? '';
-      const timestampSource = invoice.processed_timestamp_ist || invoice.invoice_date || '';
-
-      switch (filters.searchColumn) {
-        case 'bill_id':
-          return matchesValue(invoiceIdentifier);
-        case 'total_amount':
-          return matchesValue(invoice.total_amount);
-        case 'invoice_timestamp': {
-          if (!timestampSource) {
-            return false;
-          }
-
-          const parsedDate =
-            parseProcessedTimestamp(timestampSource) || parseInvoiceDate(timestampSource);
-
-          const dateCandidates: string[] = [];
-
-          if (parsedDate) {
-            dateCandidates.push(
-              parsedDate
-                .toLocaleDateString('en-GB', {
-                  day: '2-digit',
-                  month: 'short',
-                  year: 'numeric'
-                })
-                .toLowerCase()
-            );
-            dateCandidates.push(parsedDate.toISOString().slice(0, 10));
-            dateCandidates.push(
-              parsedDate
-                .toLocaleDateString('en-US', {
-                  day: 'numeric',
-                  month: 'long',
-                  year: 'numeric'
-                })
-                .toLowerCase()
-            );
-          }
-
-          const segments = timestampSource
-            .split(/[T,]/)
-            .map(part => part.trim().toLowerCase())
-            .filter(Boolean);
-
-          segments.forEach(segment => {
-            const cleaned = segment.replace(/\b\d{1,2}:\d{2}(?::\d{2})?\b/g, '').trim();
-            if (cleaned) {
-              dateCandidates.push(cleaned);
-            }
-          });
-
-          return dateCandidates.some(candidate => candidate.includes(term));
-        }
-        case 'customer_phone':
-        default:
-          return matchesValue(invoice.customer_phone);
+  const applyInvoiceFilters = useCallback(
+    (invoiceList: Invoice[]): Invoice[] => {
+      const term = filters.searchTerm.trim().toLowerCase();
+      if (!term) {
+        return invoiceList;
       }
-    });
-  }, [filters]);
+
+      const matchesValue = (value: unknown) => {
+        if (value === undefined || value === null) return false;
+        return String(value).toLowerCase().includes(term);
+      };
+
+      return invoiceList.filter(invoice => {
+        const invoiceIdentifier = invoice.invoice_no ?? invoice.invoice_id ?? '';
+        const timestampSource = invoice.processed_timestamp_ist || invoice.invoice_date || '';
+
+        switch (filters.searchColumn) {
+          case 'bill_id':
+            return matchesValue(invoiceIdentifier);
+          case 'total_amount':
+            return matchesValue(invoice.total_amount);
+          case 'invoice_timestamp': {
+            if (!timestampSource) {
+              return false;
+            }
+
+            const parsedDate =
+              parseProcessedTimestamp(timestampSource) || parseInvoiceDate(timestampSource);
+
+            const dateCandidates: string[] = [];
+
+            if (parsedDate) {
+              dateCandidates.push(
+                parsedDate
+                  .toLocaleDateString('en-GB', {
+                    day: '2-digit',
+                    month: 'short',
+                    year: 'numeric',
+                  })
+                  .toLowerCase()
+              );
+              dateCandidates.push(parsedDate.toISOString().slice(0, 10));
+              dateCandidates.push(
+                parsedDate
+                  .toLocaleDateString('en-US', {
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric',
+                  })
+                  .toLowerCase()
+              );
+            }
+
+            const segments = timestampSource
+              .split(/[T,]/)
+              .map(part => part.trim().toLowerCase())
+              .filter(Boolean);
+
+            segments.forEach(segment => {
+              const cleaned = segment.replace(/\b\d{1,2}:\d{2}(?::\d{2})?\b/g, '').trim();
+              if (cleaned) {
+                dateCandidates.push(cleaned);
+              }
+            });
+
+            return dateCandidates.some(candidate => candidate.includes(term));
+          }
+          case 'customer_phone':
+          default:
+            return matchesValue(invoice.customer_phone);
+        }
+      });
+    },
+    [filters]
+  );
 
   const filteredInvoices = useMemo(
     () => applyInvoiceFilters(invoices),
@@ -1546,7 +1556,7 @@ const buildSpendBuckets = (
   const clearFilters = () => {
     setFilters({
       searchTerm: '',
-      searchColumn: 'customer_phone'
+      searchColumn: 'customer_phone',
     });
   };
 
@@ -1557,8 +1567,8 @@ const buildSpendBuckets = (
       const token = localStorage.getItem('bb_token');
       const response = await fetch('/api/whatsapp/events?format=json', {
         headers: {
-          'Authorization': `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       });
       if (response.ok) {
         const data = await response.json();
@@ -1577,8 +1587,8 @@ const buildSpendBuckets = (
       const token = localStorage.getItem('bb_token');
       const response = await fetch('/api/whatsapp/logs?format=json', {
         headers: {
-          'Authorization': `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       });
       if (response.ok) {
         const data = await response.json();
@@ -1597,8 +1607,8 @@ const buildSpendBuckets = (
       const token = localStorage.getItem('bb_token');
       const response = await fetch('/api/whatsapp/analytics?format=json', {
         headers: {
-          'Authorization': `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       });
       if (response.ok) {
         const data = await response.json();
@@ -1634,14 +1644,14 @@ const buildSpendBuckets = (
   // Load KPIs for selected store
   const loadKPIs = async () => {
     if (!selectedStore) return;
-    
+
     setKpiLoading(true);
     try {
       const token = localStorage.getItem('bb_token');
       const response = await fetch(`/api/analytics/kpis?storeId=${selectedStore}`, {
         headers: {
-          'Authorization': `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       });
       if (response.ok) {
         const data = await response.json();
@@ -1657,14 +1667,14 @@ const buildSpendBuckets = (
   // Load customers for dashboard KPI
   const loadCustomers = async () => {
     if (!selectedStore) return;
-    
+
     setCustomersLoading(true);
     try {
       const token = localStorage.getItem('bb_token');
       const response = await fetch(`/api/analytics/customers?storeId=${selectedStore}`, {
         headers: {
-          'Authorization': `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       });
       if (response.ok) {
         const data = await response.json();
@@ -1681,7 +1691,6 @@ const buildSpendBuckets = (
       setCustomersLoading(false);
     }
   };
-
 
   // Load customer analytics data for all customers (date-range aware)
   const loadCustomerAnalytics = async () => {
@@ -1702,7 +1711,7 @@ const buildSpendBuckets = (
       );
 
       const invRes = await fetch(`/api/analytics/invoices?storeId=${selectedStore}`, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
       });
       const rawInvoices: Invoice[] = invRes.ok ? await invRes.json() : [];
 
@@ -1717,7 +1726,7 @@ const buildSpendBuckets = (
           return {
             ...invoice,
             parsedDate,
-            isoDate: formatLocalDateKey(parsedDate)
+            isoDate: formatLocalDateKey(parsedDate),
           };
         })
         .filter((invoice): invoice is WindowedInvoice => Boolean(invoice));
@@ -1742,16 +1751,24 @@ const buildSpendBuckets = (
         }
       });
 
-      const spendBuckets = buildSpendBuckets(customerDateRangeFilter as string, startD, endD).map(bucket => ({
-        ...bucket,
-        newSpend: 0,
-        returningSpend: 0,
-        anonymousSpend: 0
-      }));
+      const spendBuckets = buildSpendBuckets(customerDateRangeFilter as string, startD, endD).map(
+        bucket => ({
+          ...bucket,
+          newSpend: 0,
+          returningSpend: 0,
+          anonymousSpend: 0,
+        })
+      );
 
       const totals = new Map<
         string,
-        { name: string; totalSpent: number; lastPurchase: string; phone: string; isAnonymous: boolean }
+        {
+          name: string;
+          totalSpent: number;
+          lastPurchase: string;
+          phone: string;
+          isAnonymous: boolean;
+        }
       >();
       const spendByCustomer = new Map<
         string,
@@ -1769,8 +1786,7 @@ const buildSpendBuckets = (
         const isAnonymousCustomer = isAnonymousPhone(rawPhone);
         const amount = Number(invoice.total_amount || 0);
         const firstPurchase = firstPurchaseByCustomer.get(key);
-        const hasPriorPurchase =
-          firstPurchase ? firstPurchase.getTime() < startD.getTime() : false;
+        const hasPriorPurchase = firstPurchase ? firstPurchase.getTime() < startD.getTime() : false;
         const isFirstEncounter = !customersSeenInRange.has(key);
         if (isFirstEncounter) {
           customersSeenInRange.add(key);
@@ -1792,14 +1808,13 @@ const buildSpendBuckets = (
         const maskedName = isAnonymousCustomer
           ? 'Anonymous Customer'
           : getMaskedDisplayName(invoice.customer_name, rawPhone || key);
-        const previous =
-          totals.get(key) || {
-            name: maskedName,
-            totalSpent: 0,
-            lastPurchase: invoice.isoDate,
-            phone: rawPhone || key,
-            isAnonymous: isAnonymousCustomer
-          };
+        const previous = totals.get(key) || {
+          name: maskedName,
+          totalSpent: 0,
+          lastPurchase: invoice.isoDate,
+          phone: rawPhone || key,
+          isAnonymous: isAnonymousCustomer,
+        };
         previous.totalSpent += amount;
         if (invoice.isoDate > previous.lastPurchase) {
           previous.lastPurchase = invoice.isoDate;
@@ -1813,7 +1828,7 @@ const buildSpendBuckets = (
           invoices: 0,
           totalSpend: 0,
           phone: rawPhone || key,
-          isAnonymous: isAnonymousCustomer
+          isAnonymous: isAnonymousCustomer,
         };
         existing.invoices += 1;
         existing.totalSpend += amount;
@@ -1831,7 +1846,7 @@ const buildSpendBuckets = (
           phone: value.phone,
           name: value.name,
           invoices: value.invoices,
-          totalSpend: value.totalSpend
+          totalSpend: value.totalSpend,
         };
         if (value.isAnonymous) {
           anonymousCustomersRows.push(row);
@@ -1845,7 +1860,7 @@ const buildSpendBuckets = (
       setCustomerLifecycleTables({
         newCustomers: newCustomers.sort((a, b) => b.totalSpend - a.totalSpend),
         returningCustomers: returningCustomers.sort((a, b) => b.totalSpend - a.totalSpend),
-        anonymousCustomers: anonymousCustomersRows.sort((a, b) => b.totalSpend - a.totalSpend)
+        anonymousCustomers: anonymousCustomersRows.sort((a, b) => b.totalSpend - a.totalSpend),
       });
 
       const details: CustomerDetail[] = Array.from(totals.values()).map(info => ({
@@ -1853,7 +1868,7 @@ const buildSpendBuckets = (
         name: info.name,
         totalSpent: info.totalSpent,
         customerType: getCustomerType(info.totalSpent),
-        lastPurchase: info.lastPurchase
+        lastPurchase: info.lastPurchase,
       }));
       setCustomerDetails(details);
 
@@ -1864,7 +1879,7 @@ const buildSpendBuckets = (
         anonymousSpend: spendBuckets.map(bucket => bucket.anonymousSpend),
         totals: spendBuckets.map(
           bucket => bucket.newSpend + bucket.returningSpend + bucket.anonymousSpend
-        )
+        ),
       });
 
       // KPIs based on windowed invoices
@@ -1889,7 +1904,7 @@ const buildSpendBuckets = (
         avgBillSpent: windowed.length ? Math.round(totalSales / windowed.length) : 0,
         newCustomers: newCustomers.length,
         returningCustomers: returningCustomers.length,
-        anonymousCustomers: anonymousCustomerCount
+        anonymousCustomers: anonymousCustomerCount,
       });
     } catch (error) {
       console.error('Error fetching customer analytics:', error);
@@ -1901,16 +1916,20 @@ const buildSpendBuckets = (
         avgBillSpent: 0,
         newCustomers: 0,
         returningCustomers: 0,
-        anonymousCustomers: 0
+        anonymousCustomers: 0,
       });
       setCustomerDetails([]);
-      setCustomerLifecycleTables({ newCustomers: [], returningCustomers: [], anonymousCustomers: [] });
+      setCustomerLifecycleTables({
+        newCustomers: [],
+        returningCustomers: [],
+        anonymousCustomers: [],
+      });
       setCustomerSpendOverTime({
         labels: [],
         newSpend: [],
         returningSpend: [],
         anonymousSpend: [],
-        totals: []
+        totals: [],
       });
     } finally {
       setCustomerAnalyticsLoading(false);
@@ -1926,14 +1945,11 @@ const buildSpendBuckets = (
 
     try {
       const token = localStorage.getItem('bb_token');
-      const response = await fetch(
-        `/api/analytics/campaign-history?storeId=${selectedStore}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token ?? ''}`
-          }
-        }
-      );
+      const response = await fetch(`/api/analytics/campaign-history?storeId=${selectedStore}`, {
+        headers: {
+          Authorization: `Bearer ${token ?? ''}`,
+        },
+      });
 
       if (!response.ok) {
         console.error('Failed to load campaign history for dashboard');
@@ -1951,8 +1967,7 @@ const buildSpendBuckets = (
       const campaignMap = new Map<string, Campaign>();
 
       rawCampaigns.forEach(entry => {
-        const campaignName =
-          entry.campaignName || entry.campaign_name || 'Untitled Campaign';
+        const campaignName = entry.campaignName || entry.campaign_name || 'Untitled Campaign';
         const campaignIdValue =
           entry.id ||
           entry.campaignId ||
@@ -1960,28 +1975,26 @@ const buildSpendBuckets = (
           entry.messageId ||
           entry.message_id ||
           null;
-        const sentDateValue =
-          entry.sentDate || entry.sent_date || entry.sent_at || null;
+        const sentDateValue = entry.sentDate || entry.sent_date || entry.sent_at || null;
         const sentDate =
           typeof sentDateValue === 'string' && !Number.isNaN(Date.parse(sentDateValue))
             ? sentDateValue
             : new Date().toISOString();
-        const campaignKey = campaignIdValue ? String(campaignIdValue) : `${campaignName}-${sentDate}`;
+        const campaignKey = campaignIdValue
+          ? String(campaignIdValue)
+          : `${campaignName}-${sentDate}`;
         const templateNameValue =
           entry.templateName ||
           entry.template_name ||
           (entry.template && (entry.template.name || entry.template.TemplateName)) ||
           null;
-        const resendSettingsValue =
-          entry.resendSettings || entry.resend_settings || null;
+        const resendSettingsValue = entry.resendSettings || entry.resend_settings || null;
         const latestResendAttemptValue =
           entry.latestResendAttempt || entry.latest_resend_attempt || null;
         const overallCampaignStatusValue =
           entry.overallCampaignStatus || entry.overall_campaign_status || null;
-        const timeWindowStartValue =
-          entry.timeWindowStart || entry.time_window_start || null;
-        const timeWindowEndValue =
-          entry.timeWindowEnd || entry.time_window_end || null;
+        const timeWindowStartValue = entry.timeWindowStart || entry.time_window_start || null;
+        const timeWindowEndValue = entry.timeWindowEnd || entry.time_window_end || null;
 
         let campaign = campaignMap.get(campaignKey);
         if (!campaign) {
@@ -2001,7 +2014,7 @@ const buildSpendBuckets = (
             latestResendAttempt: latestResendAttemptValue,
             overallCampaignStatus: overallCampaignStatusValue,
             timeWindowStart: timeWindowStartValue,
-            timeWindowEnd: timeWindowEndValue
+            timeWindowEnd: timeWindowEndValue,
           };
           campaignMap.set(campaignKey, campaign);
         } else if (!campaign.templateName && templateNameValue) {
@@ -2074,7 +2087,13 @@ const buildSpendBuckets = (
     if (selectedStore && activeTab === 'customers') {
       loadCustomerAnalytics();
     }
-  }, [selectedStore, activeTab, customerDateRangeFilter, customerCustomStartDate, customerCustomEndDate]);
+  }, [
+    selectedStore,
+    activeTab,
+    customerDateRangeFilter,
+    customerCustomStartDate,
+    customerCustomEndDate,
+  ]);
   // Load charts data
   const showSidebarLabels = isSidebarExpanded || sidebarOpen;
   const sidebarWidthClass = isSidebarExpanded ? 'lg:w-64' : 'lg:w-16';
@@ -2088,7 +2107,7 @@ const buildSpendBuckets = (
     walletBalance <= walletBalanceThreshold;
 
   return (
-    <div className={cn("min-h-screen bg-[#e8f0fe] pt-16", isWhatsAppTabActive && "pt-0 sm:pt-16")}>
+    <div className={cn('min-h-screen bg-[#e8f0fe] pt-16', isWhatsAppTabActive && 'pt-0 sm:pt-16')}>
       {isWhatsAppTabActive ? (
         <div className="hidden sm:block">
           <AppHeader
@@ -2130,11 +2149,17 @@ const buildSpendBuckets = (
       )}
       {/* Sidebar */}
       <div
-        className={`fixed top-0 left-0 z-40 h-screen bg-gray-900 transform transition-all duration-200 ease-out ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} ${sidebarWidthClass} lg:translate-x-0`}
+        className={`fixed top-0 left-0 z-40 h-screen bg-gray-900 transform transition-all duration-200 ease-out ${
+          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        } ${sidebarWidthClass} lg:translate-x-0`}
         onMouseEnter={() => setIsSidebarExpanded(true)}
         onMouseLeave={() => setIsSidebarExpanded(false)}
       >
-        <div className={`flex items-center justify-between h-16 bg-gray-800 ${showSidebarLabels ? 'px-6' : 'px-2'}`}>
+        <div
+          className={`flex items-center justify-between h-16 bg-gray-800 ${
+            showSidebarLabels ? 'px-6' : 'px-2'
+          }`}
+        >
           <div className="flex w-full items-center justify-center" />
           <button
             onClick={() => setSidebarOpen(false)}
@@ -2144,10 +2169,12 @@ const buildSpendBuckets = (
           </button>
         </div>
 
-        <nav className={`flex flex-col h-[calc(100vh-64px)] ${showSidebarLabels ? 'px-4' : 'px-2'}`}>
+        <nav
+          className={`flex flex-col h-[calc(100vh-64px)] ${showSidebarLabels ? 'px-4' : 'px-2'}`}
+        >
           <div className="flex-1 space-y-2 overflow-y-auto">
             <TooltipProvider>
-              {navigationItems.map((item) => {
+              {navigationItems.map(item => {
                 const IconComponent = item.icon;
                 const button = (
                   <button
@@ -2201,7 +2228,7 @@ const buildSpendBuckets = (
           </div>
 
           <div className={`mt-4 ${showSidebarLabels ? 'px-2' : 'px-0'}`} />
-          
+
           {/* Logout button at the bottom */}
           <div className="py-4 border-t border-gray-800">
             <button
@@ -2225,18 +2252,18 @@ const buildSpendBuckets = (
 
       {/* Mobile sidebar overlay */}
       {sidebarOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
 
-            {/* Main content */}
+      {/* Main content */}
       <div className={mainOffsetClass}>
         {/* Main content area */}
         <div
           className={cn(
-            "min-h-screen bg-[#e8f0fe]",
+            'min-h-screen bg-[#e8f0fe]',
             activeTab === 'whatsapp' ? 'p-0 pb-20' : 'p-6 pb-24 lg:pb-6'
           )}
         >
@@ -2252,250 +2279,267 @@ const buildSpendBuckets = (
           ) : (
             <div className="p-6 min-h-screen bg-[#e8f0fe]">
               {activeTab !== 'automation' && (
-            <div className="hidden lg:block mb-8">
-              <h1 className="text-3xl font-bold text-gray-900">
-                {navigationItems.find(item => item.active)?.label} Analytics
-              </h1>
-            </div>
-          )}
-          {comingSoonLabel && (
-            <div className="mb-6 rounded-lg border border-dashed border-blue-300 bg-white/70 p-4 text-blue-900 shadow-sm backdrop-blur-sm">
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                  <p className="font-semibold">{comingSoonLabel} is coming soon</p>
-                  <p className="text-sm text-blue-700">
-                    We&apos;re finalizing this experience. Stay tuned—once it&apos;s ready,
-                    we&apos;ll light up the tab automatically.
-                  </p>
+                <div className="hidden lg:block mb-8">
+                  <h1 className="text-3xl font-bold text-gray-900">
+                    {navigationItems.find(item => item.active)?.label} Analytics
+                  </h1>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="outline"
-                    onClick={() => {
-                      handleTabChange('dashboard');
-                    }}
-                    className="whitespace-nowrap"
-                  >
-                    Back to dashboard
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    onClick={() => setComingSoonTab(null)}
-                    className="text-blue-700 hover:text-blue-900"
-                  >
-                    Dismiss
-                  </Button>
+              )}
+              {comingSoonLabel && (
+                <div className="mb-6 rounded-lg border border-dashed border-blue-300 bg-white/70 p-4 text-blue-900 shadow-sm backdrop-blur-sm">
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                      <p className="font-semibold">{comingSoonLabel} is coming soon</p>
+                      <p className="text-sm text-blue-700">
+                        We&apos;re finalizing this experience. Stay tuned—once it&apos;s ready,
+                        we&apos;ll light up the tab automatically.
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="outline"
+                        onClick={() => {
+                          handleTabChange('dashboard');
+                        }}
+                        className="whitespace-nowrap"
+                      >
+                        Back to dashboard
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        onClick={() => setComingSoonTab(null)}
+                        className="text-blue-700 hover:text-blue-900"
+                      >
+                        Dismiss
+                      </Button>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-          )}
+              )}
 
-          {/* Dashboard Section */}
-          {activeTab === 'dashboard' && (
-            <div className="space-y-6">
-              {/* Dashboard Date Filters */}
-              <div className="sticky top-16 z-40 bg-white rounded-lg shadow p-4 sm:p-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <p className="text-sm text-gray-500">
-                  Insights for <span className="font-medium text-gray-700">{dashboardDateRange.label}</span>
-                </p>
-                <div className="flex flex-wrap items-center gap-3 text-sm">
-                  <select
-                    value={dashboardDateRangeFilter}
-                    onChange={event => setDashboardDateRangeFilter(event.target.value as DateRangeFilter)}
-                    className="px-3 py-2 border border-gray-300 rounded-md bg-white text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  >
-                    <option value="today">Today</option>
-                    <option value="thisWeek">This Week</option>
-                    <option value="thisMonth">This Month</option>
-                    <option value="thisYear">This Year</option>
-                    <option value="alltime">All Time</option>
-                    <option value="custom">Custom</option>
-                  </select>
-                  {dashboardDateRangeFilter === 'custom' && (
-                    <>
-                      <input
-                        type="date"
-                        value={dashboardCustomStartDate}
-                        onChange={event => setDashboardCustomStartDate(event.target.value)}
+              {/* Dashboard Section */}
+              {activeTab === 'dashboard' && (
+                <div className="space-y-6">
+                  {/* Dashboard Date Filters */}
+                  <div className="sticky top-16 z-40 bg-white rounded-lg shadow p-4 sm:p-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <p className="text-sm text-gray-500">
+                      Insights for{' '}
+                      <span className="font-medium text-gray-700">{dashboardDateRange.label}</span>
+                    </p>
+                    <div className="flex flex-wrap items-center gap-3 text-sm">
+                      <select
+                        value={dashboardDateRangeFilter}
+                        onChange={event =>
+                          setDashboardDateRangeFilter(event.target.value as DateRangeFilter)
+                        }
                         className="px-3 py-2 border border-gray-300 rounded-md bg-white text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      />
-                      <span className="text-gray-400">–</span>
-                      <input
-                        type="date"
-                        value={dashboardCustomEndDate}
-                        onChange={event => setDashboardCustomEndDate(event.target.value)}
-                        className="px-3 py-2 border border-gray-300 rounded-md bg-white text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      />
-                    </>
-                  )}
-                  <Button
-                    variant="outline"
-                    className="px-3 py-2"
-                    onClick={() => {
-                      setDashboardDateRangeFilter('today');
-                      setDashboardCustomStartDate('');
-                      setDashboardCustomEndDate('');
-                    }}
-                  >
-                    Reset
-                  </Button>
-                </div>
-              </div>
-
-              {/* Dashboard Overview Cards */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                <div className="bg-white rounded-lg shadow p-6 border-t-4 border-green-500">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Total Revenue</h3>
-                  <p className="text-3xl font-bold text-green-600">
-                    {renderRevenueValue(
-                      `₹${Math.round(
-                        dashboardInvoices.reduce((sum, inv) => sum + inv.total_amount, 0)
-                      ).toLocaleString()}`
-                    )}
-                  </p>
-                  <p className="text-sm text-gray-500 mt-1">{dashboardDateRange.label}</p>
-                </div>
-                <div className="bg-white rounded-lg shadow p-6 border-t-4 border-blue-500">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Total Invoices</h3>
-                  <p className="text-3xl font-bold text-blue-600">{dashboardInvoices.length.toLocaleString()}</p>
-                  <p className="text-sm text-gray-500 mt-1">{dashboardDateRange.label}</p>
-                </div>
-                <div className="bg-white rounded-lg shadow p-6 border-t-4 border-teal-500">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">E-bill Invoices</h3>
-                  <p className="text-3xl font-bold text-teal-600">{dashboardEbillInvoiceCount.toLocaleString()}</p>
-                  <p className="text-sm text-gray-500 mt-1">Phone numbers captured</p>
-                </div>
-                <div className="bg-white rounded-lg shadow p-6 border-t-4 border-purple-500">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Total Customers</h3>
-                  <p className="text-3xl font-bold text-purple-600">{dashboardCustomerCount.toLocaleString()}</p>
-                  <p className="text-sm text-gray-500 mt-1">{dashboardDateRange.label}</p>
-                </div>
-                <div className="bg-white rounded-lg shadow p-6 border-t-4 border-indigo-500">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">E-bill Customers</h3>
-                  <p className="text-3xl font-bold text-indigo-600">{dashboardEbillCustomerCount.toLocaleString()}</p>
-                  <p className="text-sm text-gray-500 mt-1">Provided phone numbers</p>
-                </div>
-                <div className="bg-white rounded-lg shadow p-6 border-t-4 border-red-500">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Anonymous Customers</h3>
-                  <p className="text-3xl font-bold text-red-600">{dashboardAnonymousCustomerCount.toLocaleString()}</p>
-                  <p className="text-sm text-gray-500 mt-1">No Phone Number</p>
-                </div>
-                <div className="bg-white rounded-lg shadow p-6 border-t-4 border-orange-500">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Campaigns Sent</h3>
-                  <p className="text-3xl font-bold text-orange-600">{dashboardCampaigns.length.toLocaleString()}</p>
-                  <p className="text-sm text-gray-500 mt-1">{dashboardDateRange.label}</p>
-                </div>
-              </div>
-
-              {/* Quick Actions */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <div className="bg-white rounded-lg shadow p-6">
-                  <div className="flex items-center mb-4">
-                    <FileText className="h-8 w-8 text-blue-600 mr-3" />
-                    <h3 className="text-lg font-semibold text-gray-900">Invoices</h3>
+                      >
+                        <option value="today">Today</option>
+                        <option value="thisWeek">This Week</option>
+                        <option value="thisMonth">This Month</option>
+                        <option value="thisYear">This Year</option>
+                        <option value="alltime">All Time</option>
+                        <option value="custom">Custom</option>
+                      </select>
+                      {dashboardDateRangeFilter === 'custom' && (
+                        <>
+                          <input
+                            type="date"
+                            value={dashboardCustomStartDate}
+                            onChange={event => setDashboardCustomStartDate(event.target.value)}
+                            className="px-3 py-2 border border-gray-300 rounded-md bg-white text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                          />
+                          <span className="text-gray-400">–</span>
+                          <input
+                            type="date"
+                            value={dashboardCustomEndDate}
+                            onChange={event => setDashboardCustomEndDate(event.target.value)}
+                            className="px-3 py-2 border border-gray-300 rounded-md bg-white text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                          />
+                        </>
+                      )}
+                      <Button
+                        variant="outline"
+                        className="px-3 py-2"
+                        onClick={() => {
+                          setDashboardDateRangeFilter('today');
+                          setDashboardCustomStartDate('');
+                          setDashboardCustomEndDate('');
+                        }}
+                      >
+                        Reset
+                      </Button>
+                    </div>
                   </div>
-                  <p className="text-gray-600 mb-4">View and manage your invoices</p>
-                  <Button 
-                    onClick={() => handleTabChange('invoices')}
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white"
-                  >
-                    View Invoices
-                  </Button>
-                </div>
-                
-                <div className="bg-white rounded-lg shadow p-6">
-                  <div className="flex items-center mb-4">
-                    <MessageCircle className="h-8 w-8 text-green-600 mr-3" />
-                    <h3 className="text-lg font-semibold text-gray-900">WhatsApp</h3>
+
+                  {/* Dashboard Overview Cards */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div className="bg-white rounded-lg shadow p-6 border-t-4 border-green-500">
+                      <h3 className="text-lg font-semibold text-gray-900 mb-2">Total Revenue</h3>
+                      <p className="text-3xl font-bold text-green-600">
+                        {renderRevenueValue(
+                          `₹${Math.round(
+                            dashboardInvoices.reduce((sum, inv) => sum + inv.total_amount, 0)
+                          ).toLocaleString()}`
+                        )}
+                      </p>
+                      <p className="text-sm text-gray-500 mt-1">{dashboardDateRange.label}</p>
+                    </div>
+                    <div className="bg-white rounded-lg shadow p-6 border-t-4 border-blue-500">
+                      <h3 className="text-lg font-semibold text-gray-900 mb-2">Total Invoices</h3>
+                      <p className="text-3xl font-bold text-blue-600">
+                        {dashboardInvoices.length.toLocaleString()}
+                      </p>
+                      <p className="text-sm text-gray-500 mt-1">{dashboardDateRange.label}</p>
+                    </div>
+                    <div className="bg-white rounded-lg shadow p-6 border-t-4 border-teal-500">
+                      <h3 className="text-lg font-semibold text-gray-900 mb-2">E-bill Invoices</h3>
+                      <p className="text-3xl font-bold text-teal-600">
+                        {dashboardEbillInvoiceCount.toLocaleString()}
+                      </p>
+                      <p className="text-sm text-gray-500 mt-1">Phone numbers captured</p>
+                    </div>
+                    <div className="bg-white rounded-lg shadow p-6 border-t-4 border-purple-500">
+                      <h3 className="text-lg font-semibold text-gray-900 mb-2">Total Customers</h3>
+                      <p className="text-3xl font-bold text-purple-600">
+                        {dashboardCustomerCount.toLocaleString()}
+                      </p>
+                      <p className="text-sm text-gray-500 mt-1">{dashboardDateRange.label}</p>
+                    </div>
+                    <div className="bg-white rounded-lg shadow p-6 border-t-4 border-indigo-500">
+                      <h3 className="text-lg font-semibold text-gray-900 mb-2">E-bill Customers</h3>
+                      <p className="text-3xl font-bold text-indigo-600">
+                        {dashboardEbillCustomerCount.toLocaleString()}
+                      </p>
+                      <p className="text-sm text-gray-500 mt-1">Provided phone numbers</p>
+                    </div>
+                    <div className="bg-white rounded-lg shadow p-6 border-t-4 border-red-500">
+                      <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                        Anonymous Customers
+                      </h3>
+                      <p className="text-3xl font-bold text-red-600">
+                        {dashboardAnonymousCustomerCount.toLocaleString()}
+                      </p>
+                      <p className="text-sm text-gray-500 mt-1">No Phone Number</p>
+                    </div>
+                    <div className="bg-white rounded-lg shadow p-6 border-t-4 border-orange-500">
+                      <h3 className="text-lg font-semibold text-gray-900 mb-2">Campaigns Sent</h3>
+                      <p className="text-3xl font-bold text-orange-600">
+                        {dashboardCampaigns.length.toLocaleString()}
+                      </p>
+                      <p className="text-sm text-gray-500 mt-1">{dashboardDateRange.label}</p>
+                    </div>
                   </div>
-                  <p className="text-gray-600 mb-4">Monitor WhatsApp communications</p>
-                  <Button 
-                    onClick={() => handleTabChange('whatsapp')}
-                    className="w-full bg-green-600 hover:bg-green-700 text-white"
-                  >
-                    View WhatsApp
-                  </Button>
-                </div>
-                
-                <div className="bg-white rounded-lg shadow p-6">
-                  <div className="flex items-center mb-4">
-                    <Megaphone className="h-8 w-8 text-purple-600 mr-3" />
-                    <h3 className="text-lg font-semibold text-gray-900">Campaigns</h3>
+
+                  {/* Quick Actions */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="bg-white rounded-lg shadow p-6">
+                      <div className="flex items-center mb-4">
+                        <FileText className="h-8 w-8 text-blue-600 mr-3" />
+                        <h3 className="text-lg font-semibold text-gray-900">Invoices</h3>
+                      </div>
+                      <p className="text-gray-600 mb-4">View and manage your invoices</p>
+                      <Button
+                        onClick={() => handleTabChange('invoices')}
+                        className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                      >
+                        View Invoices
+                      </Button>
+                    </div>
+
+                    <div className="bg-white rounded-lg shadow p-6">
+                      <div className="flex items-center mb-4">
+                        <MessageCircle className="h-8 w-8 text-green-600 mr-3" />
+                        <h3 className="text-lg font-semibold text-gray-900">WhatsApp</h3>
+                      </div>
+                      <p className="text-gray-600 mb-4">Monitor WhatsApp communications</p>
+                      <Button
+                        onClick={() => handleTabChange('whatsapp')}
+                        className="w-full bg-green-600 hover:bg-green-700 text-white"
+                      >
+                        View WhatsApp
+                      </Button>
+                    </div>
+
+                    <div className="bg-white rounded-lg shadow p-6">
+                      <div className="flex items-center mb-4">
+                        <Megaphone className="h-8 w-8 text-purple-600 mr-3" />
+                        <h3 className="text-lg font-semibold text-gray-900">Campaigns</h3>
+                      </div>
+                      <p className="text-gray-600 mb-4">Create and manage campaigns</p>
+                      <Button
+                        onClick={() => handleTabChange('campaigns')}
+                        className="w-full bg-purple-600 hover:bg-purple-700 text-white"
+                      >
+                        View Campaigns
+                      </Button>
+                    </div>
                   </div>
-                  <p className="text-gray-600 mb-4">Create and manage campaigns</p>
-                  <Button 
-                    onClick={() => handleTabChange('campaigns')}
-                    className="w-full bg-purple-600 hover:bg-purple-700 text-white"
-                  >
-                    View Campaigns
-                  </Button>
                 </div>
-              </div>
-            </div>
-          )}
+              )}
 
-          {/* Invoices Section */}
-        {activeTab === 'invoices' && (
-          <Invoices
-            selectedStore={selectedStore}
-            onLoadInvoices={loadInvoices}
-            loading={loading}
-            invoices={invoices}
-            filteredInvoices={filteredInvoices}
-            dailyEndInvoices={dailyEndInvoices}
-            dailyEndFilteredInvoices={filteredDailyEndInvoices}
-            dailyEndReportsLoading={dailyEndReportsLoading}
-            filters={filters}
-            onFiltersChange={value => setFilters(value)}
-            onClearFilters={clearFilters}
-            kpiData={kpiData}
-            revenueUnlocked={effectiveRevenueUnlocked}
-            onRequestRevenueUnlock={handleOpenRevenueUnlock}
-          />
-        )}
-        {activeTab === 'whatsapp' && <WhatsApp />}
-        {activeTab === 'templates' && <TemplateLibrary />}
-        {activeTab === 'automation' && <Automation />}
-        {activeTab === 'whatsapp-commerce' && <WhatsAppCommerce />}
+              {/* Invoices Section */}
+              {activeTab === 'invoices' && (
+                <Invoices
+                  selectedStore={selectedStore}
+                  onLoadInvoices={loadInvoices}
+                  loading={loading}
+                  invoices={invoices}
+                  filteredInvoices={filteredInvoices}
+                  dailyEndInvoices={dailyEndInvoices}
+                  dailyEndFilteredInvoices={filteredDailyEndInvoices}
+                  dailyEndReportsLoading={dailyEndReportsLoading}
+                  filters={filters}
+                  onFiltersChange={value => setFilters(value)}
+                  onClearFilters={clearFilters}
+                  kpiData={kpiData}
+                  revenueUnlocked={effectiveRevenueUnlocked}
+                  onRequestRevenueUnlock={handleOpenRevenueUnlock}
+                />
+              )}
+              {activeTab === 'whatsapp' && <WhatsApp />}
+              {activeTab === 'templates' && <TemplateLibrary />}
+              {activeTab === 'automation' && <Automation />}
+              {activeTab === 'whatsapp-commerce' && <WhatsAppCommerce />}
 
-        {activeTab === 'customers' && (
-          <Customers
-            dateRangeFilter={customerDateRangeFilter}
-            setDateRangeFilter={setCustomerDateRangeFilter}
-            customStartDate={customerCustomStartDate}
-            setCustomStartDate={setCustomerCustomStartDate}
-            customEndDate={customerCustomEndDate}
-            setCustomEndDate={setCustomerCustomEndDate}
-            customerAnalyticsLoading={customerAnalyticsLoading}
-            customerKPIs={customerKPIs}
-            customerDetails={customerDetails}
-            customerLifecycleTables={customerLifecycleTables}
-            customerSpendOverTime={customerSpendOverTime}
-            lifecycleSummary={lifecycleSummary}
-            getCustomerType={getCustomerType}
-            getCustomerTypeStyle={getCustomerTypeStyle}
-            customerCurrentPage={customerCurrentPage}
-            setCustomerCurrentPage={setCustomerCurrentPage}
-            customerPageSize={customerPageSize}
-            revenueUnlocked={effectiveRevenueUnlocked}
-            onRequestRevenueUnlock={handleOpenRevenueUnlock}
-            onLaunchCampaign={handleLaunchCampaignPrefill}
-          />
-        )}
+              {activeTab === 'customers' && (
+                <Customers
+                  dateRangeFilter={customerDateRangeFilter}
+                  setDateRangeFilter={setCustomerDateRangeFilter}
+                  customStartDate={customerCustomStartDate}
+                  setCustomStartDate={setCustomerCustomStartDate}
+                  customEndDate={customerCustomEndDate}
+                  setCustomEndDate={setCustomerCustomEndDate}
+                  customerAnalyticsLoading={customerAnalyticsLoading}
+                  customerKPIs={customerKPIs}
+                  customerDetails={customerDetails}
+                  customerLifecycleTables={customerLifecycleTables}
+                  customerSpendOverTime={customerSpendOverTime}
+                  lifecycleSummary={lifecycleSummary}
+                  getCustomerType={getCustomerType}
+                  getCustomerTypeStyle={getCustomerTypeStyle}
+                  customerCurrentPage={customerCurrentPage}
+                  setCustomerCurrentPage={setCustomerCurrentPage}
+                  customerPageSize={customerPageSize}
+                  revenueUnlocked={effectiveRevenueUnlocked}
+                  onRequestRevenueUnlock={handleOpenRevenueUnlock}
+                  onLaunchCampaign={handleLaunchCampaignPrefill}
+                />
+              )}
 
-        {isTabFeatureEnabled('loyalty') && activeTab === 'loyalty' && (
-          <Loyalty
-            loyaltyPrograms={loyaltyPrograms}
-            onLoyaltyEdit={handleLoyaltyEdit}
-            onLoyaltyToggle={handleLoyaltyToggle}
-            loyaltyModalOpen={loyaltyModalOpen}
-            editingLoyalty={editingLoyalty}
-            onCloseModal={() => setLoyaltyModalOpen(false)}
-            onLoyaltySave={handleLoyaltySave}
-            editFormData={editFormData}
-            onFormChange={handleFormChange}
-          />
-        )}
+              {isTabFeatureEnabled('loyalty') && activeTab === 'loyalty' && (
+                <Loyalty
+                  loyaltyPrograms={loyaltyPrograms}
+                  onLoyaltyEdit={handleLoyaltyEdit}
+                  onLoyaltyToggle={handleLoyaltyToggle}
+                  loyaltyModalOpen={loyaltyModalOpen}
+                  editingLoyalty={editingLoyalty}
+                  onCloseModal={() => setLoyaltyModalOpen(false)}
+                  onLoyaltySave={handleLoyaltySave}
+                  editFormData={editFormData}
+                  onFormChange={handleFormChange}
+                />
+              )}
 
               {isTabFeatureEnabled('cdp') && activeTab === 'cdp' && (
                 <CDP
@@ -2510,108 +2554,115 @@ const buildSpendBuckets = (
           )}
         </div>
 
-      {/* Mobile bottom nav */}
-      <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-gray-200 bg-white/95 backdrop-blur lg:hidden">
-        <div className="grid grid-cols-5">
-          {mobileNavItems.map(item => {
-            const IconComponent = item.icon;
-            return (
-              <button
-                key={item.id}
-                type="button"
-                aria-disabled={item.disabled}
-                onClick={() => {
-                  const changed = handleTabChange(item.id as AnalyticsTab);
-                  if (changed) {
-                    setSidebarOpen(false);
-                  }
-                }}
-                className={cn(
-                  'flex flex-col items-center justify-center gap-1 px-2 py-2 text-[11px] font-semibold',
-                  item.active ? 'text-blue-600' : 'text-gray-500',
-                  item.disabled && 'opacity-40'
-                )}
-              >
-                <IconComponent className="h-5 w-5" />
-                {item.label}
-              </button>
-            );
-          })}
-        </div>
-      </nav>
+        {/* Mobile bottom nav */}
+        <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-gray-200 bg-white/95 backdrop-blur lg:hidden">
+          <div className="grid grid-cols-5">
+            {mobileNavItems.map(item => {
+              const IconComponent = item.icon;
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  aria-disabled={item.disabled}
+                  onClick={() => {
+                    const changed = handleTabChange(item.id as AnalyticsTab);
+                    if (changed) {
+                      setSidebarOpen(false);
+                    }
+                  }}
+                  className={cn(
+                    'flex flex-col items-center justify-center gap-1 px-2 py-2 text-[11px] font-semibold',
+                    item.active ? 'text-blue-600' : 'text-gray-500',
+                    item.disabled && 'opacity-40'
+                  )}
+                >
+                  <IconComponent className="h-5 w-5" />
+                  {item.label}
+                </button>
+              );
+            })}
+          </div>
+        </nav>
       </div>
       {!ownerMode && (
         <Dialog
           open={revenuePinModalOpen}
           onOpenChange={open => (open ? setRevenuePinModalOpen(true) : handleCloseRevenueModal())}
         >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Unlock revenue KPIs</DialogTitle>
-            <DialogDescription>
-              Only franchise owners can view revenue numbers. Enter the PIN shared with you to continue.
-            </DialogDescription>
-          </DialogHeader>
-          <form onSubmit={handleRevenuePinSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">4-6 digit PIN</label>
-              <input
-                type="password"
-                inputMode="numeric"
-                pattern="[0-9]*"
-                maxLength={6}
-                value={revenuePinInput}
-                disabled={hasRevenuePin === false}
-                onChange={event => {
-                  setRevenuePinError('');
-                  setShowRevenueResetCta(false);
-                  setRevenuePinInput(event.target.value.replace(/\D/g, '').slice(0, 6));
-                }}
-                className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 disabled:bg-gray-100"
-                placeholder="Enter PIN"
-              />
-              {revenuePinStatusLoading && (
-                <p className="text-xs text-gray-500">Checking PIN status…</p>
-              )}
-              {revenuePinStatusError && (
-                <p className="text-xs text-amber-600">{revenuePinStatusError}</p>
-              )}
-              {hasRevenuePin === false && (
-                <p className="text-sm text-amber-600">
-                  Revenue PIN is not configured yet. Ask the franchise owner to set it from Profile → Settings → Security.
-                </p>
-              )}
-              {revenuePinError && (
-                <div className="space-y-2 rounded-md border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700">
-                  <p>{revenuePinError}</p>
-                  {showRevenueResetCta && (
-                    <button
-                      type="button"
-                      className="inline-flex w-fit items-center gap-1 text-xs font-semibold text-rose-700 underline decoration-dotted"
-                      onClick={() => {
-                        handleCloseRevenueModal();
-                        redirectToRevenueSecurity();
-                      }}
-                    >
-                      Go to Profile to reset PIN
-                    </button>
-                  )}
-                </div>
-              )}
-            </div>
-            <DialogFooter className="flex flex-col gap-2 sm:flex-row sm:justify-end">
-              <Button type="button" variant="outline" onClick={handleCloseRevenueModal} disabled={revenuePinLoading}>
-                Cancel
-              </Button>
-              <Button type="submit" disabled={revenuePinLoading || hasRevenuePin === false}>
-                {revenuePinLoading ? 'Verifying…' : 'Unlock'}
-              </Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Unlock revenue KPIs</DialogTitle>
+              <DialogDescription>
+                Only franchise owners can view revenue numbers. Enter the PIN shared with you to
+                continue.
+              </DialogDescription>
+            </DialogHeader>
+            <form onSubmit={handleRevenuePinSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700">4-6 digit PIN</label>
+                <input
+                  type="password"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  maxLength={6}
+                  value={revenuePinInput}
+                  disabled={hasRevenuePin === false}
+                  onChange={event => {
+                    setRevenuePinError('');
+                    setShowRevenueResetCta(false);
+                    setRevenuePinInput(event.target.value.replace(/\D/g, '').slice(0, 6));
+                  }}
+                  className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 disabled:bg-gray-100"
+                  placeholder="Enter PIN"
+                />
+                {revenuePinStatusLoading && (
+                  <p className="text-xs text-gray-500">Checking PIN status…</p>
+                )}
+                {revenuePinStatusError && (
+                  <p className="text-xs text-amber-600">{revenuePinStatusError}</p>
+                )}
+                {hasRevenuePin === false && (
+                  <p className="text-sm text-amber-600">
+                    Revenue PIN is not configured yet. Ask the franchise owner to set it from
+                    Profile → Settings → Security.
+                  </p>
+                )}
+                {revenuePinError && (
+                  <div className="space-y-2 rounded-md border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700">
+                    <p>{revenuePinError}</p>
+                    {showRevenueResetCta && (
+                      <button
+                        type="button"
+                        className="inline-flex w-fit items-center gap-1 text-xs font-semibold text-rose-700 underline decoration-dotted"
+                        onClick={() => {
+                          handleCloseRevenueModal();
+                          redirectToRevenueSecurity();
+                        }}
+                      >
+                        Go to Profile to reset PIN
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
+              <DialogFooter className="flex flex-col gap-2 sm:flex-row sm:justify-end">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleCloseRevenueModal}
+                  disabled={revenuePinLoading}
+                >
+                  Cancel
+                </Button>
+                <Button type="submit" disabled={revenuePinLoading || hasRevenuePin === false}>
+                  {revenuePinLoading ? 'Verifying…' : 'Unlock'}
+                </Button>
+              </DialogFooter>
+            </form>
+          </DialogContent>
         </Dialog>
       )}
-</div>
+    </div>
   );
 };
 

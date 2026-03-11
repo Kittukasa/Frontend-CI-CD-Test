@@ -1,4 +1,4 @@
-import { withAdminAuthHeaders } from "@/utils/adminAuth";
+import { withAdminAuthHeaders } from '@/utils/adminAuth';
 
 export interface StoreOverviewMetrics {
   totalInvoices: number;
@@ -10,11 +10,11 @@ export interface StoreOverviewMetrics {
 
 export const fetchStoreOverviewMetrics = async (storeId: string): Promise<StoreOverviewMetrics> => {
   const response = await fetch(`/api/admin/vendor-monitor/stores/${storeId}/metrics`, {
-    credentials: "include",
+    credentials: 'include',
     headers: withAdminAuthHeaders(),
   });
   if (!response.ok) {
-    throw new Error("Failed to load store overview");
+    throw new Error('Failed to load store overview');
   }
   return (await response.json()) as StoreOverviewMetrics;
 };

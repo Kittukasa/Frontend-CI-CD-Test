@@ -1,4 +1,11 @@
-import React, { useCallback, useEffect, useMemo, useState, type Dispatch, type SetStateAction } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  type Dispatch,
+  type SetStateAction,
+} from 'react';
 import dayjs from 'dayjs';
 import { Doughnut, Bar } from 'react-chartjs-2';
 import type { Plugin, ChartDataset, ChartType, Chart, Point, ChartOptions } from 'chart.js';
@@ -50,10 +57,9 @@ const valueLabelPlugin: Plugin<ValueLabelChartType> = {
       }
 
       const datasetTypes =
-        chart.config.data?.datasets?.map(dataset => dataset?.type).filter(
-          (datasetType): datasetType is ChartType =>
-            typeof datasetType === 'string'
-        ) ?? [];
+        chart.config.data?.datasets
+          ?.map(dataset => dataset?.type)
+          .filter((datasetType): datasetType is ChartType => typeof datasetType === 'string') ?? [];
 
       for (const candidate of datasetTypes) {
         if (candidate === 'bar' || candidate === 'doughnut') {
@@ -135,7 +141,12 @@ const valueLabelPlugin: Plugin<ValueLabelChartType> = {
         let baseline: CanvasTextBaseline = 'middle';
         const textColor = '#000000';
         if (chartType === 'bar') {
-          const bar = typedElement as unknown as { base?: number; y?: number; x?: number; width?: number };
+          const bar = typedElement as unknown as {
+            base?: number;
+            y?: number;
+            x?: number;
+            width?: number;
+          };
           const base = typeof bar.base === 'number' ? bar.base : position.y;
           const top = typeof bar.y === 'number' ? bar.y : position.y;
           drawX = typeof bar.x === 'number' ? bar.x : position.x;
@@ -235,7 +246,12 @@ interface CustomersProps {
   revenueUnlocked: boolean;
   onRequestRevenueUnlock: () => void;
   onLaunchCampaign?: (
-    recipients: Array<{ phone: string; name?: string; totalSpent?: number; lifecycleSegment?: LifecycleSegment }>
+    recipients: Array<{
+      phone: string;
+      name?: string;
+      totalSpent?: number;
+      lifecycleSegment?: LifecycleSegment;
+    }>
   ) => void;
 }
 
@@ -259,13 +275,17 @@ function Customers({
   customerPageSize,
   revenueUnlocked,
   onRequestRevenueUnlock,
-  onLaunchCampaign
+  onLaunchCampaign,
 }: CustomersProps) {
   const [customerTypeFilters, setCustomerTypeFilters] = useState<CustomerTypeLabel[]>([]);
   const [lifecycleFilters, setLifecycleFilters] = useState<Array<'new' | 'returning'>>([]);
   const [customerSearchTerm, setCustomerSearchTerm] = useState('');
-  const [customerSearchColumn, setCustomerSearchColumn] = useState<'name' | 'phone' | 'customerType' | 'lastPurchase' | 'totalSpent'>('name');
-  const [customerSortColumn, setCustomerSortColumn] = useState<'name' | 'phone' | 'lastPurchase' | 'totalSpent'>('name');
+  const [customerSearchColumn, setCustomerSearchColumn] = useState<
+    'name' | 'phone' | 'customerType' | 'lastPurchase' | 'totalSpent'
+  >('name');
+  const [customerSortColumn, setCustomerSortColumn] = useState<
+    'name' | 'phone' | 'lastPurchase' | 'totalSpent'
+  >('name');
   const [customerSortDirection, setCustomerSortDirection] = useState<'asc' | 'desc'>('asc');
   const customerTypeConfig = useMemo(() => loadCustomerTypeConfig(), []);
   const premiumSpendLabel = useMemo(
@@ -284,16 +304,16 @@ function Customers({
   const anonymousCustomers = customerKPIs?.anonymousCustomers ?? 0;
   const lifecycleCounts: Record<'new' | 'returning', number> = {
     new: lifecycleSummary.newCount,
-    returning: lifecycleSummary.returningCount
+    returning: lifecycleSummary.returningCount,
   };
   const lifecycleSpends = {
     new: lifecycleSummary.newSpend,
     returning: lifecycleSummary.returningSpend,
-    anonymous: lifecycleSummary.anonymousSpend
+    anonymous: lifecycleSummary.anonymousSpend,
   };
   const lifecycleFilterLabelMap: Record<'new' | 'returning', string> = {
     new: 'New Customers',
-    returning: 'Returning Customers'
+    returning: 'Returning Customers',
   };
   const baseTotalSales = customerKPIs?.totalSales ?? 0;
   const baseTotalCustomers = customerKPIs?.totalCustomers ?? 0;
@@ -410,18 +430,14 @@ function Customers({
           data: [
             lifecycleSummary.newCount,
             lifecycleSummary.returningCount,
-            lifecycleSummary.anonymousCount
+            lifecycleSummary.anonymousCount,
           ],
-          backgroundColor: [
-            'rgba(59,130,246,0.8)',
-            'rgba(34,197,94,0.8)',
-            'rgba(239,68,68,0.8)'
-          ],
+          backgroundColor: ['rgba(59,130,246,0.8)', 'rgba(34,197,94,0.8)', 'rgba(239,68,68,0.8)'],
           borderColor: ['rgba(59,130,246,1)', 'rgba(34,197,94,1)', 'rgba(239,68,68,1)'],
           borderWidth: 1,
-          valueFormatter: (value: number) => value.toLocaleString()
-        } satisfies DatasetWithFormatter<'doughnut'>
-      ]
+          valueFormatter: (value: number) => value.toLocaleString(),
+        } satisfies DatasetWithFormatter<'doughnut'>,
+      ],
     }),
     [lifecycleSummary.newCount, lifecycleSummary.returningCount, lifecycleSummary.anonymousCount]
   );
@@ -483,7 +499,7 @@ function Customers({
 
         return {
           ...customer,
-          lifecycleSegment
+          lifecycleSegment,
         };
       })
       .filter(customer => {
@@ -517,7 +533,9 @@ function Customers({
       const lastVisitedLabel = formatLastVisited(customer.lastPurchase).toLowerCase();
       const lastVisitedRaw = (customer.lastPurchase || '').toLowerCase();
       const lastVisitedDigits = (customer.lastPurchase || '').replace(/\D/g, '');
-      const totalSpentRounded = Number.isFinite(customer.totalSpent) ? Math.round(customer.totalSpent) : 0;
+      const totalSpentRounded = Number.isFinite(customer.totalSpent)
+        ? Math.round(customer.totalSpent)
+        : 0;
       const totalSpentPlain = totalSpentRounded.toString();
       const totalSpentFormatted = totalSpentRounded.toLocaleString();
       const totalSpentDigits = totalSpentFormatted.replace(/\D/g, '');
@@ -569,7 +587,7 @@ function Customers({
       } else {
         comparison = String(aVal ?? '').localeCompare(String(bVal ?? ''), undefined, {
           sensitivity: 'base',
-          numeric: true
+          numeric: true,
         });
       }
       return customerSortDirection === 'asc' ? comparison : -comparison;
@@ -587,24 +605,20 @@ function Customers({
           data: [
             lifecycleSummary.newSpend,
             lifecycleSummary.returningSpend,
-            lifecycleSummary.anonymousSpend
+            lifecycleSummary.anonymousSpend,
           ],
-          backgroundColor: [
-            'rgba(59,130,246,0.8)',
-            'rgba(34,197,94,0.8)',
-            'rgba(239,68,68,0.8)'
-          ],
+          backgroundColor: ['rgba(59,130,246,0.8)', 'rgba(34,197,94,0.8)', 'rgba(239,68,68,0.8)'],
           borderColor: ['rgba(59,130,246,1)', 'rgba(34,197,94,1)', 'rgba(239,68,68,1)'],
           borderWidth: 1,
-          valueFormatter: (value: number) => formatCurrency(value)
-        } satisfies DatasetWithFormatter<'bar'>
-      ]
+          valueFormatter: (value: number) => formatCurrency(value),
+        } satisfies DatasetWithFormatter<'bar'>,
+      ],
     }),
     [
       formatCurrency,
       lifecycleSummary.newSpend,
       lifecycleSummary.returningSpend,
-      lifecycleSummary.anonymousSpend
+      lifecycleSummary.anonymousSpend,
     ]
   );
 
@@ -626,7 +640,7 @@ function Customers({
           backgroundColor: 'rgba(59,130,246,0.8)',
           borderColor: 'rgba(59,130,246,1)',
           borderWidth: 1,
-          valueFormatter: (value: number) => formatCurrency(value)
+          valueFormatter: (value: number) => formatCurrency(value),
         } satisfies DatasetWithFormatter<'bar'>,
         {
           label: 'Returning Customers',
@@ -634,7 +648,7 @@ function Customers({
           backgroundColor: 'rgba(34,197,94,0.8)',
           borderColor: 'rgba(34,197,94,1)',
           borderWidth: 1,
-          valueFormatter: (value: number) => formatCurrency(value)
+          valueFormatter: (value: number) => formatCurrency(value),
         } satisfies DatasetWithFormatter<'bar'>,
         {
           label: 'Anonymous Customers',
@@ -642,16 +656,16 @@ function Customers({
           backgroundColor: 'rgba(239,68,68,0.8)',
           borderColor: 'rgba(239,68,68,1)',
           borderWidth: 1,
-          valueFormatter: (value: number) => formatCurrency(value)
-        } satisfies DatasetWithFormatter<'bar'>
-      ]
+          valueFormatter: (value: number) => formatCurrency(value),
+        } satisfies DatasetWithFormatter<'bar'>,
+      ],
     }),
     [
       customerSpendOverTime.labels,
       customerSpendOverTime.newSpend,
       customerSpendOverTime.returningSpend,
       customerSpendOverTime.anonymousSpend,
-      formatCurrency
+      formatCurrency,
     ]
   );
 
@@ -674,7 +688,7 @@ function Customers({
             phone: normalizedPhone,
             name: getSafeCustomerName(customer.name, customer.phone),
             totalSpent: customer.totalSpent,
-            lifecycleSegment: customer.lifecycleSegment ?? 'anonymous'
+            lifecycleSegment: customer.lifecycleSegment ?? 'anonymous',
           };
         })
         .filter((candidate): candidate is CampaignRecipient => candidate !== null),
@@ -710,7 +724,8 @@ function Customers({
   };
 
   const hasSpendData =
-    lifecycleSummary.newSpend + lifecycleSummary.returningSpend + lifecycleSummary.anonymousSpend > 0;
+    lifecycleSummary.newSpend + lifecycleSummary.returningSpend + lifecycleSummary.anonymousSpend >
+    0;
   const hasSpendOverTime =
     spendOverTimeData.labels.length > 0 &&
     (customerSpendOverTime.newSpend.some(value => value > 0) ||
@@ -730,19 +745,17 @@ function Customers({
               const label = context.label || '';
               const value = Number(context.parsed) || 0;
               const total = customerCountTotal || 0;
-              return [
-                `${label}: ${value.toLocaleString()}`,
-                `Total: ${total.toLocaleString()}`
-              ];
-            }
-          }
-        }
-      }
+              return [`${label}: ${value.toLocaleString()}`, `Total: ${total.toLocaleString()}`];
+            },
+          },
+        },
+      },
     }),
     [customerCountTotal]
   );
 
-  const lifecycleBarOptions = useMemo<ChartOptions<'bar'>>(() => ({
+  const lifecycleBarOptions = useMemo<ChartOptions<'bar'>>(
+    () => ({
       responsive: true,
       maintainAspectRatio: false,
       animation: false as const,
@@ -753,14 +766,14 @@ function Customers({
           ticks: {
             callback(value: any) {
               return '₹' + Number(value).toLocaleString();
-            }
+            },
           },
-          title: { display: true, text: 'Spend (₹)' }
+          title: { display: true, text: 'Spend (₹)' },
         },
         x: {
           grid: { display: false },
-          title: { display: false }
-        }
+          title: { display: false },
+        },
       },
       plugins: {
         legend: { display: false },
@@ -768,33 +781,25 @@ function Customers({
           callbacks: {
             label(context: any) {
               const value =
-                Number(
-                  typeof context.parsed === 'object' ? context.parsed.y : context.parsed
-                ) || 0;
+                Number(typeof context.parsed === 'object' ? context.parsed.y : context.parsed) || 0;
               const total =
                 lifecycleSummary.newSpend +
                   lifecycleSummary.returningSpend +
                   lifecycleSummary.anonymousSpend || 0;
-              return [
-                `Spend: ₹${value.toLocaleString()}`,
-                `Total: ₹${total.toLocaleString()}`
-              ];
+              return [`Spend: ₹${value.toLocaleString()}`, `Total: ₹${total.toLocaleString()}`];
             },
             title(context: any[]) {
               return context[0]?.label || '';
-            }
-          }
-        }
-      }
+            },
+          },
+        },
+      },
     }),
-    [
-      lifecycleSummary.newSpend,
-      lifecycleSummary.returningSpend,
-      lifecycleSummary.anonymousSpend
-    ]
+    [lifecycleSummary.newSpend, lifecycleSummary.returningSpend, lifecycleSummary.anonymousSpend]
   );
 
-  const spendOverTimeOptions = useMemo<ChartOptions<'bar'>>(() => ({
+  const spendOverTimeOptions = useMemo<ChartOptions<'bar'>>(
+    () => ({
       responsive: true,
       maintainAspectRatio: false,
       animation: false as const,
@@ -802,7 +807,7 @@ function Customers({
         x: {
           grid: { display: false },
           title: { display: true, text: 'Date' },
-          stacked: false
+          stacked: false,
         },
         y: {
           beginAtZero: true,
@@ -810,19 +815,18 @@ function Customers({
           ticks: {
             callback(value: any) {
               return '₹' + Number(value).toLocaleString();
-            }
+            },
           },
-          title: { display: true, text: 'Spend (₹)' }
-        }
+          title: { display: true, text: 'Spend (₹)' },
+        },
       },
       plugins: {
         legend: { display: false },
         tooltip: {
           callbacks: {
             label(context: any) {
-              const value = Number(
-                typeof context.parsed === 'object' ? context.parsed.y : context.parsed
-              ) || 0;
+              const value =
+                Number(typeof context.parsed === 'object' ? context.parsed.y : context.parsed) || 0;
               return `${context.dataset.label}: ₹${value.toLocaleString()}`;
             },
             footer(items: any[]) {
@@ -832,20 +836,20 @@ function Customers({
               const index = items[0].dataIndex ?? 0;
               const fallbackTotal =
                 customerSpendOverTime.totals[index] ??
-                ((customerSpendOverTime.newSpend[index] || 0) +
+                (customerSpendOverTime.newSpend[index] || 0) +
                   (customerSpendOverTime.returningSpend[index] || 0) +
-                  (customerSpendOverTime.anonymousSpend[index] || 0));
+                  (customerSpendOverTime.anonymousSpend[index] || 0);
               return `Total: ₹${fallbackTotal.toLocaleString()}`;
-            }
-          }
-        }
-      }
+            },
+          },
+        },
+      },
     }),
     [
       customerSpendOverTime.totals,
       customerSpendOverTime.newSpend,
       customerSpendOverTime.returningSpend,
-      customerSpendOverTime.anonymousSpend
+      customerSpendOverTime.anonymousSpend,
     ]
   );
 
@@ -860,7 +864,7 @@ function Customers({
               <label className="text-sm font-medium text-gray-700">Date Range:</label>
               <select
                 value={dateRangeFilter}
-                onChange={(e) => {
+                onChange={e => {
                   const value = e.target.value as DateRangeFilter;
                   setDateRangeFilter(value);
                   if (value !== 'custom') {
@@ -884,7 +888,7 @@ function Customers({
                 <input
                   type="date"
                   value={customStartDate}
-                  onChange={(e) => setCustomStartDate(e.target.value)}
+                  onChange={e => setCustomStartDate(e.target.value)}
                   className="px-3 py-2 border border-gray-300 rounded-md bg-white text-gray-900 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm"
                   placeholder="Start Date"
                 />
@@ -892,7 +896,7 @@ function Customers({
                 <input
                   type="date"
                   value={customEndDate}
-                  onChange={(e) => setCustomEndDate(e.target.value)}
+                  onChange={e => setCustomEndDate(e.target.value)}
                   className="px-3 py-2 border border-gray-300 rounded-md bg-white text-gray-900 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm"
                   placeholder="End Date"
                 />
@@ -911,7 +915,7 @@ function Customers({
 
       {customerAnalyticsLoading ? (
         <div className="grid grid-cols-1 gap-6 mb-8 md:grid-cols-2 xl:grid-cols-4">
-          {[1, 2, 3, 4].map((i) => (
+          {[1, 2, 3, 4].map(i => (
             <div key={i} className="bg-white rounded-lg shadow p-6">
               <div className="animate-pulse">
                 <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
@@ -938,9 +942,7 @@ function Customers({
           </div>
           <div className="bg-white rounded-lg shadow p-6 border-t-4 border-red-500">
             <h3 className="text-lg font-semibold text-gray-900 mb-2">Anonymous Customers</h3>
-            <p className="text-3xl font-bold text-red-600">
-              {anonymousCustomers.toLocaleString()}
-            </p>
+            <p className="text-3xl font-bold text-red-600">{anonymousCustomers.toLocaleString()}</p>
             <p className="text-sm text-gray-500 mt-1">Invoices without a customer phone number</p>
           </div>
           <div className="bg-white rounded-lg shadow p-6 border-t-4 border-green-500">
@@ -953,7 +955,7 @@ function Customers({
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-6 mb-8 md:grid-cols-2 xl:grid-cols-4">
-          {[1, 2, 3, 4].map((i) => (
+          {[1, 2, 3, 4].map(i => (
             <div key={i} className="bg-white rounded-lg shadow p-6">
               <div className="text-center text-gray-500">No data available</div>
             </div>
@@ -967,11 +969,7 @@ function Customers({
           {hasCountData ? (
             <div className="h-64 flex flex-col">
               <div className="flex-1">
-                <Doughnut
-                  data={donutData}
-                  options={donutChartOptions}
-                  plugins={chartPlugins}
-                />
+                <Doughnut data={donutData} options={donutChartOptions} plugins={chartPlugins} />
               </div>
               <div className="mt-4 flex flex-wrap items-center justify-center gap-4 text-sm text-gray-600">
                 <span className="inline-flex items-center gap-2">
@@ -1015,11 +1013,7 @@ function Customers({
             </div>
             {hasSpendData ? (
               <div className="h-64">
-                <Bar
-                  data={barData}
-                  options={lifecycleBarOptions}
-                  plugins={chartPlugins}
-                />
+                <Bar data={barData} options={lifecycleBarOptions} plugins={chartPlugins} />
               </div>
             ) : (
               <div className="h-64 flex items-center justify-center text-gray-500 text-sm border border-dashed border-gray-300 rounded-md">
@@ -1037,48 +1031,50 @@ function Customers({
                   Total Spend by New vs Returning Customers (Over Time)
                 </h3>
                 <span className="text-sm text-gray-500">Filtered Range</span>
-            </div>
-            {hasSpendOverTime ? (
-              <div className="h-80 flex flex-col">
-                <div className="flex-1">
-                  <Bar
-                    data={spendOverTimeData}
-                    options={spendOverTimeOptions}
-                    plugins={chartPlugins}
-                  />
-                </div>
-                <div className="mt-4 flex flex-wrap items-center justify-center gap-4 text-sm text-gray-600">
-                  <span className="inline-flex items-center gap-2">
-                    <span
-                      className="h-3 w-3 rounded-full"
-                      style={{ backgroundColor: 'rgba(59,130,246,0.8)' }}
-                      aria-hidden="true"
-                    />
-                    New Customers
-                  </span>
-                  <span className="inline-flex items-center gap-2">
-                    <span
-                      className="h-3 w-3 rounded-full"
-                      style={{ backgroundColor: 'rgba(34,197,94,0.8)' }}
-                      aria-hidden="true"
-                    />
-                    Returning Customers
-                  </span>
-                  <span className="inline-flex items-center gap-2">
-                    <span
-                      className="h-3 w-3 rounded-full"
-                      style={{ backgroundColor: 'rgba(239,68,68,0.8)' }}
-                      aria-hidden="true"
-                    />
-                    Anonymous Customers
-                  </span>
-                </div>
               </div>
-            ) : (
-              <div className="h-80 flex items-center justify-center text-gray-500 text-sm border border-dashed border-gray-300 rounded-md">
-                {customerAnalyticsLoading ? 'Building spend timeline…' : 'No spend data in this range.'}
-              </div>
-            )}
+              {hasSpendOverTime ? (
+                <div className="h-80 flex flex-col">
+                  <div className="flex-1">
+                    <Bar
+                      data={spendOverTimeData}
+                      options={spendOverTimeOptions}
+                      plugins={chartPlugins}
+                    />
+                  </div>
+                  <div className="mt-4 flex flex-wrap items-center justify-center gap-4 text-sm text-gray-600">
+                    <span className="inline-flex items-center gap-2">
+                      <span
+                        className="h-3 w-3 rounded-full"
+                        style={{ backgroundColor: 'rgba(59,130,246,0.8)' }}
+                        aria-hidden="true"
+                      />
+                      New Customers
+                    </span>
+                    <span className="inline-flex items-center gap-2">
+                      <span
+                        className="h-3 w-3 rounded-full"
+                        style={{ backgroundColor: 'rgba(34,197,94,0.8)' }}
+                        aria-hidden="true"
+                      />
+                      Returning Customers
+                    </span>
+                    <span className="inline-flex items-center gap-2">
+                      <span
+                        className="h-3 w-3 rounded-full"
+                        style={{ backgroundColor: 'rgba(239,68,68,0.8)' }}
+                        aria-hidden="true"
+                      />
+                      Anonymous Customers
+                    </span>
+                  </div>
+                </div>
+              ) : (
+                <div className="h-80 flex items-center justify-center text-gray-500 text-sm border border-dashed border-gray-300 rounded-md">
+                  {customerAnalyticsLoading
+                    ? 'Building spend timeline…'
+                    : 'No spend data in this range.'}
+                </div>
+              )}
             </div>
           </RevenueChartGuard>
         </div>
@@ -1106,13 +1102,13 @@ function Customers({
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {(() => {
                 const premiumCount = customerDetails.filter(
-                  (customer) => getCustomerType(customer.totalSpent) === 'Premium',
+                  customer => getCustomerType(customer.totalSpent) === 'Premium'
                 ).length;
                 const standardCount = customerDetails.filter(
-                  (customer) => getCustomerType(customer.totalSpent) === 'Standard',
+                  customer => getCustomerType(customer.totalSpent) === 'Standard'
                 ).length;
                 const basicCount = customerDetails.filter(
-                  (customer) => getCustomerType(customer.totalSpent) === 'Basic',
+                  customer => getCustomerType(customer.totalSpent) === 'Basic'
                 ).length;
                 const total = customerDetails.length;
 
@@ -1210,7 +1206,9 @@ function Customers({
               />
               <select
                 value={customerSearchColumn}
-                onChange={event => setCustomerSearchColumn(event.target.value as typeof customerSearchColumn)}
+                onChange={event =>
+                  setCustomerSearchColumn(event.target.value as typeof customerSearchColumn)
+                }
                 className="px-3 py-2 border border-gray-300 rounded-md bg-white text-gray-900 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
                 <option value="name">Name</option>
@@ -1221,7 +1219,9 @@ function Customers({
               </select>
               <select
                 value={customerSortColumn}
-                onChange={event => setCustomerSortColumn(event.target.value as typeof customerSortColumn)}
+                onChange={event =>
+                  setCustomerSortColumn(event.target.value as typeof customerSortColumn)
+                }
                 className="px-3 py-2 border border-gray-300 rounded-md bg-white text-gray-900 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
                 <option value="name">Sort: Name</option>
@@ -1253,7 +1253,8 @@ function Customers({
                       : 'border-gray-300 text-gray-600 hover:border-indigo-300'
                   }`}
                 >
-                  {lifecycleFilterLabelMap[type]} ({lifecycleCountsForButtons[type].toLocaleString()})
+                  {lifecycleFilterLabelMap[type]} (
+                  {lifecycleCountsForButtons[type].toLocaleString()})
                 </button>
               ))}
               <Button
@@ -1302,38 +1303,38 @@ function Customers({
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
                   {paginatedCustomers.map((customer, index) => (
-                      <tr
-                        key={`${customer.phone}-${index}`}
-                        className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}
-                      >
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                          {getSafeCustomerName(customer.name, customer.phone)}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {maskPhoneNumber(customer.phone)}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {formatLastVisited(customer.lastPurchase)}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          ₹{customer.totalSpent.toLocaleString()}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          {(() => {
-                            const dynamicCustomerType = getCustomerType(customer.totalSpent);
-                            return (
-                              <span
-                                className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getCustomerTypeStyle(
-                                  dynamicCustomerType,
-                                )}`}
-                              >
-                                {dynamicCustomerType}
-                              </span>
-                            );
-                          })()}
-                        </td>
-                      </tr>
-                    ))}
+                    <tr
+                      key={`${customer.phone}-${index}`}
+                      className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}
+                    >
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        {getSafeCustomerName(customer.name, customer.phone)}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {maskPhoneNumber(customer.phone)}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {formatLastVisited(customer.lastPurchase)}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        ₹{customer.totalSpent.toLocaleString()}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {(() => {
+                          const dynamicCustomerType = getCustomerType(customer.totalSpent);
+                          return (
+                            <span
+                              className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getCustomerTypeStyle(
+                                dynamicCustomerType
+                              )}`}
+                            >
+                              {dynamicCustomerType}
+                            </span>
+                          );
+                        })()}
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
 
@@ -1344,7 +1345,7 @@ function Customers({
                 </div>
                 <div className="flex gap-2">
                   <Button
-                    onClick={() => setCustomerCurrentPage((prev) => Math.max(0, prev - 1))}
+                    onClick={() => setCustomerCurrentPage(prev => Math.max(0, prev - 1))}
                     disabled={customerCurrentPage === 0}
                     variant="outline"
                     size="sm"
@@ -1352,8 +1353,10 @@ function Customers({
                     Previous
                   </Button>
                   <Button
-                    onClick={() => setCustomerCurrentPage((prev) => prev + 1)}
-                    disabled={(customerCurrentPage + 1) * customerPageSize >= totalFilteredCustomers}
+                    onClick={() => setCustomerCurrentPage(prev => prev + 1)}
+                    disabled={
+                      (customerCurrentPage + 1) * customerPageSize >= totalFilteredCustomers
+                    }
                     variant="outline"
                     size="sm"
                   >

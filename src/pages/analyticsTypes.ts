@@ -41,8 +41,12 @@ export interface CustomerLifecycleRow {
   totalSpend: number;
 }
 
-
-export type LoyaltyProgramKey = 'points' | 'cashback' | 'freeItem' | 'appReferral' | 'influencerReferral';
+export type LoyaltyProgramKey =
+  | 'points'
+  | 'cashback'
+  | 'freeItem'
+  | 'appReferral'
+  | 'influencerReferral';
 
 export interface StoreCard {
   id: string;

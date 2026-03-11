@@ -29,20 +29,38 @@ import {
   Reply,
   Zap,
   LayoutGrid,
-  Paperclip
+  Paperclip,
 } from 'lucide-react';
 import { getStoredWhatsAppConfig } from '@/lib/whatsappConfig';
 
 const runtimeOnboardingLink = (
   ((import.meta.env as Record<string, string | undefined>)?.VITE_ONBOARDING_LINK ??
     (import.meta.env as Record<string, string | undefined>)?.ONBOARDING_LINK ??
-    '') || ''
+    '') ||
+  ''
 ).trim();
 const notificationSoundPath = '/tones/tone1.mp3';
 const orderRingSoundPath = '/tones/tone1.mp3';
 const ORDER_RING_DURATION_MS = 10_000;
 const ORDER_RING_PULSE_MS = 350;
-const QUICK_EMOJIS = ['😀', '😁', '😂', '😍', '😎', '🥳', '🤝', '🙏', '👍', '👏', '🎉', '❤️', '🔥', '💡', '📣', '✅'];
+const QUICK_EMOJIS = [
+  '😀',
+  '😁',
+  '😂',
+  '😍',
+  '😎',
+  '🥳',
+  '🤝',
+  '🙏',
+  '👍',
+  '👏',
+  '🎉',
+  '❤️',
+  '🔥',
+  '💡',
+  '📣',
+  '✅',
+];
 
 const normalizePhoneKey = (value?: string | null) => {
   if (!value) return '';
@@ -94,16 +112,15 @@ const preferPhoneNumber = (current?: string | null, candidate?: string | null) =
   return trimmedCurrent;
 };
 
-const getConversationKey = (contact?: { normalizedPhone?: string; phone?: string; id?: string }) => {
+const getConversationKey = (contact?: {
+  normalizedPhone?: string;
+  phone?: string;
+  id?: string;
+}) => {
   if (!contact) {
     return '';
   }
-  return (
-    contact.normalizedPhone ||
-    normalizePhoneKey(contact.phone) ||
-    contact.id ||
-    ''
-  );
+  return contact.normalizedPhone || normalizePhoneKey(contact.phone) || contact.id || '';
 };
 
 interface Contact {
@@ -286,7 +303,7 @@ const defaultWebhookConfig: WebhookConfig = {
   verifyTokenSet: false,
   appSecretSet: false,
   lastUpdatedAt: null,
-  lastValidatedAt: null
+  lastValidatedAt: null,
 };
 
 const defaultOnboardingConfig: OnboardingConfig = {
@@ -297,7 +314,7 @@ const defaultOnboardingConfig: OnboardingConfig = {
   appId: '',
   verifiedName: '',
   lastUpdatedAt: null,
-  onboardingLink: runtimeOnboardingLink
+  onboardingLink: runtimeOnboardingLink,
 };
 
 const buildAuthHeaders = (includeJson = false) => {
@@ -306,7 +323,7 @@ const buildAuthHeaders = (includeJson = false) => {
     throw new Error('Missing authentication token. Please log in again.');
   }
   const headers: Record<string, string> = {
-    'Authorization': `Bearer ${token}`
+    Authorization: `Bearer ${token}`,
   };
   if (includeJson) {
     headers['Content-Type'] = 'application/json';
@@ -346,7 +363,7 @@ const formatStatusTimestamp = (value?: string) => {
   if (Number.isNaN(date.getTime())) return '';
   return `${date.toLocaleDateString()} ${date.toLocaleTimeString(undefined, {
     hour: '2-digit',
-    minute: '2-digit'
+    minute: '2-digit',
   })}`;
 };
 
@@ -396,7 +413,17 @@ const shouldAttachAuthHeaders = (url: string) => {
 const IMAGE_EXTENSIONS = new Set(['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp']);
 const VIDEO_EXTENSIONS = new Set(['mp4', 'mov', 'webm', 'mkv', 'avi']);
 const AUDIO_EXTENSIONS = new Set(['mp3', 'wav', 'ogg', 'm4a', 'aac']);
-const DOCUMENT_EXTENSIONS = new Set(['pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'txt', 'csv']);
+const DOCUMENT_EXTENSIONS = new Set([
+  'pdf',
+  'doc',
+  'docx',
+  'xls',
+  'xlsx',
+  'ppt',
+  'pptx',
+  'txt',
+  'csv',
+]);
 
 const resolveMediaKind = (message: ChatMessage) => {
   const rawType = (message.messageType || '').toLowerCase();
@@ -452,48 +479,48 @@ const getStatusAppearance = (
     return {
       icon: <Loader2 className="h-3 w-3 animate-spin text-slate-300" />,
       label: 'Sending',
-      colorClass: 'text-slate-300'
+      colorClass: 'text-slate-300',
     };
   }
   if (normalized === 'queued' || normalized === 'accepted') {
     return {
       icon: <Clock className="h-3 w-3 text-slate-300" />,
       label: 'Queued',
-      colorClass: 'text-slate-300'
+      colorClass: 'text-slate-300',
     };
   }
   if (normalized === 'sent') {
     return {
       icon: <Check className="h-3 w-3 text-slate-300" />,
       label: 'Sent',
-      colorClass: 'text-slate-300'
+      colorClass: 'text-slate-300',
     };
   }
   if (normalized === 'delivered') {
     return {
       icon: <CheckCheck className="h-3 w-3 text-slate-300" />,
       label: 'Delivered',
-      colorClass: 'text-slate-300'
+      colorClass: 'text-slate-300',
     };
   }
   if (normalized === 'read') {
     return {
       icon: <CheckCheck className="h-3 w-3 text-sky-400" />,
       label: 'Read',
-      colorClass: 'text-sky-300'
+      colorClass: 'text-sky-300',
     };
   }
   if (normalized === 'failed' || normalized === 'undelivered') {
     return {
       icon: <XCircle className="h-3 w-3 text-red-400" />,
       label: 'Failed',
-      colorClass: 'text-red-300'
+      colorClass: 'text-red-300',
     };
   }
   return {
     icon: <Clock className="h-3 w-3 text-slate-300" />,
     label: status,
-    colorClass: 'text-slate-300'
+    colorClass: 'text-slate-300',
   };
 };
 
@@ -768,12 +795,14 @@ const WhatsApp: React.FC = () => {
   const [notificationsSupported] = useState(
     () => typeof window !== 'undefined' && 'Notification' in window
   );
-  const [notificationPermission, setNotificationPermission] = useState<NotificationPermission>(() => {
-    if (typeof window === 'undefined' || !('Notification' in window)) {
-      return 'denied';
+  const [notificationPermission, setNotificationPermission] = useState<NotificationPermission>(
+    () => {
+      if (typeof window === 'undefined' || !('Notification' in window)) {
+        return 'denied';
+      }
+      return Notification.permission;
     }
-    return Notification.permission;
-  });
+  );
   const requestNotificationPermission = useCallback(async () => {
     if (!notificationsSupported) {
       return;
@@ -781,7 +810,8 @@ const WhatsApp: React.FC = () => {
     if (typeof Notification !== 'undefined' && Notification.permission === 'denied') {
       toast({
         title: 'Notifications blocked',
-        description: 'Enable notifications in your browser settings for this site, then refresh the page.',
+        description:
+          'Enable notifications in your browser settings for this site, then refresh the page.',
       });
       return;
     }
@@ -907,7 +937,7 @@ const WhatsApp: React.FC = () => {
         const notification = new Notification(title, {
           body,
           tag: `${contact.phone}-${message.id}`,
-          data: { phone: contact.phone }
+          data: { phone: contact.phone },
         });
         notification.onclick = () => {
           window.focus();
@@ -992,7 +1022,7 @@ const WhatsApp: React.FC = () => {
         try {
           const response = await fetch(mediaUrl, {
             headers: shouldAttachAuthHeaders(mediaUrl) ? buildAuthHeaders() : undefined,
-            signal: controller.signal
+            signal: controller.signal,
           });
           if (!response.ok) {
             throw new Error('Failed to download media');
@@ -1038,7 +1068,7 @@ const WhatsApp: React.FC = () => {
   const [webhookForm, setWebhookForm] = useState<WebhookFormValues>({
     webhookUrl: '',
     verifyToken: '',
-    appSecret: ''
+    appSecret: '',
   });
   const [webhookLoading, setWebhookLoading] = useState(true);
   const [webhookSaving, setWebhookSaving] = useState(false);
@@ -1054,7 +1084,7 @@ const WhatsApp: React.FC = () => {
     businessPhone: '',
     businessId: '',
     appId: '',
-    verifiedName: ''
+    verifiedName: '',
   });
   const [onboardingLoading, setOnboardingLoading] = useState(true);
   const [onboardingSaving, setOnboardingSaving] = useState(false);
@@ -1063,7 +1093,10 @@ const WhatsApp: React.FC = () => {
   const [latestWebhookSnapshot, setLatestWebhookSnapshot] =
     useState<OnboardingWebhookSnapshot | null>(null);
   const HARD_CODED_PIN = '000000';
-  const [registerStatus, setRegisterStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+  const [registerStatus, setRegisterStatus] = useState<{
+    type: 'success' | 'error';
+    message: string;
+  } | null>(null);
   const [registeringNumber, setRegisteringNumber] = useState(false);
   const onboardingPollAttemptsRef = useRef(0);
   const latestSnapshotTimestampRef = useRef<string | null>(null);
@@ -1218,7 +1251,10 @@ const WhatsApp: React.FC = () => {
     const variables = [] as string[];
     for (let index = 1; index <= maxIndex; index += 1) {
       const exampleIndex = indexToExampleIndex.get(index);
-      const name = exampleIndex !== undefined && exampleIndex >= 0 ? order[exampleIndex] : order[index - 1] || String(index);
+      const name =
+        exampleIndex !== undefined && exampleIndex >= 0
+          ? order[exampleIndex]
+          : order[index - 1] || String(index);
       variables.push(name);
     }
 
@@ -1239,7 +1275,7 @@ const WhatsApp: React.FC = () => {
     bodyExamples: [''],
     footerText: '',
     footerExample: '',
-    buttons: []
+    buttons: [],
   });
   const headerMediaInputRef = useRef<HTMLInputElement | null>(null);
   const [headerUploadLoading, setHeaderUploadLoading] = useState(false);
@@ -1252,7 +1288,7 @@ const WhatsApp: React.FC = () => {
 
     try {
       const response = await fetch('/api/whatsapp/config/webhook', {
-        headers: buildAuthHeaders()
+        headers: buildAuthHeaders(),
       });
 
       if (!response.ok) {
@@ -1266,7 +1302,7 @@ const WhatsApp: React.FC = () => {
         verifyTokenSet: Boolean(data.verifyTokenSet),
         appSecretSet: Boolean(data.appSecretSet),
         lastUpdatedAt: data.lastUpdatedAt || null,
-        lastValidatedAt: data.lastValidatedAt || null
+        lastValidatedAt: data.lastValidatedAt || null,
       };
 
       setWebhookConfig(nextConfig);
@@ -1274,7 +1310,7 @@ const WhatsApp: React.FC = () => {
         ...prev,
         webhookUrl: nextConfig.webhookUrl,
         verifyToken: '',
-        appSecret: ''
+        appSecret: '',
       }));
     } catch (error: any) {
       const message = error?.message || 'Unable to load onboarding configuration';
@@ -1290,7 +1326,7 @@ const WhatsApp: React.FC = () => {
 
     try {
       const response = await fetch('/api/whatsapp/config/onboarding', {
-        headers: buildAuthHeaders()
+        headers: buildAuthHeaders(),
       });
 
       if (!response.ok) {
@@ -1311,7 +1347,7 @@ const WhatsApp: React.FC = () => {
         appId: data.appId ?? '',
         verifiedName: data.verifiedName ?? '',
         lastUpdatedAt: data.lastUpdatedAt || null,
-        onboardingLink: onboardingUrl
+        onboardingLink: onboardingUrl,
       };
 
       setOnboardingConfig(nextConfig);
@@ -1321,7 +1357,7 @@ const WhatsApp: React.FC = () => {
         businessPhone: nextConfig.businessPhone,
         businessId: nextConfig.businessId,
         appId: nextConfig.appId,
-        verifiedName: nextConfig.verifiedName
+        verifiedName: nextConfig.verifiedName,
       });
       setOnboardingLinkUrl(onboardingUrl);
     } catch (error: any) {
@@ -1335,7 +1371,7 @@ const WhatsApp: React.FC = () => {
   const loadLatestOnboardingSnapshot = useCallback(async () => {
     try {
       const response = await fetch('/api/whatsapp/onboarding/latest-webhook', {
-        headers: buildAuthHeaders()
+        headers: buildAuthHeaders(),
       });
 
       if (!response.ok) {
@@ -1375,7 +1411,7 @@ const WhatsApp: React.FC = () => {
         webhookVerifyToken: normalize(snapshotRaw.webhookVerifyToken),
         accessToken: normalize(snapshotRaw.accessToken),
         eventType: normalize(snapshotRaw.eventType),
-        capturedAt: captureTimestamp
+        capturedAt: captureTimestamp,
       };
 
       setLatestWebhookSnapshot(normalizedSnapshot);
@@ -1386,13 +1422,13 @@ const WhatsApp: React.FC = () => {
         businessPhone: normalizedSnapshot.businessPhone ?? prev.businessPhone,
         businessId: normalizedSnapshot.businessId ?? prev.businessId,
         appId: normalizedSnapshot.appId ?? prev.appId,
-        verifiedName: normalizedSnapshot.verifiedName ?? prev.verifiedName
+        verifiedName: normalizedSnapshot.verifiedName ?? prev.verifiedName,
       }));
 
       if (captureTimestamp && captureTimestamp !== latestSnapshotTimestampRef.current) {
         toast({
           title: 'Meta onboarding data detected',
-          description: 'Latest webhook payload prefilled the onboarding form.'
+          description: 'Latest webhook payload prefilled the onboarding form.',
         });
         latestSnapshotTimestampRef.current = captureTimestamp;
       }
@@ -1410,7 +1446,7 @@ const WhatsApp: React.FC = () => {
           toast({
             title: 'WABA ID missing',
             description: 'Enter or detect a WABA ID first.',
-            variant: 'destructive'
+            variant: 'destructive',
           });
         }
         return;
@@ -1425,7 +1461,7 @@ const WhatsApp: React.FC = () => {
         const response = await fetch(
           `/api/whatsapp/onboarding/phone-numbers?wabaId=${encodeURIComponent(trimmedWabaId)}`,
           {
-            headers: buildAuthHeaders()
+            headers: buildAuthHeaders(),
           }
         );
 
@@ -1444,7 +1480,7 @@ const WhatsApp: React.FC = () => {
             ...prev,
             phoneNumberId: firstNumber.id || prev.phoneNumberId,
             businessPhone: firstNumber.display_phone_number || prev.businessPhone,
-            verifiedName: firstNumber.verified_name || prev.verifiedName
+            verifiedName: firstNumber.verified_name || prev.verifiedName,
           }));
         }
 
@@ -1452,8 +1488,10 @@ const WhatsApp: React.FC = () => {
           toast({
             title: 'Phone numbers retrieved',
             description: firstNumber
-              ? `Found ${payload.phoneNumbers.length} number(s); using ${firstNumber.display_phone_number || firstNumber.id}.`
-              : 'Fetched phone numbers. Review the list below.'
+              ? `Found ${payload.phoneNumbers.length} number(s); using ${
+                  firstNumber.display_phone_number || firstNumber.id
+                }.`
+              : 'Fetched phone numbers. Review the list below.',
           });
         }
       } catch (error: any) {
@@ -1463,7 +1501,7 @@ const WhatsApp: React.FC = () => {
           toast({
             title: 'Meta fetch failed',
             description: message,
-            variant: 'destructive'
+            variant: 'destructive',
           });
         }
       } finally {
@@ -1523,7 +1561,7 @@ const WhatsApp: React.FC = () => {
     onboardingConfig.wabaId,
     onboardingConfig.businessId,
     onboardingConfig.phoneNumberId,
-    latestWebhookSnapshot
+    latestWebhookSnapshot,
   ]);
 
   useEffect(() => {
@@ -1545,7 +1583,7 @@ const WhatsApp: React.FC = () => {
     onboardingForm.wabaId,
     onboardingForm.phoneNumberId,
     candidateWabaIdForLookup,
-    fetchPhoneNumbersFromMeta
+    fetchPhoneNumbersFromMeta,
   ]);
 
   useEffect(() => {
@@ -1628,89 +1666,94 @@ const WhatsApp: React.FC = () => {
     setActiveTab(tab);
   };
 
-const loadContacts = useCallback(async (options?: { silent?: boolean }) => {
-    const silent = Boolean(options?.silent);
-    if (loadingContactsRef.current) {
-      return;
-    }
-    loadingContactsRef.current = true;
-    if (!silent) {
-      setContactsLoading(true);
-      setContactsError(null);
-    }
-
-    try {
-      const headers = buildAuthHeaders();
-      const [analyticsResponse, savedResponse] = await Promise.all([
-        fetch('/api/whatsapp/analytics?format=json', { headers }),
-        fetch('/api/whatsapp/contacts', { headers })
-      ]);
-
-      const analyticsPayload = await analyticsResponse.json().catch(() => ({}));
-      if (!analyticsResponse.ok) {
-        throw new Error(analyticsPayload?.error || 'Unable to load WhatsApp analytics');
+  const loadContacts = useCallback(
+    async (options?: { silent?: boolean }) => {
+      const silent = Boolean(options?.silent);
+      if (loadingContactsRef.current) {
+        return;
+      }
+      loadingContactsRef.current = true;
+      if (!silent) {
+        setContactsLoading(true);
+        setContactsError(null);
       }
 
-      const savedPayload = await savedResponse.json().catch(() => ({}));
-      if (!savedResponse.ok) {
-        throw new Error(savedPayload?.error || 'Unable to load saved contacts');
-      }
+      try {
+        const headers = buildAuthHeaders();
+        const [analyticsResponse, savedResponse] = await Promise.all([
+          fetch('/api/whatsapp/analytics?format=json', { headers }),
+          fetch('/api/whatsapp/contacts', { headers }),
+        ]);
 
-      const dataset = Array.isArray(analyticsPayload)
-        ? analyticsPayload
-        : analyticsPayload?.data || [];
-      const savedDataset = Array.isArray(savedPayload?.contacts)
-        ? savedPayload.contacts
-        : Array.isArray(savedPayload)
-        ? savedPayload
-        : [];
-
-      const mapped = dataset.map((item: any) => {
-        const primaryPhone = item.primary_phone || item.user || item.phone || item.id || '';
-        const normalizedPhone = normalizePhoneKey(item.normalized_phone || primaryPhone);
-        const phonesArray = Array.isArray(item.phones)
-          ? item.phones.filter((value: unknown) => typeof value === 'string' && value.trim().length > 0)
-          : [];
-
-        if (primaryPhone && !phonesArray.includes(primaryPhone)) {
-          phonesArray.unshift(primaryPhone);
+        const analyticsPayload = await analyticsResponse.json().catch(() => ({}));
+        if (!analyticsResponse.ok) {
+          throw new Error(analyticsPayload?.error || 'Unable to load WhatsApp analytics');
         }
 
-        const contactName = (item.name || item.display_name || primaryPhone || 'Unknown').trim();
+        const savedPayload = await savedResponse.json().catch(() => ({}));
+        if (!savedResponse.ok) {
+          throw new Error(savedPayload?.error || 'Unable to load saved contacts');
+        }
 
-        const contact: Contact = {
-          id: normalizedPhone || primaryPhone || item.id || Math.random().toString(36).slice(2),
-          phone: primaryPhone || phonesArray[0] || 'Unknown',
-          name: contactName,
-          normalizedPhone: normalizedPhone || undefined,
-          allPhones: phonesArray.length ? phonesArray : undefined,
-          lastMessage: item.last_message_text,
-          lastMessageTime: item.last_message_time || item.last_message_timestamp,
-          lastInboundTime: item.last_inbound_time || null,
-          segment: item.segment,
-          lastStatus: item.last_status,
-          messagesReceived: item.messages_received || 0,
-          messagesSent: item.messages_sent || 0,
-          hasInbound:
-            typeof item.has_inbound === 'boolean'
-              ? item.has_inbound
-              : (item.messages_received || 0) > 0
-        };
+        const dataset = Array.isArray(analyticsPayload)
+          ? analyticsPayload
+          : analyticsPayload?.data || [];
+        const savedDataset = Array.isArray(savedPayload?.contacts)
+          ? savedPayload.contacts
+          : Array.isArray(savedPayload)
+          ? savedPayload
+          : [];
 
-        return contact;
-      });
+        const mapped = dataset.map((item: any) => {
+          const primaryPhone = item.primary_phone || item.user || item.phone || item.id || '';
+          const normalizedPhone = normalizePhoneKey(item.normalized_phone || primaryPhone);
+          const phonesArray = Array.isArray(item.phones)
+            ? item.phones.filter(
+                (value: unknown) => typeof value === 'string' && value.trim().length > 0
+              )
+            : [];
 
-      const savedContactLookup = new Map<string, { name: string; tag?: string | null }>();
+          if (primaryPhone && !phonesArray.includes(primaryPhone)) {
+            phonesArray.unshift(primaryPhone);
+          }
 
-      savedDataset
-        .filter(Boolean)
-        .forEach((entry: any) => {
+          const contactName = (item.name || item.display_name || primaryPhone || 'Unknown').trim();
+
+          const contact: Contact = {
+            id: normalizedPhone || primaryPhone || item.id || Math.random().toString(36).slice(2),
+            phone: primaryPhone || phonesArray[0] || 'Unknown',
+            name: contactName,
+            normalizedPhone: normalizedPhone || undefined,
+            allPhones: phonesArray.length ? phonesArray : undefined,
+            lastMessage: item.last_message_text,
+            lastMessageTime: item.last_message_time || item.last_message_timestamp,
+            lastInboundTime: item.last_inbound_time || null,
+            segment: item.segment,
+            lastStatus: item.last_status,
+            messagesReceived: item.messages_received || 0,
+            messagesSent: item.messages_sent || 0,
+            hasInbound:
+              typeof item.has_inbound === 'boolean'
+                ? item.has_inbound
+                : (item.messages_received || 0) > 0,
+          };
+
+          return contact;
+        });
+
+        const savedContactLookup = new Map<string, { name: string; tag?: string | null }>();
+
+        savedDataset.filter(Boolean).forEach((entry: any) => {
           const normalizedPhone = normalizePhoneKey(
-            entry?.normalized_phone || entry?.customer_phone || entry?.phone || entry?.display_phone || ''
+            entry?.normalized_phone ||
+              entry?.customer_phone ||
+              entry?.phone ||
+              entry?.display_phone ||
+              ''
           );
-          const displayName = (
-            entry?.display_name || entry?.customer_name || entry?.name || ''
-          ).toString().trim();
+          const displayName = (entry?.display_name || entry?.customer_name || entry?.name || '')
+            .toString()
+            .trim();
 
           if (!normalizedPhone || !displayName) {
             return;
@@ -1718,170 +1761,184 @@ const loadContacts = useCallback(async (options?: { silent?: boolean }) => {
 
           savedContactLookup.set(normalizedPhone, {
             name: displayName,
-            tag: entry?.tag || entry?.customer_tag || null
+            tag: entry?.tag || entry?.customer_tag || null,
           });
         });
 
-      const dedupedMap = new Map<string, Contact>();
-      mapped.forEach(contact => {
-        const normalizedKey =
-          (contact.normalizedPhone && normalizePhoneKey(contact.normalizedPhone)) || undefined;
-        const key = normalizedKey || normalizePhoneKey(contact.phone) || contact.id;
+        const dedupedMap = new Map<string, Contact>();
+        mapped.forEach(contact => {
+          const normalizedKey =
+            (contact.normalizedPhone && normalizePhoneKey(contact.normalizedPhone)) || undefined;
+          const key = normalizedKey || normalizePhoneKey(contact.phone) || contact.id;
 
-        if (!dedupedMap.has(key)) {
+          if (!dedupedMap.has(key)) {
+            const saved = key ? savedContactLookup.get(key) : undefined;
+            const resolvedName = saved?.name?.trim() || contact.name;
+            const resolvedSegment = saved?.tag || contact.segment || undefined;
+            dedupedMap.set(key, {
+              ...contact,
+              name: resolvedName,
+              segment: resolvedSegment,
+              normalizedPhone: key || contact.normalizedPhone,
+            });
+            return;
+          }
+
+          const existing = dedupedMap.get(key)!;
+
           const saved = key ? savedContactLookup.get(key) : undefined;
-          const resolvedName = saved?.name?.trim() || contact.name;
-          const resolvedSegment = saved?.tag || contact.segment || undefined;
-          dedupedMap.set(key, {
-            ...contact,
-            name: resolvedName,
-            segment: resolvedSegment,
-            normalizedPhone: key || contact.normalizedPhone
-          });
-          return;
-        }
+          const mergedPhones = new Set<string>(
+            [
+              ...(existing.allPhones || []),
+              ...(contact.allPhones || []),
+              existing.phone,
+              contact.phone,
+            ].filter(Boolean)
+          );
 
-        const existing = dedupedMap.get(key)!;
+          existing.allPhones = Array.from(mergedPhones);
+          existing.phone = preferPhoneNumber(existing.phone, contact.phone);
 
-        const saved = key ? savedContactLookup.get(key) : undefined;
-        const mergedPhones = new Set<string>([
-          ...(existing.allPhones || []),
-          ...(contact.allPhones || []),
-          existing.phone,
-          contact.phone
-        ].filter(Boolean));
-
-        existing.allPhones = Array.from(mergedPhones);
-        existing.phone = preferPhoneNumber(existing.phone, contact.phone);
-
-        if (saved?.name) {
-          existing.name = saved.name;
-        } else if (contact.name && (!existing.name || existing.name.toLowerCase().startsWith('customer '))) {
-          existing.name = contact.name;
-        }
-
-        if (saved?.tag) {
-          existing.segment = saved.tag;
-        } else if (contact.segment && !existing.segment) {
-          existing.segment = contact.segment;
-        }
-
-        const existingTime = existing.lastMessageTime ? new Date(existing.lastMessageTime).getTime() : 0;
-        const candidateTime = contact.lastMessageTime ? new Date(contact.lastMessageTime).getTime() : 0;
-        if (candidateTime > existingTime) {
-          existing.lastMessageTime = contact.lastMessageTime;
-          existing.lastMessage = contact.lastMessage;
-          existing.lastStatus = contact.lastStatus;
-        }
-
-        existing.messagesReceived = (existing.messagesReceived || 0) + (contact.messagesReceived || 0);
-        existing.messagesSent = (existing.messagesSent || 0) + (contact.messagesSent || 0);
-        if (contact.segment && !existing.segment) {
-          existing.segment = contact.segment;
-        }
-        if (contact.hasInbound) {
-          existing.hasInbound = true;
-        }
-        const existingInboundTime = existing.lastInboundTime
-          ? new Date(existing.lastInboundTime).getTime()
-          : 0;
-        const candidateInboundTime = contact.lastInboundTime
-          ? new Date(contact.lastInboundTime).getTime()
-          : 0;
-        if (candidateInboundTime > existingInboundTime) {
-          existing.lastInboundTime = contact.lastInboundTime;
-        }
-      });
-
-      const deduped = Array.from(dedupedMap.values()).sort((a, b) => {
-        const timeA = a.lastMessageTime ? new Date(a.lastMessageTime).getTime() : 0;
-        const timeB = b.lastMessageTime ? new Date(b.lastMessageTime).getTime() : 0;
-        return timeB - timeA;
-      });
-
-      const isFirstContactsLoad = !contactsInitializedRef.current;
-      if (!isFirstContactsLoad) {
-        const previousByKey = new Map<string, Contact>();
-        contactsRef.current.forEach(contact => {
-          const key = getConversationKey(contact);
-          if (key) {
-            previousByKey.set(key, contact);
+          if (saved?.name) {
+            existing.name = saved.name;
+          } else if (
+            contact.name &&
+            (!existing.name || existing.name.toLowerCase().startsWith('customer '))
+          ) {
+            existing.name = contact.name;
           }
-        });
-        const selectedKey = selectedContact ? getConversationKey(selectedContact) : null;
 
-        deduped.forEach(contact => {
-          const key = getConversationKey(contact);
-          if (!key || (selectedKey && key === selectedKey)) {
-            return;
+          if (saved?.tag) {
+            existing.segment = saved.tag;
+          } else if (contact.segment && !existing.segment) {
+            existing.segment = contact.segment;
           }
-          const previous = previousByKey.get(key);
-          if (!previous) {
-            return;
-          }
-          const previousTime = previous.lastMessageTime
-            ? new Date(previous.lastMessageTime).getTime()
+
+          const existingTime = existing.lastMessageTime
+            ? new Date(existing.lastMessageTime).getTime()
             : 0;
-          const currentTime = contact.lastMessageTime
+          const candidateTime = contact.lastMessageTime
             ? new Date(contact.lastMessageTime).getTime()
             : 0;
-          if (!Number.isFinite(currentTime) || currentTime <= previousTime) {
-            return;
-          }
-          if (!isOrderPreviewText(contact.lastMessage)) {
-            return;
+          if (candidateTime > existingTime) {
+            existing.lastMessageTime = contact.lastMessageTime;
+            existing.lastMessage = contact.lastMessage;
+            existing.lastStatus = contact.lastStatus;
           }
 
-          playBackgroundOrderRing(ORDER_RING_DURATION_MS);
+          existing.messagesReceived =
+            (existing.messagesReceived || 0) + (contact.messagesReceived || 0);
+          existing.messagesSent = (existing.messagesSent || 0) + (contact.messagesSent || 0);
+          if (contact.segment && !existing.segment) {
+            existing.segment = contact.segment;
+          }
+          if (contact.hasInbound) {
+            existing.hasInbound = true;
+          }
+          const existingInboundTime = existing.lastInboundTime
+            ? new Date(existing.lastInboundTime).getTime()
+            : 0;
+          const candidateInboundTime = contact.lastInboundTime
+            ? new Date(contact.lastInboundTime).getTime()
+            : 0;
+          if (candidateInboundTime > existingInboundTime) {
+            existing.lastInboundTime = contact.lastInboundTime;
+          }
+        });
+
+        const deduped = Array.from(dedupedMap.values()).sort((a, b) => {
+          const timeA = a.lastMessageTime ? new Date(a.lastMessageTime).getTime() : 0;
+          const timeB = b.lastMessageTime ? new Date(b.lastMessageTime).getTime() : 0;
+          return timeB - timeA;
+        });
+
+        const isFirstContactsLoad = !contactsInitializedRef.current;
+        if (!isFirstContactsLoad) {
+          const previousByKey = new Map<string, Contact>();
+          contactsRef.current.forEach(contact => {
+            const key = getConversationKey(contact);
+            if (key) {
+              previousByKey.set(key, contact);
+            }
+          });
+          const selectedKey = selectedContact ? getConversationKey(selectedContact) : null;
+
+          deduped.forEach(contact => {
+            const key = getConversationKey(contact);
+            if (!key || (selectedKey && key === selectedKey)) {
+              return;
+            }
+            const previous = previousByKey.get(key);
+            if (!previous) {
+              return;
+            }
+            const previousTime = previous.lastMessageTime
+              ? new Date(previous.lastMessageTime).getTime()
+              : 0;
+            const currentTime = contact.lastMessageTime
+              ? new Date(contact.lastMessageTime).getTime()
+              : 0;
+            if (!Number.isFinite(currentTime) || currentTime <= previousTime) {
+              return;
+            }
+            if (!isOrderPreviewText(contact.lastMessage)) {
+              return;
+            }
+
+            playBackgroundOrderRing(ORDER_RING_DURATION_MS);
+            toast({
+              title: 'New order received',
+              description: `${getContactDisplayName(contact)}: ${
+                contact.lastMessage || 'Order received'
+              }`,
+            });
+            showBrowserNotification(contact, {
+              id: `${key}-${contact.lastMessageTime || Date.now()}`,
+              type: 'received',
+              from: 'customer',
+              text: contact.lastMessage || 'Order received',
+              timestamp: contact.lastMessageTime || new Date().toISOString(),
+              status: null,
+            });
+          });
+        }
+
+        setContacts(deduped);
+        setContactsLoaded(true);
+        contactsInitializedRef.current = true;
+        setSelectedContact(prev => {
+          if (deduped.length === 0) return null;
+          if (!prev) return isDesktopChatLayout ? deduped[0] : null;
+          const previousKey =
+            (prev.normalizedPhone && normalizePhoneKey(prev.normalizedPhone)) ||
+            normalizePhoneKey(prev.phone) ||
+            prev.id;
+          return (
+            deduped.find(contact => {
+              const key = contact.normalizedPhone || normalizePhoneKey(contact.phone) || contact.id;
+              return key === previousKey;
+            }) || deduped[0]
+          );
+        });
+      } catch (error: any) {
+        const message = error?.message || 'Unable to load WhatsApp analytics';
+        if (!silent) {
+          setContactsError(message);
           toast({
-            title: 'New order received',
-            description: `${getContactDisplayName(contact)}: ${contact.lastMessage || 'Order received'}`
+            title: 'Failed to load chats',
+            description: message,
+            variant: 'destructive',
           });
-          showBrowserNotification(contact, {
-            id: `${key}-${contact.lastMessageTime || Date.now()}`,
-            type: 'received',
-            from: 'customer',
-            text: contact.lastMessage || 'Order received',
-            timestamp: contact.lastMessageTime || new Date().toISOString(),
-            status: null
-          });
-        });
+        }
+      } finally {
+        loadingContactsRef.current = false;
+        if (!silent) {
+          setContactsLoading(false);
+        }
       }
-
-      setContacts(deduped);
-      setContactsLoaded(true);
-      contactsInitializedRef.current = true;
-      setSelectedContact(prev => {
-        if (deduped.length === 0) return null;
-        if (!prev) return isDesktopChatLayout ? deduped[0] : null;
-        const previousKey =
-          (prev.normalizedPhone && normalizePhoneKey(prev.normalizedPhone)) ||
-          normalizePhoneKey(prev.phone) ||
-          prev.id;
-        return (
-          deduped.find(contact => {
-            const key = contact.normalizedPhone || normalizePhoneKey(contact.phone) || contact.id;
-            return key === previousKey;
-          }) || deduped[0]
-        );
-      });
-    } catch (error: any) {
-      const message = error?.message || 'Unable to load WhatsApp analytics';
-      if (!silent) {
-        setContactsError(message);
-        toast({
-          title: 'Failed to load chats',
-          description: message,
-          variant: 'destructive'
-        });
-      }
-    } finally {
-      loadingContactsRef.current = false;
-      if (!silent) {
-        setContactsLoading(false);
-      }
-    }
-}, [playBackgroundOrderRing, selectedContact, showBrowserNotification]);
+    },
+    [playBackgroundOrderRing, selectedContact, showBrowserNotification]
+  );
 
   useEffect(() => {
     if (activeTab === 'chat' && !contactsLoaded) {
@@ -1920,8 +1977,8 @@ const loadContacts = useCallback(async (options?: { silent?: boolean }) => {
         body: JSON.stringify({
           phone: saveContactPhone.trim(),
           name: saveContactName.trim(),
-          tag: saveContactTag.trim()
-        })
+          tag: saveContactTag.trim(),
+        }),
       });
       const result = await response.json().catch(() => ({}));
       if (!response.ok) {
@@ -1929,7 +1986,7 @@ const loadContacts = useCallback(async (options?: { silent?: boolean }) => {
       }
       toast({
         title: 'Contact saved',
-        description: saveContactName.trim() || saveContactPhone.trim()
+        description: saveContactName.trim() || saveContactPhone.trim(),
       });
       resetSaveContactForm();
       setShowSaveContactForm(false);
@@ -1940,7 +1997,7 @@ const loadContacts = useCallback(async (options?: { silent?: boolean }) => {
       toast({
         title: 'Save failed',
         description: message,
-        variant: 'destructive'
+        variant: 'destructive',
       });
     } finally {
       setSavingContact(false);
@@ -1960,10 +2017,9 @@ const loadContacts = useCallback(async (options?: { silent?: boolean }) => {
 
     try {
       const params = new URLSearchParams();
-      const phoneVariants = new Set<string>([
-        ...(contact.allPhones || []),
-        contact.phone
-      ].filter(Boolean));
+      const phoneVariants = new Set<string>(
+        [...(contact.allPhones || []), contact.phone].filter(Boolean)
+      );
 
       phoneVariants.forEach(variant => params.append('phones', variant));
 
@@ -1974,10 +2030,12 @@ const loadContacts = useCallback(async (options?: { silent?: boolean }) => {
 
       const queryString = params.toString();
       const response = await fetch(
-        `/api/whatsapp/chat/${encodeURIComponent(contact.phone)}${queryString ? `?${queryString}` : ''}`,
+        `/api/whatsapp/chat/${encodeURIComponent(contact.phone)}${
+          queryString ? `?${queryString}` : ''
+        }`,
         {
           headers: buildAuthHeaders(),
-          signal
+          signal,
         }
       );
 
@@ -2002,11 +2060,7 @@ const loadContacts = useCallback(async (options?: { silent?: boolean }) => {
             : 'received';
 
         const from: ChatMessage['from'] =
-          entry.from === 'vendor'
-            ? 'vendor'
-            : entry.from === 'system'
-            ? 'system'
-            : 'customer';
+          entry.from === 'vendor' ? 'vendor' : entry.from === 'system' ? 'system' : 'customer';
 
         return {
           id: entry.id,
@@ -2026,18 +2080,17 @@ const loadContacts = useCallback(async (options?: { silent?: boolean }) => {
           orderMetadata: entry.orderMetadata ?? entry.order_metadata ?? null,
           statusHistory: Array.isArray(entry.statusHistory ?? entry.status_history)
             ? entry.statusHistory ?? entry.status_history
-            : []
+            : [],
         };
       });
       history.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
       const previousLast = messagesRef.current[messagesRef.current.length - 1] || null;
       const latest = history[history.length - 1] || null;
-      const isNewMessage =
-        Boolean(
-          options?.silent &&
-            latest?.from === 'customer' &&
-            (!previousLast || previousLast.id !== latest?.id)
-        );
+      const isNewMessage = Boolean(
+        options?.silent &&
+          latest?.from === 'customer' &&
+          (!previousLast || previousLast.id !== latest?.id)
+      );
       messagesRef.current = history;
       setMessages(history);
       if (isNewMessage && latest) {
@@ -2046,7 +2099,7 @@ const loadContacts = useCallback(async (options?: { silent?: boolean }) => {
           playBackgroundOrderRing(ORDER_RING_DURATION_MS);
           toast({
             title: 'New order received',
-            description: `${getContactDisplayName(contact)}: ${latest.text || 'Order received'}`
+            description: `${getContactDisplayName(contact)}: ${latest.text || 'Order received'}`,
           });
         } else {
           playIncomingMessageAudio(0);
@@ -2090,7 +2143,11 @@ const loadContacts = useCallback(async (options?: { silent?: boolean }) => {
 
     const confirmed =
       typeof window !== 'undefined'
-        ? window.confirm(`Delete chat history for ${getContactDisplayName(selectedContact)}? This cannot be undone.`)
+        ? window.confirm(
+            `Delete chat history for ${getContactDisplayName(
+              selectedContact
+            )}? This cannot be undone.`
+          )
         : false;
 
     if (!confirmed) {
@@ -2100,20 +2157,25 @@ const loadContacts = useCallback(async (options?: { silent?: boolean }) => {
     try {
       setDeletingChat(true);
       const params = new URLSearchParams();
-      const phoneVariants = new Set<string>([...(selectedContact.allPhones || []), selectedContact.phone].filter(Boolean));
+      const phoneVariants = new Set<string>(
+        [...(selectedContact.allPhones || []), selectedContact.phone].filter(Boolean)
+      );
       phoneVariants.forEach(phone => params.append('phones', phone));
 
-      const normalized = selectedContact.normalizedPhone || normalizePhoneKey(selectedContact.phone);
+      const normalized =
+        selectedContact.normalizedPhone || normalizePhoneKey(selectedContact.phone);
       if (normalized) {
         params.set('normalized', normalized);
       }
 
       const queryString = params.toString();
       const response = await fetch(
-        `/api/whatsapp/chat/${encodeURIComponent(selectedContact.phone)}${queryString ? `?${queryString}` : ''}`,
+        `/api/whatsapp/chat/${encodeURIComponent(selectedContact.phone)}${
+          queryString ? `?${queryString}` : ''
+        }`,
         {
           method: 'DELETE',
-          headers: buildAuthHeaders()
+          headers: buildAuthHeaders(),
         }
       );
       const result = await response.json().catch(() => ({}));
@@ -2123,7 +2185,7 @@ const loadContacts = useCallback(async (options?: { silent?: boolean }) => {
 
       toast({
         title: 'Chat deleted',
-        description: `Deleted ${Number(result?.deleted || 0).toLocaleString()} messages.`
+        description: `Deleted ${Number(result?.deleted || 0).toLocaleString()} messages.`,
       });
 
       setMessages([]);
@@ -2133,7 +2195,7 @@ const loadContacts = useCallback(async (options?: { silent?: boolean }) => {
       toast({
         title: 'Delete failed',
         description: error?.message || 'Unable to delete chat history',
-        variant: 'destructive'
+        variant: 'destructive',
       });
     } finally {
       setDeletingChat(false);
@@ -2182,8 +2244,7 @@ const loadContacts = useCallback(async (options?: { silent?: boolean }) => {
     const mediaUrl = resolveMediaUrl(message.media);
     const messageText = (message.text || '').trim();
     const captionText = (message.media?.caption || '').trim();
-    const primaryText =
-      captionText || (!isPlaceholderMediaText(messageText) ? messageText : '');
+    const primaryText = captionText || (!isPlaceholderMediaText(messageText) ? messageText : '');
     const secondaryText =
       captionText &&
       messageText &&
@@ -2206,7 +2267,7 @@ const loadContacts = useCallback(async (options?: { silent?: boolean }) => {
         try {
           return new Intl.NumberFormat('en-IN', {
             style: 'currency',
-            currency
+            currency,
           }).format(value);
         } catch {
           return `${currency} ${value}`;
@@ -2217,18 +2278,12 @@ const loadContacts = useCallback(async (options?: { silent?: boolean }) => {
           <div className="font-semibold">
             Order received ({items.length} item{items.length === 1 ? '' : 's'})
           </div>
-          <div className="text-xs text-gray-600">
-            Estimated total: {formatMoney(total)}
-          </div>
+          <div className="text-xs text-gray-600">Estimated total: {formatMoney(total)}</div>
           <div className="space-y-1 text-xs text-gray-700">
             {items.map((item, idx) => {
               const qty = Number(item?.quantity || 0) || 1;
               const price = Number(item?.item_price || 0) || 0;
-              const name =
-                item?.name ||
-                item?.product_retailer_id ||
-                item?.item_id ||
-                'Item';
+              const name = item?.name || item?.product_retailer_id || item?.item_id || 'Item';
               return (
                 <div key={`${name}-${idx}`}>
                   - {qty} x {name}
@@ -2279,7 +2334,9 @@ const loadContacts = useCallback(async (options?: { silent?: boolean }) => {
       const mediaDisplay = resolveMediaDisplay(message.media);
       if (mediaDisplay.failed) {
         return (
-          <div className={cn('rounded-lg border px-3 py-2 text-xs italic opacity-70', accentClasses)}>
+          <div
+            className={cn('rounded-lg border px-3 py-2 text-xs italic opacity-70', accentClasses)}
+          >
             Unable to load media.
           </div>
         );
@@ -2295,9 +2352,7 @@ const loadContacts = useCallback(async (options?: { silent?: boolean }) => {
       const mediaSource = mediaDisplay.src;
       if (!mediaSource) {
         return (
-          <p className="whitespace-pre-line break-words">
-            {message.text || '[Media message]'}
-          </p>
+          <p className="whitespace-pre-line break-words">{message.text || '[Media message]'}</p>
         );
       }
 
@@ -2315,7 +2370,7 @@ const loadContacts = useCallback(async (options?: { silent?: boolean }) => {
                   src: mediaSource,
                   type,
                   caption: primaryText || '',
-                  fileName: message.media?.fileName || fallbackName
+                  fileName: message.media?.fileName || fallbackName,
                 })
               }
             >
@@ -2345,12 +2400,8 @@ const loadContacts = useCallback(async (options?: { silent?: boolean }) => {
               className="max-h-72 w-full rounded-xl object-cover"
               loading="lazy"
             />
-            {primaryText && (
-              <p className="whitespace-pre-line break-words">{primaryText}</p>
-            )}
-            {secondaryText && (
-              <p className="whitespace-pre-line break-words">{secondaryText}</p>
-            )}
+            {primaryText && <p className="whitespace-pre-line break-words">{primaryText}</p>}
+            {secondaryText && <p className="whitespace-pre-line break-words">{secondaryText}</p>}
             {renderMediaActions('image.jpg', true)}
           </div>
         );
@@ -2365,12 +2416,8 @@ const loadContacts = useCallback(async (options?: { silent?: boolean }) => {
             >
               Your browser does not support video playback.
             </video>
-            {primaryText && (
-              <p className="whitespace-pre-line break-words">{primaryText}</p>
-            )}
-            {secondaryText && (
-              <p className="whitespace-pre-line break-words">{secondaryText}</p>
-            )}
+            {primaryText && <p className="whitespace-pre-line break-words">{primaryText}</p>}
+            {secondaryText && <p className="whitespace-pre-line break-words">{secondaryText}</p>}
             {renderMediaActions('video.mp4', true)}
           </div>
         );
@@ -2395,12 +2442,15 @@ const loadContacts = useCallback(async (options?: { silent?: boolean }) => {
         const docExtraText = captionText ? secondaryText : primaryText;
         return (
           <div className="space-y-2">
-            <div className={cn('flex items-center gap-3 rounded-lg border px-3 py-2 text-sm', accentClasses)}>
+            <div
+              className={cn(
+                'flex items-center gap-3 rounded-lg border px-3 py-2 text-sm',
+                accentClasses
+              )}
+            >
               <FileText className="h-5 w-5 flex-shrink-0" />
               <div className="min-w-0 flex-1">
-                <p className="truncate font-semibold">
-                  {message.media.fileName || 'Document'}
-                </p>
+                <p className="truncate font-semibold">{message.media.fileName || 'Document'}</p>
                 {message.media.caption && (
                   <p className="truncate text-xs opacity-80">{message.media.caption}</p>
                 )}
@@ -2429,15 +2479,16 @@ const loadContacts = useCallback(async (options?: { silent?: boolean }) => {
       }
       return (
         <div className="space-y-2">
-          <div className={cn('flex items-center gap-3 rounded-lg border px-3 py-2 text-sm', accentClasses)}>
+          <div
+            className={cn(
+              'flex items-center gap-3 rounded-lg border px-3 py-2 text-sm',
+              accentClasses
+            )}
+          >
             <FileText className="h-5 w-5 flex-shrink-0" />
             <div className="min-w-0 flex-1">
-              <p className="truncate font-semibold">
-                {message.media.fileName || 'Attachment'}
-              </p>
-              {primaryText && (
-                <p className="truncate text-xs opacity-80">{primaryText}</p>
-              )}
+              <p className="truncate font-semibold">{message.media.fileName || 'Attachment'}</p>
+              {primaryText && <p className="truncate text-xs opacity-80">{primaryText}</p>}
             </div>
             {mediaSource ? (
               <a
@@ -2478,7 +2529,7 @@ const loadContacts = useCallback(async (options?: { silent?: boolean }) => {
       toast({
         title: '24-hour window closed',
         description: 'You can message this customer only within 24 hours of their last reply.',
-        variant: 'destructive'
+        variant: 'destructive',
       });
       return;
     }
@@ -2500,10 +2551,10 @@ const loadContacts = useCallback(async (options?: { silent?: boolean }) => {
           url: attachmentPreviewUrl || '',
           caption: trimmed || null,
           mimeType: attachmentFile.type || null,
-          fileName: attachmentFile.name || null
+          fileName: attachmentFile.name || null,
         },
         location: null,
-        statusHistory: []
+        statusHistory: [],
       };
 
       setNewMessage('');
@@ -2522,7 +2573,7 @@ const loadContacts = useCallback(async (options?: { silent?: boolean }) => {
           {
             method: 'POST',
             headers: buildAuthHeaders(),
-            body: formData
+            body: formData,
           }
         );
 
@@ -2548,9 +2599,9 @@ const loadContacts = useCallback(async (options?: { silent?: boolean }) => {
                     ...(message.statusHistory || []),
                     {
                       status: result.status || 'sent',
-                      timestamp: result.timestamp || message.timestamp
-                    }
-                  ]
+                      timestamp: result.timestamp || message.timestamp,
+                    },
+                  ],
                 }
               : message
           )
@@ -2560,17 +2611,21 @@ const loadContacts = useCallback(async (options?: { silent?: boolean }) => {
           if (!current) {
             return current;
           }
-          const currentKey = current.normalizedPhone || normalizePhoneKey(current.phone) || current.id;
+          const currentKey =
+            current.normalizedPhone || normalizePhoneKey(current.phone) || current.id;
           const selectedKey =
-            selectedContact.normalizedPhone || normalizePhoneKey(selectedContact.phone) || selectedContact.id;
+            selectedContact.normalizedPhone ||
+            normalizePhoneKey(selectedContact.phone) ||
+            selectedContact.id;
           if (currentKey !== selectedKey) {
             return current;
           }
           return {
             ...current,
             lastMessage: trimmed || (attachmentType === 'document' ? '📄 Document' : '📷 Photo'),
-            lastMessageTime: result.timestamp || current.lastMessageTime || new Date().toISOString(),
-            lastStatus: result.status || 'sent'
+            lastMessageTime:
+              result.timestamp || current.lastMessageTime || new Date().toISOString(),
+            lastStatus: result.status || 'sent',
           };
         });
 
@@ -2583,7 +2638,7 @@ const loadContacts = useCallback(async (options?: { silent?: boolean }) => {
         toast({
           title: 'Send failed',
           description: message,
-          variant: 'destructive'
+          variant: 'destructive',
         });
       } finally {
         setSending(false);
@@ -2601,7 +2656,7 @@ const loadContacts = useCallback(async (options?: { silent?: boolean }) => {
       messageType: 'text',
       media: null,
       location: null,
-      statusHistory: []
+      statusHistory: [],
     };
 
     setNewMessage('');
@@ -2610,11 +2665,14 @@ const loadContacts = useCallback(async (options?: { silent?: boolean }) => {
     setMessages(prev => [...prev, optimisticMessage]);
 
     try {
-      const response = await fetch(`/api/whatsapp/chat/${encodeURIComponent(selectedContact.phone)}/send`, {
-        method: 'POST',
-        headers: buildAuthHeaders(true),
-        body: JSON.stringify({ message: trimmed, name: selectedContact.name })
-      });
+      const response = await fetch(
+        `/api/whatsapp/chat/${encodeURIComponent(selectedContact.phone)}/send`,
+        {
+          method: 'POST',
+          headers: buildAuthHeaders(true),
+          body: JSON.stringify({ message: trimmed, name: selectedContact.name }),
+        }
+      );
 
       const result = await response.json().catch(() => ({}));
 
@@ -2634,9 +2692,9 @@ const loadContacts = useCallback(async (options?: { silent?: boolean }) => {
                   ...(message.statusHistory || []),
                   {
                     status: result.status || 'sent',
-                    timestamp: result.timestamp || message.timestamp
-                  }
-                ]
+                    timestamp: result.timestamp || message.timestamp,
+                  },
+                ],
               }
             : message
         )
@@ -2646,9 +2704,12 @@ const loadContacts = useCallback(async (options?: { silent?: boolean }) => {
         if (!current) {
           return current;
         }
-        const currentKey = current.normalizedPhone || normalizePhoneKey(current.phone) || current.id;
+        const currentKey =
+          current.normalizedPhone || normalizePhoneKey(current.phone) || current.id;
         const selectedKey =
-          selectedContact.normalizedPhone || normalizePhoneKey(selectedContact.phone) || selectedContact.id;
+          selectedContact.normalizedPhone ||
+          normalizePhoneKey(selectedContact.phone) ||
+          selectedContact.id;
         if (currentKey !== selectedKey) {
           return current;
         }
@@ -2656,7 +2717,7 @@ const loadContacts = useCallback(async (options?: { silent?: boolean }) => {
           ...current,
           lastMessage: trimmed,
           lastMessageTime: result.timestamp || current.lastMessageTime || new Date().toISOString(),
-          lastStatus: result.status || 'sent'
+          lastStatus: result.status || 'sent',
         };
       });
 
@@ -2668,7 +2729,7 @@ const loadContacts = useCallback(async (options?: { silent?: boolean }) => {
       toast({
         title: 'Send failed',
         description: message,
-        variant: 'destructive'
+        variant: 'destructive',
       });
     } finally {
       setSending(false);
@@ -2685,7 +2746,7 @@ const loadContacts = useCallback(async (options?: { silent?: boolean }) => {
       toast({
         title: 'Missing details',
         description: 'Please provide both a phone number and a message.',
-        variant: 'destructive'
+        variant: 'destructive',
       });
       return;
     }
@@ -2695,7 +2756,7 @@ const loadContacts = useCallback(async (options?: { silent?: boolean }) => {
       toast({
         title: 'Invalid number',
         description: 'Phone number must contain digits (and an optional leading +).',
-        variant: 'destructive'
+        variant: 'destructive',
       });
       return;
     }
@@ -2706,11 +2767,17 @@ const loadContacts = useCallback(async (options?: { silent?: boolean }) => {
     setMessageError(null);
 
     try {
-      const response = await fetch(`/api/whatsapp/chat/${encodeURIComponent(sanitizedPhone)}/send`, {
-        method: 'POST',
-        headers: buildAuthHeaders(true),
-        body: JSON.stringify({ message: messageText, name: newChatName.trim() || sanitizedPhone })
-      });
+      const response = await fetch(
+        `/api/whatsapp/chat/${encodeURIComponent(sanitizedPhone)}/send`,
+        {
+          method: 'POST',
+          headers: buildAuthHeaders(true),
+          body: JSON.stringify({
+            message: messageText,
+            name: newChatName.trim() || sanitizedPhone,
+          }),
+        }
+      );
 
       const result = await response.json().catch(() => ({}));
 
@@ -2729,13 +2796,14 @@ const loadContacts = useCallback(async (options?: { silent?: boolean }) => {
         lastMessageTime: timestamp,
         lastStatus: result.status || 'sent',
         messagesSent: 1,
-        messagesReceived: 0
+        messagesReceived: 0,
       };
 
       setContacts(prev => {
         const key = normalizedKey || normalizePhoneKey(sanitizedPhone) || sanitizedPhone;
         const existingIndex = prev.findIndex(contact => {
-          const contactKey = contact.normalizedPhone || normalizePhoneKey(contact.phone) || contact.id;
+          const contactKey =
+            contact.normalizedPhone || normalizePhoneKey(contact.phone) || contact.id;
           return contactKey === key;
         });
         if (existingIndex !== -1) {
@@ -2745,7 +2813,7 @@ const loadContacts = useCallback(async (options?: { silent?: boolean }) => {
             ...contactEntry,
             allPhones: Array.from(
               new Set([...(updated[existingIndex].allPhones || []), sanitizedPhone])
-            )
+            ),
           };
           return updated;
         }
@@ -2761,8 +2829,8 @@ const loadContacts = useCallback(async (options?: { silent?: boolean }) => {
           text: messageText,
           timestamp,
           from: 'vendor',
-          status: result.status || 'sent'
-        }
+          status: result.status || 'sent',
+        },
       ]);
 
       setShowNewChatForm(false);
@@ -2774,14 +2842,14 @@ const loadContacts = useCallback(async (options?: { silent?: boolean }) => {
 
       toast({
         title: 'Message sent',
-        description: `Started a new conversation with ${contactEntry.phone}.`
+        description: `Started a new conversation with ${contactEntry.phone}.`,
       });
     } catch (error: any) {
       const message = error?.message || 'Failed to send message';
       toast({
         title: 'Send failed',
         description: message,
-        variant: 'destructive'
+        variant: 'destructive',
       });
     } finally {
       setSendingNewChat(false);
@@ -2840,7 +2908,7 @@ const loadContacts = useCallback(async (options?: { silent?: boolean }) => {
       const value = event.target.value;
       setWebhookForm(prev => ({
         ...prev,
-        [field]: value
+        [field]: value,
       }));
     };
 
@@ -2849,7 +2917,7 @@ const loadContacts = useCallback(async (options?: { silent?: boolean }) => {
       const value = event.target.value;
       setOnboardingForm(prev => ({
         ...prev,
-        [field]: value
+        [field]: value,
       }));
     };
 
@@ -2861,13 +2929,13 @@ const loadContacts = useCallback(async (options?: { silent?: boolean }) => {
       toast({
         title: 'Onboarding URL required',
         description: 'Please provide the secure callback URL before saving.',
-        variant: 'destructive'
+        variant: 'destructive',
       });
       return;
     }
 
     const payload: Record<string, string> = {
-      webhookUrl: trimmedUrl
+      webhookUrl: trimmedUrl,
     };
 
     if (webhookForm.verifyToken.trim()) {
@@ -2885,7 +2953,7 @@ const loadContacts = useCallback(async (options?: { silent?: boolean }) => {
       const response = await fetch('/api/whatsapp/config/webhook', {
         method: 'POST',
         headers: buildAuthHeaders(true),
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
       });
 
       const result = await response.json().catch(() => ({}));
@@ -2904,19 +2972,19 @@ const loadContacts = useCallback(async (options?: { silent?: boolean }) => {
           updatedConfig.appSecretSet ?? (payload.appSecret ? true : webhookConfig.appSecretSet)
         ),
         lastUpdatedAt: updatedConfig.lastUpdatedAt || new Date().toISOString(),
-        lastValidatedAt: updatedConfig.lastValidatedAt || webhookConfig.lastValidatedAt
+        lastValidatedAt: updatedConfig.lastValidatedAt || webhookConfig.lastValidatedAt,
       };
 
       setWebhookConfig(nextConfig);
       setWebhookForm(prev => ({
         ...prev,
         verifyToken: '',
-        appSecret: ''
+        appSecret: '',
       }));
 
       toast({
         title: 'Onboarding configuration saved',
-        description: 'Your WhatsApp onboarding settings were updated successfully.'
+        description: 'Your WhatsApp onboarding settings were updated successfully.',
       });
     } catch (error: any) {
       const message = error?.message || 'Unable to update onboarding configuration';
@@ -2924,7 +2992,7 @@ const loadContacts = useCallback(async (options?: { silent?: boolean }) => {
       toast({
         title: 'Save failed',
         description: message,
-        variant: 'destructive'
+        variant: 'destructive',
       });
     } finally {
       setWebhookSaving(false);
@@ -2945,7 +3013,7 @@ const loadContacts = useCallback(async (options?: { silent?: boolean }) => {
       toast({
         title: 'Missing required details',
         description: 'Both WABA ID and Phone Number ID are required to save onboarding details.',
-        variant: 'destructive'
+        variant: 'destructive',
       });
       return;
     }
@@ -2956,7 +3024,7 @@ const loadContacts = useCallback(async (options?: { silent?: boolean }) => {
       verifiedName: trimmedVerifiedName,
       businessPhone: trimmedBusinessPhone,
       businessId: trimmedBusinessId,
-      appId: trimmedAppId
+      appId: trimmedAppId,
     };
 
     setOnboardingSaving(true);
@@ -2966,7 +3034,7 @@ const loadContacts = useCallback(async (options?: { silent?: boolean }) => {
       const response = await fetch('/api/whatsapp/config/onboarding', {
         method: 'POST',
         headers: buildAuthHeaders(true),
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
       });
 
       const result = await response.json().catch(() => ({}));
@@ -2988,7 +3056,7 @@ const loadContacts = useCallback(async (options?: { silent?: boolean }) => {
         appId: updatedConfig.appId ?? trimmedAppId,
         verifiedName: updatedConfig.verifiedName ?? trimmedVerifiedName,
         lastUpdatedAt: updatedConfig.lastUpdatedAt || new Date().toISOString(),
-        onboardingLink: updatedLinkValue
+        onboardingLink: updatedLinkValue,
       };
 
       setOnboardingConfig(nextConfig);
@@ -2998,13 +3066,13 @@ const loadContacts = useCallback(async (options?: { silent?: boolean }) => {
         businessPhone: nextConfig.businessPhone,
         businessId: nextConfig.businessId,
         appId: nextConfig.appId,
-        verifiedName: nextConfig.verifiedName
+        verifiedName: nextConfig.verifiedName,
       });
       setOnboardingLinkUrl(updatedLinkValue);
 
       toast({
         title: 'Onboarding details saved',
-        description: 'WhatsApp Business information was stored successfully.'
+        description: 'WhatsApp Business information was stored successfully.',
       });
     } catch (error: any) {
       const message = error?.message || 'Unable to save onboarding configuration';
@@ -3012,7 +3080,7 @@ const loadContacts = useCallback(async (options?: { silent?: boolean }) => {
       toast({
         title: 'Save failed',
         description: message,
-        variant: 'destructive'
+        variant: 'destructive',
       });
     } finally {
       setOnboardingSaving(false);
@@ -3025,7 +3093,7 @@ const loadContacts = useCallback(async (options?: { silent?: boolean }) => {
       toast({
         title: 'Phone number ID required',
         description: 'Enter and save the phone number ID before connecting.',
-        variant: 'destructive'
+        variant: 'destructive',
       });
       return;
     }
@@ -3039,8 +3107,8 @@ const loadContacts = useCallback(async (options?: { silent?: boolean }) => {
         headers: buildAuthHeaders(true),
         body: JSON.stringify({
           phoneNumberId,
-          pin: HARD_CODED_PIN
-        })
+          pin: HARD_CODED_PIN,
+        }),
       });
 
       const result = await response.json().catch(() => ({}));
@@ -3052,7 +3120,7 @@ const loadContacts = useCallback(async (options?: { silent?: boolean }) => {
       const successMessage = 'The WhatsApp number was registered successfully.';
       toast({
         title: 'Number connected',
-        description: successMessage
+        description: successMessage,
       });
       setRegisterStatus({ type: 'success', message: successMessage });
     } catch (error: any) {
@@ -3060,7 +3128,7 @@ const loadContacts = useCallback(async (options?: { silent?: boolean }) => {
       toast({
         title: 'Connection failed',
         description: message,
-        variant: 'destructive'
+        variant: 'destructive',
       });
       setRegisterStatus({ type: 'error', message });
     } finally {
@@ -3081,7 +3149,7 @@ const loadContacts = useCallback(async (options?: { silent?: boolean }) => {
       const response = await fetch('/api/whatsapp/config/webhook/validate', {
         method: 'POST',
         headers: buildAuthHeaders(true),
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
       });
 
       const result = await response.json().catch(() => ({}));
@@ -3096,13 +3164,13 @@ const loadContacts = useCallback(async (options?: { silent?: boolean }) => {
           verifyTokenSet: Boolean(result.config?.verifyTokenSet ?? webhookConfig.verifyTokenSet),
           appSecretSet: Boolean(result.config?.appSecretSet ?? webhookConfig.appSecretSet),
           lastUpdatedAt: result.config?.lastUpdatedAt || webhookConfig.lastUpdatedAt,
-          lastValidatedAt: result.config?.lastValidatedAt || webhookConfig.lastValidatedAt
+          lastValidatedAt: result.config?.lastValidatedAt || webhookConfig.lastValidatedAt,
         });
 
         toast({
           title: 'Validation failed',
           description: 'The provided verify token does not match the stored value.',
-          variant: 'destructive'
+          variant: 'destructive',
         });
         return;
       }
@@ -3113,7 +3181,7 @@ const loadContacts = useCallback(async (options?: { silent?: boolean }) => {
         verifyTokenSet: Boolean(updatedConfig.verifyTokenSet ?? webhookConfig.verifyTokenSet),
         appSecretSet: Boolean(updatedConfig.appSecretSet ?? webhookConfig.appSecretSet),
         lastUpdatedAt: updatedConfig.lastUpdatedAt || webhookConfig.lastUpdatedAt,
-        lastValidatedAt: updatedConfig.lastValidatedAt || new Date().toISOString()
+        lastValidatedAt: updatedConfig.lastValidatedAt || new Date().toISOString(),
       };
 
       setWebhookConfig(nextConfig);
@@ -3123,7 +3191,7 @@ const loadContacts = useCallback(async (options?: { silent?: boolean }) => {
         description:
           result.matchesEnvironment === false
             ? 'Stored verify token is valid but does not match the server environment variable.'
-            : 'Onboarding token validated successfully.'
+            : 'Onboarding token validated successfully.',
       });
     } catch (error: any) {
       const message = error?.message || 'Validation request failed';
@@ -3131,7 +3199,7 @@ const loadContacts = useCallback(async (options?: { silent?: boolean }) => {
       toast({
         title: 'Validation error',
         description: message,
-        variant: 'destructive'
+        variant: 'destructive',
       });
     } finally {
       setWebhookValidating(false);
@@ -3145,20 +3213,24 @@ const loadContacts = useCallback(async (options?: { silent?: boolean }) => {
   const filteredTemplates = useMemo(() => {
     const term = templateSearch.trim().toLowerCase();
     if (!term) return templates;
-    return templates.filter(template =>
-      template.name.toLowerCase().includes(term) ||
-      template.category.toLowerCase().includes(term) ||
-      template.language.toLowerCase().includes(term)
+    return templates.filter(
+      template =>
+        template.name.toLowerCase().includes(term) ||
+        template.category.toLowerCase().includes(term) ||
+        template.language.toLowerCase().includes(term)
     );
   }, [templates, templateSearch]);
 
   const createButtonDraft = (type: TemplateButtonType = 'QUICK_REPLY'): TemplateButtonDraft => ({
-    id: typeof crypto !== 'undefined' && 'randomUUID' in crypto ? crypto.randomUUID() : `btn_${Date.now()}_${Math.random().toString(16).slice(2)}`,
+    id:
+      typeof crypto !== 'undefined' && 'randomUUID' in crypto
+        ? crypto.randomUUID()
+        : `btn_${Date.now()}_${Math.random().toString(16).slice(2)}`,
     type,
     text: '',
     url: '',
     phoneNumber: '',
-    example: ''
+    example: '',
   });
 
   const handleTemplateFormChange = <K extends keyof TemplateFormState>(
@@ -3167,7 +3239,7 @@ const loadContacts = useCallback(async (options?: { silent?: boolean }) => {
   ) => {
     setTemplateForm(prev => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
 
     if (field === 'headerType') {
@@ -3221,7 +3293,7 @@ const loadContacts = useCallback(async (options?: { silent?: boolean }) => {
         buttonIndex === index
           ? {
               ...button,
-              ...updates
+              ...updates,
             }
           : button
       )
@@ -3327,7 +3399,7 @@ const loadContacts = useCallback(async (options?: { silent?: boolean }) => {
       const response = await fetch('/api/whatsapp/media/upload', {
         method: 'POST',
         headers,
-        body: formData
+        body: formData,
       });
 
       const result = await response.json().catch(() => ({}));
@@ -3342,7 +3414,7 @@ const loadContacts = useCallback(async (options?: { silent?: boolean }) => {
 
       toast({
         title: 'Header media uploaded',
-        description: 'Media handle inserted into the template automatically.'
+        description: 'Media handle inserted into the template automatically.',
       });
     } catch (error: any) {
       const message = error?.message || 'Failed to upload media';
@@ -3350,7 +3422,7 @@ const loadContacts = useCallback(async (options?: { silent?: boolean }) => {
       toast({
         title: 'Upload failed',
         description: message,
-        variant: 'destructive'
+        variant: 'destructive',
       });
     } finally {
       setHeaderUploadLoading(false);
@@ -3360,27 +3432,27 @@ const loadContacts = useCallback(async (options?: { silent?: boolean }) => {
     }
   };
 
-const resetTemplateForm = () => {
-  setTemplateForm({
-    name: '',
-    category: 'UTILITY',
-    language: 'en_US',
-    headerType: 'NONE',
-    headerText: '',
-    headerMediaHandle: '',
-    headerExampleText: '',
-    bodyText: '',
-    bodyExamples: [''],
-    footerText: '',
-    footerExample: '',
-    buttons: []
-  });
-  setHeaderUploadError(null);
-  setHeaderUploadSuccess(null);
-  if (headerMediaInputRef.current) {
-    headerMediaInputRef.current.value = '';
-  }
-};
+  const resetTemplateForm = () => {
+    setTemplateForm({
+      name: '',
+      category: 'UTILITY',
+      language: 'en_US',
+      headerType: 'NONE',
+      headerText: '',
+      headerMediaHandle: '',
+      headerExampleText: '',
+      bodyText: '',
+      bodyExamples: [''],
+      footerText: '',
+      footerExample: '',
+      buttons: [],
+    });
+    setHeaderUploadError(null);
+    setHeaderUploadSuccess(null);
+    if (headerMediaInputRef.current) {
+      headerMediaInputRef.current.value = '';
+    }
+  };
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -3393,7 +3465,7 @@ const resetTemplateForm = () => {
       navigate(
         {
           pathname: location.pathname,
-          search: nextSearch ? `?${nextSearch}` : ''
+          search: nextSearch ? `?${nextSearch}` : '',
         },
         { replace: true }
       );
@@ -3413,7 +3485,7 @@ const resetTemplateForm = () => {
       navigate(
         {
           pathname: location.pathname,
-          search: nextSearch ? `?${nextSearch}` : ''
+          search: nextSearch ? `?${nextSearch}` : '',
         },
         { replace: true }
       );
@@ -3423,7 +3495,7 @@ const resetTemplateForm = () => {
       const phoneCandidates = [
         contact.normalizedPhone,
         contact.phone,
-        ...(contact.allPhones || [])
+        ...(contact.allPhones || []),
       ].filter(Boolean) as string[];
       return phoneCandidates.some(value => normalizePhoneKey(value) === normalizedTarget);
     });
@@ -3434,7 +3506,7 @@ const resetTemplateForm = () => {
     } else {
       toast({
         title: 'Chat not found',
-        description: 'Start a conversation from the WhatsApp tab to message this contact.'
+        description: 'Start a conversation from the WhatsApp tab to message this contact.',
       });
     }
     params.delete('chat');
@@ -3442,7 +3514,7 @@ const resetTemplateForm = () => {
     navigate(
       {
         pathname: location.pathname,
-        search: nextSearch ? `?${nextSearch}` : ''
+        search: nextSearch ? `?${nextSearch}` : '',
       },
       { replace: true }
     );
@@ -3453,10 +3525,10 @@ const resetTemplateForm = () => {
     setTemplatesError(null);
     try {
       const params = new URLSearchParams({
-        limit: '50'
+        limit: '50',
       });
       const response = await fetch(`/api/whatsapp/templates?${params.toString()}`, {
-        headers: buildAuthHeaders()
+        headers: buildAuthHeaders(),
       });
       if (!response.ok) {
         const payload = await response.json().catch(() => ({}));
@@ -3474,7 +3546,7 @@ const resetTemplateForm = () => {
         rejectedReason: item.rejected_reason || null,
         subCategory: item.sub_category || null,
         qualityScore: item.quality_score?.score || item.quality_score || null,
-        components: item.components || null
+        components: item.components || null,
       }));
       setTemplates(list);
     } catch (error: any) {
@@ -3483,7 +3555,7 @@ const resetTemplateForm = () => {
       toast({
         title: 'Failed to load templates',
         description: message,
-        variant: 'destructive'
+        variant: 'destructive',
       });
     } finally {
       setTemplatesLoading(false);
@@ -3498,7 +3570,7 @@ const resetTemplateForm = () => {
       toast({
         title: 'Missing required fields',
         description: 'Template name and body are required.',
-        variant: 'destructive'
+        variant: 'destructive',
       });
       return;
     }
@@ -3526,8 +3598,9 @@ const resetTemplateForm = () => {
       if (bodyExampleRows.length === 0) {
         toast({
           title: 'Add example values',
-          description: 'Provide sample values for the body placeholders (e.g. “John, Order #1234”).',
-          variant: 'destructive'
+          description:
+            'Provide sample values for the body placeholders (e.g. “John, Order #1234”).',
+          variant: 'destructive',
         });
         return;
       }
@@ -3535,8 +3608,12 @@ const resetTemplateForm = () => {
       if ((normalizedBodyExampleRows[0] ?? []).length < uniquePlaceholders.length) {
         toast({
           title: 'Incomplete body examples',
-          description: `Expected ${uniquePlaceholders.length} value(s) for the first example row but found ${(normalizedBodyExampleRows[0] ?? []).length}.`,
-          variant: 'destructive'
+          description: `Expected ${
+            uniquePlaceholders.length
+          } value(s) for the first example row but found ${
+            (normalizedBodyExampleRows[0] ?? []).length
+          }.`,
+          variant: 'destructive',
         });
         return;
       }
@@ -3546,19 +3623,21 @@ const resetTemplateForm = () => {
       toast({
         title: 'Header text required',
         description: 'Provide header text or switch header type to none.',
-        variant: 'destructive'
+        variant: 'destructive',
       });
       return;
     }
 
     if (
-      (templateForm.headerType === 'IMAGE' || templateForm.headerType === 'VIDEO' || templateForm.headerType === 'DOCUMENT') &&
+      (templateForm.headerType === 'IMAGE' ||
+        templateForm.headerType === 'VIDEO' ||
+        templateForm.headerType === 'DOCUMENT') &&
       !templateForm.headerMediaHandle.trim()
     ) {
       toast({
         title: 'Header media handle required',
         description: 'Provide the uploaded media handle for the header.',
-        variant: 'destructive'
+        variant: 'destructive',
       });
       return;
     }
@@ -3574,7 +3653,7 @@ const resetTemplateForm = () => {
       toast({
         title: 'Incomplete button details',
         description: 'Each button needs text and any required URL or phone number.',
-        variant: 'destructive'
+        variant: 'destructive',
       });
       return;
     }
@@ -3585,7 +3664,7 @@ const resetTemplateForm = () => {
 
       if (templateForm.headerType !== 'NONE') {
         const headerComponent: any = {
-          type: 'HEADER'
+          type: 'HEADER',
         };
 
         if (templateForm.headerType === 'TEXT') {
@@ -3593,14 +3672,14 @@ const resetTemplateForm = () => {
           headerComponent.text = templateForm.headerText.trim();
           if (templateForm.headerExampleText.trim()) {
             headerComponent.example = {
-              header_text: [templateForm.headerExampleText.trim()]
+              header_text: [templateForm.headerExampleText.trim()],
             };
           }
         } else {
           headerComponent.format = templateForm.headerType;
           if (templateForm.headerMediaHandle.trim()) {
             headerComponent.example = {
-              header_handle: [templateForm.headerMediaHandle.trim()]
+              header_handle: [templateForm.headerMediaHandle.trim()],
             };
           }
         }
@@ -3610,12 +3689,12 @@ const resetTemplateForm = () => {
 
       const bodyComponent: any = {
         type: 'BODY',
-        text: templateForm.bodyText.trim()
+        text: templateForm.bodyText.trim(),
       };
 
       if (normalizedBodyExampleRows.length > 0) {
         bodyComponent.example = {
-          body_text: normalizedBodyExampleRows
+          body_text: normalizedBodyExampleRows,
         };
       }
 
@@ -3624,11 +3703,11 @@ const resetTemplateForm = () => {
       if (templateForm.footerText.trim()) {
         const footerComponent: any = {
           type: 'FOOTER',
-          text: templateForm.footerText.trim()
+          text: templateForm.footerText.trim(),
         };
         if (templateForm.footerExample.trim()) {
           footerComponent.example = {
-            footer_text: [templateForm.footerExample.trim()]
+            footer_text: [templateForm.footerExample.trim()],
           };
         }
         components.push(footerComponent);
@@ -3638,7 +3717,7 @@ const resetTemplateForm = () => {
         const buttonsForApi = templateForm.buttons.map(button => {
           const base = {
             type: button.type,
-            text: button.text.trim()
+            text: button.text.trim(),
           } as any;
 
           if (button.type === 'URL') {
@@ -3657,7 +3736,7 @@ const resetTemplateForm = () => {
 
         components.push({
           type: 'BUTTONS',
-          buttons: buttonsForApi
+          buttons: buttonsForApi,
         });
       }
 
@@ -3665,13 +3744,13 @@ const resetTemplateForm = () => {
         name: templateForm.name.trim(),
         category: templateForm.category,
         language: templateForm.language,
-        components
+        components,
       };
 
       const response = await fetch('/api/whatsapp/templates', {
         method: 'POST',
         headers: buildAuthHeaders(true),
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
       });
 
       const result = await response.json().catch(() => ({}));
@@ -3681,7 +3760,7 @@ const resetTemplateForm = () => {
 
       toast({
         title: 'Template draft created',
-        description: 'The template has been saved. Submit it for review when ready.'
+        description: 'The template has been saved. Submit it for review when ready.',
       });
       resetTemplateForm();
       setShowTemplateModal(false);
@@ -3691,7 +3770,7 @@ const resetTemplateForm = () => {
       toast({
         title: 'Create failed',
         description: message,
-        variant: 'destructive'
+        variant: 'destructive',
       });
     } finally {
       setTemplateActionLoading(false);
@@ -3705,7 +3784,7 @@ const resetTemplateForm = () => {
       const response = await fetch('/api/whatsapp/templates/submit', {
         method: 'POST',
         headers: buildAuthHeaders(true),
-        body: JSON.stringify({ templateId })
+        body: JSON.stringify({ templateId }),
       });
       const result = await response.json().catch(() => ({}));
       if (!response.ok) {
@@ -3713,7 +3792,7 @@ const resetTemplateForm = () => {
       }
       toast({
         title: 'Template submitted',
-        description: 'The template has been submitted to Meta for approval.'
+        description: 'The template has been submitted to Meta for approval.',
       });
       await loadTemplates();
     } catch (error: any) {
@@ -3721,7 +3800,7 @@ const resetTemplateForm = () => {
       toast({
         title: 'Submit failed',
         description: message,
-        variant: 'destructive'
+        variant: 'destructive',
       });
     } finally {
       setTemplateActionLoading(false);
@@ -3746,7 +3825,7 @@ const resetTemplateForm = () => {
         }`,
         {
           method: 'DELETE',
-          headers: buildAuthHeaders()
+          headers: buildAuthHeaders(),
         }
       );
 
@@ -3757,7 +3836,7 @@ const resetTemplateForm = () => {
 
       toast({
         title: 'Template deleted',
-        description: 'The template has been removed.'
+        description: 'The template has been removed.',
       });
       await loadTemplates();
     } catch (error: any) {
@@ -3765,7 +3844,7 @@ const resetTemplateForm = () => {
       toast({
         title: 'Delete failed',
         description: message,
-        variant: 'destructive'
+        variant: 'destructive',
       });
     } finally {
       setTemplateActionLoading(false);
@@ -3893,7 +3972,7 @@ const resetTemplateForm = () => {
                   <input
                     type="text"
                     value={searchTerm}
-                    onChange={(event) => setSearchTerm(event.target.value)}
+                    onChange={event => setSearchTerm(event.target.value)}
                     placeholder="Search by name or number"
                     className="flex-1 bg-transparent text-sm text-gray-700 outline-none placeholder:text-gray-400"
                   />
@@ -3926,7 +4005,10 @@ const resetTemplateForm = () => {
                   </button>
                 </div>
                 {showNewChatForm && (
-                  <form onSubmit={handleStartNewChat} className="mt-4 space-y-3 rounded-xl border border-teal-100 bg-teal-50/70 p-3 shadow-sm">
+                  <form
+                    onSubmit={handleStartNewChat}
+                    className="mt-4 space-y-3 rounded-xl border border-teal-100 bg-teal-50/70 p-3 shadow-sm"
+                  >
                     <div>
                       <label className="block text-xs font-semibold uppercase tracking-wide text-teal-900">
                         Phone number
@@ -3934,7 +4016,7 @@ const resetTemplateForm = () => {
                       <input
                         type="tel"
                         value={newChatPhone}
-                        onChange={(event) => setNewChatPhone(event.target.value)}
+                        onChange={event => setNewChatPhone(event.target.value)}
                         placeholder="e.g. +911234567890"
                         className="mt-1 w-full rounded-md border border-teal-200 px-3 py-2 text-sm text-teal-900 focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-500/30"
                         disabled={sendingNewChat}
@@ -3948,7 +4030,7 @@ const resetTemplateForm = () => {
                       <input
                         type="text"
                         value={newChatName}
-                        onChange={(event) => setNewChatName(event.target.value)}
+                        onChange={event => setNewChatName(event.target.value)}
                         placeholder="Customer name"
                         className="mt-1 w-full rounded-md border border-teal-200 px-3 py-2 text-sm text-teal-900 focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-500/30"
                         disabled={sendingNewChat}
@@ -3960,7 +4042,7 @@ const resetTemplateForm = () => {
                       </label>
                       <textarea
                         value={newChatMessage}
-                        onChange={(event) => setNewChatMessage(event.target.value)}
+                        onChange={event => setNewChatMessage(event.target.value)}
                         placeholder="Write your first message…"
                         rows={3}
                         className="mt-1 w-full rounded-md border border-teal-200 px-3 py-2 text-sm text-teal-900 focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-500/30"
@@ -4011,7 +4093,7 @@ const resetTemplateForm = () => {
                       <input
                         type="tel"
                         value={saveContactPhone}
-                        onChange={(event) => setSaveContactPhone(event.target.value)}
+                        onChange={event => setSaveContactPhone(event.target.value)}
                         placeholder="e.g. +911234567890"
                         className="mt-1 w-full rounded-md border border-indigo-200 px-3 py-2 text-sm text-indigo-900 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/30"
                         disabled={savingContact}
@@ -4025,7 +4107,7 @@ const resetTemplateForm = () => {
                       <input
                         type="text"
                         value={saveContactName}
-                        onChange={(event) => setSaveContactName(event.target.value)}
+                        onChange={event => setSaveContactName(event.target.value)}
                         placeholder="Customer name"
                         className="mt-1 w-full rounded-md border border-indigo-200 px-3 py-2 text-sm text-indigo-900 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/30"
                         disabled={savingContact}
@@ -4039,7 +4121,7 @@ const resetTemplateForm = () => {
                       <input
                         type="text"
                         value={saveContactTag}
-                        onChange={(event) => setSaveContactTag(event.target.value)}
+                        onChange={event => setSaveContactTag(event.target.value)}
                         placeholder="e.g. VIP, Partner"
                         className="mt-1 w-full rounded-md border border-indigo-200 px-3 py-2 text-sm text-indigo-900 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/30"
                         disabled={savingContact}
@@ -4118,9 +4200,7 @@ const resetTemplateForm = () => {
                             onClick={() => setSelectedContact(contact)}
                             className={cn(
                               'flex w-full items-center gap-3 px-4 py-3 text-left transition-colors',
-                              isActive
-                                ? 'bg-teal-50'
-                                : 'hover:bg-gray-50'
+                              isActive ? 'bg-teal-50' : 'hover:bg-gray-50'
                             )}
                           >
                             <div className="relative">
@@ -4219,7 +4299,8 @@ const resetTemplateForm = () => {
                             setShowNewChatForm(false);
                             setSaveContactPhone(selectedContact.phone);
                             setSaveContactName(
-                              selectedContact.name && selectedContact.name.toLowerCase().startsWith('customer')
+                              selectedContact.name &&
+                                selectedContact.name.toLowerCase().startsWith('customer')
                                 ? ''
                                 : selectedContact.name
                             );
@@ -4262,7 +4343,8 @@ const resetTemplateForm = () => {
                           setShowNewChatForm(false);
                           setSaveContactPhone(selectedContact.phone);
                           setSaveContactName(
-                            selectedContact.name && selectedContact.name.toLowerCase().startsWith('customer')
+                            selectedContact.name &&
+                              selectedContact.name.toLowerCase().startsWith('customer')
                               ? ''
                               : selectedContact.name
                           );
@@ -4373,7 +4455,9 @@ const resetTemplateForm = () => {
                                   </div>
                                 </div>
                               )}
-                              <div className={cn('flex', isVendor ? 'justify-end' : 'justify-start')}>
+                              <div
+                                className={cn('flex', isVendor ? 'justify-end' : 'justify-start')}
+                              >
                                 <div
                                   className={cn(
                                     'max-w-[75%] rounded-[18px] px-4 py-2.5 text-[14px] leading-relaxed md:max-w-xl space-y-2 shadow-sm sm:max-w-[85%] sm:rounded-2xl sm:px-4 sm:py-2 sm:text-sm',
@@ -4554,8 +4638,8 @@ const resetTemplateForm = () => {
                                     onClick: () => {
                                       attachmentsInputRef.current?.click();
                                       setActionMenuOpen(false);
-                                    }
-                                  }
+                                    },
+                                  },
                                 ].map(item => (
                                   <button
                                     key={item.label}
@@ -4590,7 +4674,7 @@ const resetTemplateForm = () => {
                             <input
                               type="text"
                               value={newMessage}
-                              onChange={(event) => setNewMessage(event.target.value)}
+                              onChange={event => setNewMessage(event.target.value)}
                               onKeyDown={handleMessageKeyDown}
                               placeholder="Type a message…"
                               disabled={sending || !canSendWithinWindow}
@@ -4615,7 +4699,11 @@ const resetTemplateForm = () => {
                         <Button
                           type="button"
                           onClick={handleSendMessage}
-                          disabled={sending || !canSendWithinWindow || (!newMessage.trim() && !attachmentFile)}
+                          disabled={
+                            sending ||
+                            !canSendWithinWindow ||
+                            (!newMessage.trim() && !attachmentFile)
+                          }
                           className="h-10 w-10 sm:w-auto sm:px-4 rounded-full bg-teal-600 text-white hover:bg-teal-500 shadow-md"
                           aria-label="Send message"
                         >
@@ -4646,7 +4734,8 @@ const resetTemplateForm = () => {
           <div className="bg-white rounded-xl shadow p-6 text-center">
             <h2 className="text-xl font-semibold text-gray-900">Message Templates</h2>
             <p className="mt-2 text-sm text-gray-600">
-              Template management now lives in the Template Library. Switch to Analytics → Template Library to create, edit, or submit WhatsApp templates.
+              Template management now lives in the Template Library. Switch to Analytics → Template
+              Library to create, edit, or submit WhatsApp templates.
             </p>
             <div className="mt-4 flex justify-center">
               <Button
@@ -4660,564 +4749,635 @@ const resetTemplateForm = () => {
           </div>
           {false && (
             <>
-          <div className="bg-white rounded-xl shadow p-6">
-            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-              <div>
-                <h2 className="text-xl font-semibold text-gray-900">Message Templates</h2>
-                <p className="mt-1 text-sm text-gray-500">
-                  Manage your WhatsApp template drafts, submit them for approval, and monitor their status.
-                </p>
-              </div>
-              <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center">
-                <div className="flex items-center gap-2 rounded-full bg-gray-100 px-3 py-2">
-                  <Search className="h-4 w-4 text-gray-400" />
-                  <input
-                    type="text"
-                    value={templateSearch}
-                    onChange={event => setTemplateSearch(event.target.value)}
-                    placeholder="Search templates"
-                    className="flex-1 bg-transparent text-sm text-gray-700 outline-none placeholder:text-gray-400"
-                  />
-                </div>
-                <Button
-                  type="button"
-                  onClick={() => {
-                    resetTemplateForm();
-                    setShowTemplateModal(true);
-                  }}
-                >
-                  <Plus className="h-4 w-4" />
-                  Create Template
-                </Button>
-              </div>
-            </div>
-
-            <div className="mt-6 rounded-xl border border-gray-100 overflow-hidden">
-              {templatesLoading ? (
-                <div className="flex items-center justify-center gap-2 py-12 text-sm text-gray-500">
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  Loading templates…
-                </div>
-              ) : templatesError ? (
-                <div className="py-12 text-center text-sm text-red-600">{templatesError}</div>
-              ) : filteredTemplates.length === 0 ? (
-                <div className="py-12 text-center text-sm text-gray-500">
-                  No templates yet. Create your first template draft to get started.
-                </div>
-              ) : (
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">
-                        Name
-                      </th>
-                      <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">
-                        Status
-                      </th>
-                      <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">
-                        Category
-                      </th>
-                      <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">
-                        Language
-                      </th>
-                      <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">
-                        Updated
-                      </th>
-                      <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">
-                        Actions
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-200 bg-white">
-                    {filteredTemplates.map(template => (
-                      <tr key={template.id}>
-                        <td className="px-4 py-3 text-sm font-medium text-gray-900">{template.name}</td>
-                        <td className="px-4 py-3 text-sm">
-                          <span
-                            className={cn(
-                              'inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold',
-                              template.status === 'approved'
-                                ? 'bg-green-100 text-green-700'
-                                : template.status === 'rejected'
-                                ? 'bg-red-100 text-red-700'
-                                : template.status === 'submitted'
-                                ? 'bg-blue-100 text-[#66A3FF]'
-                                : 'bg-yellow-100 text-yellow-700'
-                            )}
-                          >
-                            {template.status}
-                          </span>
-                        </td>
-                        <td className="px-4 py-3 text-sm text-gray-600">{template.category}</td>
-                        <td className="px-4 py-3 text-sm text-gray-600">
-                          {template.language.toUpperCase()}
-                        </td>
-                        <td className="px-4 py-3 text-sm text-gray-600">
-                          {new Date(template.updatedAt).toLocaleString()}
-                        </td>
-                        <td className="px-4 py-3 text-sm text-gray-600">
-                          <div className="flex items-center gap-2">
-                            <Button
-                              type="button"
-                              size="sm"
-                              variant="secondary"
-                              disabled={templateActionLoading || template.status !== 'draft'}
-                              onClick={() => handleSubmitTemplate(template.id)}
-                            >
-                              <PenSquare className="h-3.5 w-3.5" />
-                              Submit
-                            </Button>
-                            <Button
-                              type="button"
-                              size="sm"
-                              variant="ghost"
-                              disabled={templateActionLoading}
-                              onClick={() => handleDeleteTemplate(template)}
-                            >
-                              Delete
-                            </Button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              )}
-            </div>
-          </div>
-
-          {showTemplateModal && (
-            <div
-              className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4"
-              role="presentation"
-              onClick={() => {
-                if (templateActionLoading) return;
-                setShowTemplateModal(false);
-              }}
-            >
-              <div
-                role="dialog"
-                aria-modal="true"
-                className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white p-6 shadow-xl"
-                onClick={event => event.stopPropagation()}
-              >
-                <div className="flex items-start justify-between gap-3">
+              <div className="bg-white rounded-xl shadow p-6">
+                <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-900">Create Template Draft</h3>
+                    <h2 className="text-xl font-semibold text-gray-900">Message Templates</h2>
                     <p className="mt-1 text-sm text-gray-500">
-                      Provide the required fields and preview content before submitting to Meta.
+                      Manage your WhatsApp template drafts, submit them for approval, and monitor
+                      their status.
                     </p>
                   </div>
-                  <button
-                    onClick={() => {
-                      if (templateActionLoading) return;
-                      setShowTemplateModal(false);
-                    }}
-                    className="text-gray-400 hover:text-gray-600"
-                  >
-                    ×
-                  </button>
+                  <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center">
+                    <div className="flex items-center gap-2 rounded-full bg-gray-100 px-3 py-2">
+                      <Search className="h-4 w-4 text-gray-400" />
+                      <input
+                        type="text"
+                        value={templateSearch}
+                        onChange={event => setTemplateSearch(event.target.value)}
+                        placeholder="Search templates"
+                        className="flex-1 bg-transparent text-sm text-gray-700 outline-none placeholder:text-gray-400"
+                      />
+                    </div>
+                    <Button
+                      type="button"
+                      onClick={() => {
+                        resetTemplateForm();
+                        setShowTemplateModal(true);
+                      }}
+                    >
+                      <Plus className="h-4 w-4" />
+                      Create Template
+                    </Button>
+                  </div>
                 </div>
 
-                <form className="mt-6 space-y-6" onSubmit={handleCreateTemplate}>
-                  <div className="grid gap-6 lg:grid-cols-2">
-                    <div className="space-y-5">
-                      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700">Template Name</label>
-                          <input
-                            type="text"
-                            value={templateForm.name}
-                            onChange={event => handleTemplateFormChange('name', event.target.value)}
-                            placeholder="limited_time_offer"
-                            className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-                            required
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700">Category</label>
-                          <select
-                            value={templateForm.category}
-                            onChange={event =>
-                              handleTemplateFormChange('category', event.target.value as TemplateCategory)
-                            }
-                            className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-                          >
-                            <option value="MARKETING">MARKETING</option>
-                            <option value="UTILITY" disabled>
-                              UTILITY (disabled)
-                            </option>
-                            <option value="PROMOTIONAL" disabled>
-                              PROMOTIONAL (disabled)
-                            </option>
-                          </select>
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700">Language</label>
-                          <input
-                            type="text"
-                            value={templateForm.language}
-                            onChange={event => handleTemplateFormChange('language', event.target.value)}
-                            placeholder="en_US"
-                            className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-                          />
-                        </div>
-                      </div>
-
-                      <div className="space-y-3 rounded-lg border border-gray-200 bg-gray-50 p-4">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <p className="text-sm font-semibold text-gray-800">Header</p>
-                            <p className="text-xs text-gray-500">Optional text or rich media shown at the top.</p>
-                          </div>
-                        </div>
-                        <select
-                          value={templateForm.headerType}
-                          onChange={event => {
-                            const nextType = event.target.value as TemplateHeaderType;
-                            handleTemplateFormChange('headerType', nextType);
-                            if (nextType === 'TEXT') {
-                              handleTemplateFormChange('headerMediaHandle', '');
-                            } else if (nextType === 'NONE') {
-                              handleTemplateFormChange('headerText', '');
-                              handleTemplateFormChange('headerMediaHandle', '');
-                              handleTemplateFormChange('headerExampleText', '');
-                            } else {
-                              handleTemplateFormChange('headerText', '');
-                              handleTemplateFormChange('headerExampleText', '');
-                              handleTemplateFormChange('headerMediaHandle', '');
-                            }
-                          }}
-                          className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-                        >
-                          <option value="NONE">No header</option>
-                          <option value="TEXT">Text</option>
-                          <option value="IMAGE">Image</option>
-                          <option value="VIDEO">Video</option>
-                          <option value="DOCUMENT">Document</option>
-                        </select>
-
-                        {templateForm.headerType === 'TEXT' && (
-                          <div className="space-y-2">
-                            <input
-                              type="text"
-                              value={templateForm.headerText}
-                              onChange={event => handleTemplateFormChange('headerText', event.target.value)}
-                              placeholder="Title or short sentence"
-                              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-                            />
-                            <input
-                              type="text"
-                              value={templateForm.headerExampleText}
-                              onChange={event => handleTemplateFormChange('headerExampleText', event.target.value)}
-                              placeholder="Example value (optional)"
-                              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-                            />
-                          </div>
-                        )}
-
-                        {templateForm.headerType !== 'TEXT' && templateForm.headerType !== 'NONE' && (
-                          <div className="space-y-3">
-                            <div className="flex flex-wrap items-center gap-3">
-                              <button
-                                type="button"
-                                onClick={handleHeaderUploadClick}
-                                disabled={headerUploadLoading}
+                <div className="mt-6 rounded-xl border border-gray-100 overflow-hidden">
+                  {templatesLoading ? (
+                    <div className="flex items-center justify-center gap-2 py-12 text-sm text-gray-500">
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Loading templates…
+                    </div>
+                  ) : templatesError ? (
+                    <div className="py-12 text-center text-sm text-red-600">{templatesError}</div>
+                  ) : filteredTemplates.length === 0 ? (
+                    <div className="py-12 text-center text-sm text-gray-500">
+                      No templates yet. Create your first template draft to get started.
+                    </div>
+                  ) : (
+                    <table className="min-w-full divide-y divide-gray-200">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">
+                            Name
+                          </th>
+                          <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">
+                            Status
+                          </th>
+                          <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">
+                            Category
+                          </th>
+                          <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">
+                            Language
+                          </th>
+                          <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">
+                            Updated
+                          </th>
+                          <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">
+                            Actions
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-200 bg-white">
+                        {filteredTemplates.map(template => (
+                          <tr key={template.id}>
+                            <td className="px-4 py-3 text-sm font-medium text-gray-900">
+                              {template.name}
+                            </td>
+                            <td className="px-4 py-3 text-sm">
+                              <span
                                 className={cn(
-                                  'inline-flex items-center rounded-md border border-blue-500 px-3 py-1.5 text-sm font-medium text-blue-600 hover:bg-blue-50',
-                                  headerUploadLoading && 'cursor-not-allowed opacity-75'
+                                  'inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold',
+                                  template.status === 'approved'
+                                    ? 'bg-green-100 text-green-700'
+                                    : template.status === 'rejected'
+                                    ? 'bg-red-100 text-red-700'
+                                    : template.status === 'submitted'
+                                    ? 'bg-blue-100 text-[#66A3FF]'
+                                    : 'bg-yellow-100 text-yellow-700'
                                 )}
                               >
-                                {headerUploadLoading ? (
-                                  <>
-                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                    Uploading…
-                                  </>
-                                ) : (
-                                  <>
-                                    <Image className="mr-2 h-4 w-4" />
-                                    Upload media
-                                  </>
-                                )}
-                              </button>
-                              <input
-                                type="text"
-                                value={templateForm.headerMediaHandle}
-                                onChange={event => handleTemplateFormChange('headerMediaHandle', event.target.value)}
-                                placeholder="Paste uploaded media handle"
-                                className="flex-1 rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-                              />
-                            </div>
-                            <input
-                              ref={headerMediaInputRef}
-                              type="file"
-                              accept={headerFileAccept}
-                              onChange={handleHeaderFileChange}
-                              hidden
-                            />
-                            <p className="text-xs text-gray-500">
-                              Upload media via the WhatsApp Business API or provide an existing handle. Supported size up to 5&nbsp;MB.
-                            </p>
-                            {headerUploadSuccess && (
-                              <p className="text-xs font-medium text-green-600">
-                                Media uploaded successfully. Handle: {headerUploadSuccess}
-                              </p>
-                            )}
-                            {headerUploadError && (
-                              <p className="text-xs font-medium text-red-600">{headerUploadError}</p>
-                            )}
-                          </div>
-                        )}
-                      </div>
-
-                      <div className="space-y-3">
-                        <label className="block text-sm font-medium text-gray-700">Body</label>
-                        <textarea
-                          value={templateForm.bodyText}
-                          onChange={event => handleTemplateFormChange('bodyText', event.target.value)}
-                          placeholder="Hi {{1}}, your order {{2}} has been shipped!"
-                          rows={5}
-                          className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-                          required
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm font-medium text-gray-700">Body variable examples</span>
-                          <button
-                            type="button"
-                            onClick={addBodyExampleRow}
-                            className="text-sm font-medium text-blue-600 hover:text-[#66A3FF]"
-                          >
-                            + Add example
-                          </button>
-                        </div>
-                        <p className="text-xs text-gray-500">Provide sample values to demonstrate how numbered placeholders will render. Separate variables with commas.</p>
-                        {templateForm.bodyExamples.map((example, index) => (
-                          <div key={index} className="flex items-center gap-2">
-                            <input
-                              type="text"
-                              value={example}
-                              onChange={event => updateBodyExampleRow(index, event.target.value)}
-                              placeholder="e.g. John Doe, Order #1234"
-                              className="flex-1 rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-                            />
-                            {templateForm.bodyExamples.length > 1 && (
-                              <button
-                                type="button"
-                                onClick={() => removeBodyExampleRow(index)}
-                                className="rounded-full border border-gray-200 bg-white p-1 text-gray-400 hover:text-red-500"
-                                aria-label="Remove example"
-                              >
-                                ×
-                              </button>
-                            )}
-                          </div>
+                                {template.status}
+                              </span>
+                            </td>
+                            <td className="px-4 py-3 text-sm text-gray-600">{template.category}</td>
+                            <td className="px-4 py-3 text-sm text-gray-600">
+                              {template.language.toUpperCase()}
+                            </td>
+                            <td className="px-4 py-3 text-sm text-gray-600">
+                              {new Date(template.updatedAt).toLocaleString()}
+                            </td>
+                            <td className="px-4 py-3 text-sm text-gray-600">
+                              <div className="flex items-center gap-2">
+                                <Button
+                                  type="button"
+                                  size="sm"
+                                  variant="secondary"
+                                  disabled={templateActionLoading || template.status !== 'draft'}
+                                  onClick={() => handleSubmitTemplate(template.id)}
+                                >
+                                  <PenSquare className="h-3.5 w-3.5" />
+                                  Submit
+                                </Button>
+                                <Button
+                                  type="button"
+                                  size="sm"
+                                  variant="ghost"
+                                  disabled={templateActionLoading}
+                                  onClick={() => handleDeleteTemplate(template)}
+                                >
+                                  Delete
+                                </Button>
+                              </div>
+                            </td>
+                          </tr>
                         ))}
-                      </div>
+                      </tbody>
+                    </table>
+                  )}
+                </div>
+              </div>
 
-                      <div className="space-y-2">
-                        <label className="block text-sm font-medium text-gray-700">Footer</label>
-                        <input
-                          type="text"
-                          value={templateForm.footerText}
-                          onChange={event => handleTemplateFormChange('footerText', event.target.value)}
-                          placeholder="Optional footer text"
-                          className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-                        />
-                        <input
-                          type="text"
-                          value={templateForm.footerExample}
-                          onChange={event => handleTemplateFormChange('footerExample', event.target.value)}
-                          placeholder="Footer example (optional)"
-                          className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-                        />
-                      </div>
-
-                      <div className="space-y-3">
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm font-medium text-gray-700">Buttons</span>
-                          <button
-                            type="button"
-                            onClick={addTemplateButton}
-                            disabled={templateForm.buttons.length >= 3}
-                            className="text-sm font-medium text-blue-600 hover:text-[#66A3FF] disabled:cursor-not-allowed disabled:text-gray-400"
-                          >
-                            + Add button
-                          </button>
-                        </div>
-                        <p className="text-xs text-gray-500">
-                          Add up to 3 buttons. URL buttons can include a dynamic parameter via <code>{'{{1}}'}</code>.
+              {showTemplateModal && (
+                <div
+                  className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4"
+                  role="presentation"
+                  onClick={() => {
+                    if (templateActionLoading) return;
+                    setShowTemplateModal(false);
+                  }}
+                >
+                  <div
+                    role="dialog"
+                    aria-modal="true"
+                    className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white p-6 shadow-xl"
+                    onClick={event => event.stopPropagation()}
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <h3 className="text-lg font-semibold text-gray-900">
+                          Create Template Draft
+                        </h3>
+                        <p className="mt-1 text-sm text-gray-500">
+                          Provide the required fields and preview content before submitting to Meta.
                         </p>
+                      </div>
+                      <button
+                        onClick={() => {
+                          if (templateActionLoading) return;
+                          setShowTemplateModal(false);
+                        }}
+                        className="text-gray-400 hover:text-gray-600"
+                      >
+                        ×
+                      </button>
+                    </div>
 
-                        {templateForm.buttons.map((button, index) => (
-                          <div key={button.id} className="space-y-2 rounded-lg border border-gray-200 bg-white p-3">
-                            <div className="flex flex-col gap-2 sm:flex-row">
-                              <select
-                                value={button.type}
-                                onChange={event => {
-                                  const nextType = event.target.value as TemplateButtonType;
-                                  updateTemplateButton(index, {
-                                    type: nextType,
-                                    url: nextType === 'URL' ? button.url : '',
-                                    phoneNumber: nextType === 'PHONE_NUMBER' ? button.phoneNumber : '',
-                                    example: nextType === 'URL' ? button.example : ''
-                                  });
-                                }}
-                                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 sm:w-40"
-                              >
-                                <option value="QUICK_REPLY">Quick Reply</option>
-                                <option value="URL">Call-to-Action URL</option>
-                                <option value="PHONE_NUMBER">Call Phone Number</option>
-                              </select>
+                    <form className="mt-6 space-y-6" onSubmit={handleCreateTemplate}>
+                      <div className="grid gap-6 lg:grid-cols-2">
+                        <div className="space-y-5">
+                          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700">
+                                Template Name
+                              </label>
                               <input
                                 type="text"
-                                value={button.text}
-                                onChange={event => updateTemplateButton(index, { text: event.target.value })}
-                                placeholder="Button label"
-                                className="flex-1 rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                                value={templateForm.name}
+                                onChange={event =>
+                                  handleTemplateFormChange('name', event.target.value)
+                                }
+                                placeholder="limited_time_offer"
+                                className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                                 required
                               />
                             </div>
-
-                            {button.type === 'URL' && (
-                              <div className="grid gap-2 sm:grid-cols-2">
-                                <input
-                                  type="text"
-                                  value={button.url}
-                                  onChange={event => updateTemplateButton(index, { url: event.target.value })}
-                                  placeholder="https://example.com"
-                                  className="rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-                                />
-                                <input
-                                  type="text"
-                                  value={button.example}
-                                  onChange={event => updateTemplateButton(index, { example: event.target.value })}
-                                  placeholder="Example parameter (optional)"
-                                  className="rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-                                />
-                              </div>
-                            )}
-
-                            {button.type === 'PHONE_NUMBER' && (
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700">
+                                Category
+                              </label>
+                              <select
+                                value={templateForm.category}
+                                onChange={event =>
+                                  handleTemplateFormChange(
+                                    'category',
+                                    event.target.value as TemplateCategory
+                                  )
+                                }
+                                className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                              >
+                                <option value="MARKETING">MARKETING</option>
+                                <option value="UTILITY" disabled>
+                                  UTILITY (disabled)
+                                </option>
+                                <option value="PROMOTIONAL" disabled>
+                                  PROMOTIONAL (disabled)
+                                </option>
+                              </select>
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700">
+                                Language
+                              </label>
                               <input
                                 type="text"
-                                value={button.phoneNumber}
-                                onChange={event => updateTemplateButton(index, { phoneNumber: event.target.value })}
-                                placeholder="e.g. +15551234567"
-                                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                                value={templateForm.language}
+                                onChange={event =>
+                                  handleTemplateFormChange('language', event.target.value)
+                                }
+                                placeholder="en_US"
+                                className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                               />
-                            )}
-
-                            <div className="flex justify-end">
-                              <button
-                                type="button"
-                                onClick={() => removeTemplateButton(index)}
-                                className="text-xs font-medium text-red-500 hover:text-red-600"
-                              >
-                                Remove button
-                              </button>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-                      <h4 className="text-sm font-semibold text-gray-700 mb-3">Live preview</h4>
-                      <div className="mx-auto w-full max-w-[260px] rounded-[2.2rem] border-[6px] border-gray-900 bg-black">
-                        <div className="relative h-[520px] overflow-hidden rounded-[1.6rem] bg-[#ece5dd]">
-                          <div className="flex items-center gap-2 bg-[#075e54] px-3 py-2 text-white">
-                            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white/20 text-xs font-semibold">
-                              {(templateForm.name || 'TM').slice(0, 2).toUpperCase()}
-                            </div>
-                            <div className="min-w-0">
-                              <p className="truncate text-xs font-semibold text-white">
-                                {templateForm.name ? templateForm.name.replace(/_/g, ' ') : 'Template draft'}
-                              </p>
-                              <p className="text-[10px] text-white/70">WhatsApp template preview</p>
                             </div>
                           </div>
 
-                          <div className="flex flex-col gap-3 px-3 py-4 text-sm text-gray-800">
-                            {templateForm.headerType !== 'NONE' && (
-                              hasMediaHeader ? (
-                                <div className="flex h-32 items-center justify-center rounded-xl bg-gray-300 text-xs font-medium text-gray-600">
-                                  {headerPreviewLabel}
-                                </div>
-                              ) : (
-                                <div className="rounded-xl bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow">
-                                  {headerPreviewLabel}
-                                </div>
-                              )
-                            )}
-
-                            <div className="rounded-xl rounded-tl-none bg-white px-3 py-3 shadow">
-                              {bodyPreview ? (
-                                bodyPreview.split('\n').map((line, index) => (
-                                  <p key={index} className={index > 0 ? 'mt-2' : undefined}>
-                                    {line}
-                                  </p>
-                                ))
-                              ) : (
-                                <p className="text-gray-400">Body content will appear here</p>
-                              )}
+                          <div className="space-y-3 rounded-lg border border-gray-200 bg-gray-50 p-4">
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <p className="text-sm font-semibold text-gray-800">Header</p>
+                                <p className="text-xs text-gray-500">
+                                  Optional text or rich media shown at the top.
+                                </p>
+                              </div>
                             </div>
+                            <select
+                              value={templateForm.headerType}
+                              onChange={event => {
+                                const nextType = event.target.value as TemplateHeaderType;
+                                handleTemplateFormChange('headerType', nextType);
+                                if (nextType === 'TEXT') {
+                                  handleTemplateFormChange('headerMediaHandle', '');
+                                } else if (nextType === 'NONE') {
+                                  handleTemplateFormChange('headerText', '');
+                                  handleTemplateFormChange('headerMediaHandle', '');
+                                  handleTemplateFormChange('headerExampleText', '');
+                                } else {
+                                  handleTemplateFormChange('headerText', '');
+                                  handleTemplateFormChange('headerExampleText', '');
+                                  handleTemplateFormChange('headerMediaHandle', '');
+                                }
+                              }}
+                              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                            >
+                              <option value="NONE">No header</option>
+                              <option value="TEXT">Text</option>
+                              <option value="IMAGE">Image</option>
+                              <option value="VIDEO">Video</option>
+                              <option value="DOCUMENT">Document</option>
+                            </select>
 
-                            {templateForm.footerText.trim() && (
-                              <p className="text-xs text-gray-500">{templateForm.footerText.trim()}</p>
-                            )}
-
-                            {templateForm.buttons.length > 0 && (
+                            {templateForm.headerType === 'TEXT' && (
                               <div className="space-y-2">
-                                {templateForm.buttons.map(button => (
-                                  <button
-                                    key={button.id}
-                                    type="button"
-                                    disabled
-                                    className="w-full rounded-full border border-[#25d366] bg-white py-2 text-xs font-semibold text-[#128c7e]"
-                                  >
-                                    {button.text.trim() || 'Button'}
-                                  </button>
-                                ))}
+                                <input
+                                  type="text"
+                                  value={templateForm.headerText}
+                                  onChange={event =>
+                                    handleTemplateFormChange('headerText', event.target.value)
+                                  }
+                                  placeholder="Title or short sentence"
+                                  className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                                />
+                                <input
+                                  type="text"
+                                  value={templateForm.headerExampleText}
+                                  onChange={event =>
+                                    handleTemplateFormChange(
+                                      'headerExampleText',
+                                      event.target.value
+                                    )
+                                  }
+                                  placeholder="Example value (optional)"
+                                  className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                                />
                               </div>
                             )}
+
+                            {templateForm.headerType !== 'TEXT' &&
+                              templateForm.headerType !== 'NONE' && (
+                                <div className="space-y-3">
+                                  <div className="flex flex-wrap items-center gap-3">
+                                    <button
+                                      type="button"
+                                      onClick={handleHeaderUploadClick}
+                                      disabled={headerUploadLoading}
+                                      className={cn(
+                                        'inline-flex items-center rounded-md border border-blue-500 px-3 py-1.5 text-sm font-medium text-blue-600 hover:bg-blue-50',
+                                        headerUploadLoading && 'cursor-not-allowed opacity-75'
+                                      )}
+                                    >
+                                      {headerUploadLoading ? (
+                                        <>
+                                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                          Uploading…
+                                        </>
+                                      ) : (
+                                        <>
+                                          <Image className="mr-2 h-4 w-4" />
+                                          Upload media
+                                        </>
+                                      )}
+                                    </button>
+                                    <input
+                                      type="text"
+                                      value={templateForm.headerMediaHandle}
+                                      onChange={event =>
+                                        handleTemplateFormChange(
+                                          'headerMediaHandle',
+                                          event.target.value
+                                        )
+                                      }
+                                      placeholder="Paste uploaded media handle"
+                                      className="flex-1 rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                                    />
+                                  </div>
+                                  <input
+                                    ref={headerMediaInputRef}
+                                    type="file"
+                                    accept={headerFileAccept}
+                                    onChange={handleHeaderFileChange}
+                                    hidden
+                                  />
+                                  <p className="text-xs text-gray-500">
+                                    Upload media via the WhatsApp Business API or provide an
+                                    existing handle. Supported size up to 5&nbsp;MB.
+                                  </p>
+                                  {headerUploadSuccess && (
+                                    <p className="text-xs font-medium text-green-600">
+                                      Media uploaded successfully. Handle: {headerUploadSuccess}
+                                    </p>
+                                  )}
+                                  {headerUploadError && (
+                                    <p className="text-xs font-medium text-red-600">
+                                      {headerUploadError}
+                                    </p>
+                                  )}
+                                </div>
+                              )}
+                          </div>
+
+                          <div className="space-y-3">
+                            <label className="block text-sm font-medium text-gray-700">Body</label>
+                            <textarea
+                              value={templateForm.bodyText}
+                              onChange={event =>
+                                handleTemplateFormChange('bodyText', event.target.value)
+                              }
+                              placeholder="Hi {{1}}, your order {{2}} has been shipped!"
+                              rows={5}
+                              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                              required
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <div className="flex items-center justify-between">
+                              <span className="text-sm font-medium text-gray-700">
+                                Body variable examples
+                              </span>
+                              <button
+                                type="button"
+                                onClick={addBodyExampleRow}
+                                className="text-sm font-medium text-blue-600 hover:text-[#66A3FF]"
+                              >
+                                + Add example
+                              </button>
+                            </div>
+                            <p className="text-xs text-gray-500">
+                              Provide sample values to demonstrate how numbered placeholders will
+                              render. Separate variables with commas.
+                            </p>
+                            {templateForm.bodyExamples.map((example, index) => (
+                              <div key={index} className="flex items-center gap-2">
+                                <input
+                                  type="text"
+                                  value={example}
+                                  onChange={event =>
+                                    updateBodyExampleRow(index, event.target.value)
+                                  }
+                                  placeholder="e.g. John Doe, Order #1234"
+                                  className="flex-1 rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                                />
+                                {templateForm.bodyExamples.length > 1 && (
+                                  <button
+                                    type="button"
+                                    onClick={() => removeBodyExampleRow(index)}
+                                    className="rounded-full border border-gray-200 bg-white p-1 text-gray-400 hover:text-red-500"
+                                    aria-label="Remove example"
+                                  >
+                                    ×
+                                  </button>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+
+                          <div className="space-y-2">
+                            <label className="block text-sm font-medium text-gray-700">
+                              Footer
+                            </label>
+                            <input
+                              type="text"
+                              value={templateForm.footerText}
+                              onChange={event =>
+                                handleTemplateFormChange('footerText', event.target.value)
+                              }
+                              placeholder="Optional footer text"
+                              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                            />
+                            <input
+                              type="text"
+                              value={templateForm.footerExample}
+                              onChange={event =>
+                                handleTemplateFormChange('footerExample', event.target.value)
+                              }
+                              placeholder="Footer example (optional)"
+                              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                            />
+                          </div>
+
+                          <div className="space-y-3">
+                            <div className="flex items-center justify-between">
+                              <span className="text-sm font-medium text-gray-700">Buttons</span>
+                              <button
+                                type="button"
+                                onClick={addTemplateButton}
+                                disabled={templateForm.buttons.length >= 3}
+                                className="text-sm font-medium text-blue-600 hover:text-[#66A3FF] disabled:cursor-not-allowed disabled:text-gray-400"
+                              >
+                                + Add button
+                              </button>
+                            </div>
+                            <p className="text-xs text-gray-500">
+                              Add up to 3 buttons. URL buttons can include a dynamic parameter via{' '}
+                              <code>{'{{1}}'}</code>.
+                            </p>
+
+                            {templateForm.buttons.map((button, index) => (
+                              <div
+                                key={button.id}
+                                className="space-y-2 rounded-lg border border-gray-200 bg-white p-3"
+                              >
+                                <div className="flex flex-col gap-2 sm:flex-row">
+                                  <select
+                                    value={button.type}
+                                    onChange={event => {
+                                      const nextType = event.target.value as TemplateButtonType;
+                                      updateTemplateButton(index, {
+                                        type: nextType,
+                                        url: nextType === 'URL' ? button.url : '',
+                                        phoneNumber:
+                                          nextType === 'PHONE_NUMBER' ? button.phoneNumber : '',
+                                        example: nextType === 'URL' ? button.example : '',
+                                      });
+                                    }}
+                                    className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 sm:w-40"
+                                  >
+                                    <option value="QUICK_REPLY">Quick Reply</option>
+                                    <option value="URL">Call-to-Action URL</option>
+                                    <option value="PHONE_NUMBER">Call Phone Number</option>
+                                  </select>
+                                  <input
+                                    type="text"
+                                    value={button.text}
+                                    onChange={event =>
+                                      updateTemplateButton(index, { text: event.target.value })
+                                    }
+                                    placeholder="Button label"
+                                    className="flex-1 rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                                    required
+                                  />
+                                </div>
+
+                                {button.type === 'URL' && (
+                                  <div className="grid gap-2 sm:grid-cols-2">
+                                    <input
+                                      type="text"
+                                      value={button.url}
+                                      onChange={event =>
+                                        updateTemplateButton(index, { url: event.target.value })
+                                      }
+                                      placeholder="https://example.com"
+                                      className="rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                                    />
+                                    <input
+                                      type="text"
+                                      value={button.example}
+                                      onChange={event =>
+                                        updateTemplateButton(index, { example: event.target.value })
+                                      }
+                                      placeholder="Example parameter (optional)"
+                                      className="rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                                    />
+                                  </div>
+                                )}
+
+                                {button.type === 'PHONE_NUMBER' && (
+                                  <input
+                                    type="text"
+                                    value={button.phoneNumber}
+                                    onChange={event =>
+                                      updateTemplateButton(index, {
+                                        phoneNumber: event.target.value,
+                                      })
+                                    }
+                                    placeholder="e.g. +15551234567"
+                                    className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                                  />
+                                )}
+
+                                <div className="flex justify-end">
+                                  <button
+                                    type="button"
+                                    onClick={() => removeTemplateButton(index)}
+                                    className="text-xs font-medium text-red-500 hover:text-red-600"
+                                  >
+                                    Remove button
+                                  </button>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+                          <h4 className="text-sm font-semibold text-gray-700 mb-3">Live preview</h4>
+                          <div className="mx-auto w-full max-w-[260px] rounded-[2.2rem] border-[6px] border-gray-900 bg-black">
+                            <div className="relative h-[520px] overflow-hidden rounded-[1.6rem] bg-[#ece5dd]">
+                              <div className="flex items-center gap-2 bg-[#075e54] px-3 py-2 text-white">
+                                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white/20 text-xs font-semibold">
+                                  {(templateForm.name || 'TM').slice(0, 2).toUpperCase()}
+                                </div>
+                                <div className="min-w-0">
+                                  <p className="truncate text-xs font-semibold text-white">
+                                    {templateForm.name
+                                      ? templateForm.name.replace(/_/g, ' ')
+                                      : 'Template draft'}
+                                  </p>
+                                  <p className="text-[10px] text-white/70">
+                                    WhatsApp template preview
+                                  </p>
+                                </div>
+                              </div>
+
+                              <div className="flex flex-col gap-3 px-3 py-4 text-sm text-gray-800">
+                                {templateForm.headerType !== 'NONE' &&
+                                  (hasMediaHeader ? (
+                                    <div className="flex h-32 items-center justify-center rounded-xl bg-gray-300 text-xs font-medium text-gray-600">
+                                      {headerPreviewLabel}
+                                    </div>
+                                  ) : (
+                                    <div className="rounded-xl bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow">
+                                      {headerPreviewLabel}
+                                    </div>
+                                  ))}
+
+                                <div className="rounded-xl rounded-tl-none bg-white px-3 py-3 shadow">
+                                  {bodyPreview ? (
+                                    bodyPreview.split('\n').map((line, index) => (
+                                      <p key={index} className={index > 0 ? 'mt-2' : undefined}>
+                                        {line}
+                                      </p>
+                                    ))
+                                  ) : (
+                                    <p className="text-gray-400">Body content will appear here</p>
+                                  )}
+                                </div>
+
+                                {templateForm.footerText.trim() && (
+                                  <p className="text-xs text-gray-500">
+                                    {templateForm.footerText.trim()}
+                                  </p>
+                                )}
+
+                                {templateForm.buttons.length > 0 && (
+                                  <div className="space-y-2">
+                                    {templateForm.buttons.map(button => (
+                                      <button
+                                        key={button.id}
+                                        type="button"
+                                        disabled
+                                        className="w-full rounded-full border border-[#25d366] bg-white py-2 text-xs font-semibold text-[#128c7e]"
+                                      >
+                                        {button.text.trim() || 'Button'}
+                                      </button>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  </div>
 
-                  <div className="flex items-center justify-end gap-2">
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      onClick={() => {
-                        if (templateActionLoading) return;
-                        setShowTemplateModal(false);
-                      }}
-                    >
-                      Cancel
-                    </Button>
-                    <Button type="submit" disabled={templateActionLoading}>
-                      {templateActionLoading ? (
-                        <>
-                          <Loader2 className="h-4 w-4 animate-spin" />
-                          Submitting…
-                        </>
-                      ) : (
-                        <>
-                          <FileText className="h-4 w-4" />
-                          Submit
-                        </>
-                      )}
-                    </Button>
+                      <div className="flex items-center justify-end gap-2">
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          onClick={() => {
+                            if (templateActionLoading) return;
+                            setShowTemplateModal(false);
+                          }}
+                        >
+                          Cancel
+                        </Button>
+                        <Button type="submit" disabled={templateActionLoading}>
+                          {templateActionLoading ? (
+                            <>
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                              Submitting…
+                            </>
+                          ) : (
+                            <>
+                              <FileText className="h-4 w-4" />
+                              Submit
+                            </>
+                          )}
+                        </Button>
+                      </div>
+                    </form>
                   </div>
-                </form>
-              </div>
-            </div>
-          )}
+                </div>
+              )}
             </>
           )}
         </section>
@@ -5229,7 +5389,7 @@ const resetTemplateForm = () => {
         >
           <div
             className="relative flex w-full max-w-4xl flex-col overflow-hidden rounded-2xl bg-slate-900 text-white shadow-2xl"
-            onClick={(event) => event.stopPropagation()}
+            onClick={event => event.stopPropagation()}
           >
             <div className="flex items-center justify-between border-b border-white/10 px-5 py-3">
               <div className="min-w-0">
@@ -5293,7 +5453,11 @@ const resetTemplateForm = () => {
                   <div className="flex items-center justify-center">
                     <img
                       src={activeMediaPreview.src}
-                      alt={activeMediaPreview.caption || activeMediaPreview.fileName || 'WhatsApp media'}
+                      alt={
+                        activeMediaPreview.caption ||
+                        activeMediaPreview.fileName ||
+                        'WhatsApp media'
+                      }
                       className="max-h-[70vh] w-full rounded-xl object-contain"
                     />
                   </div>
@@ -5324,12 +5488,7 @@ const resetTemplateForm = () => {
         preload="auto"
         className="hidden"
       />
-      <audio
-        ref={orderRingAudioRef}
-        src={orderRingSoundPath}
-        preload="auto"
-        className="hidden"
-      />
+      <audio ref={orderRingAudioRef} src={orderRingSoundPath} preload="auto" className="hidden" />
     </div>
   );
 };

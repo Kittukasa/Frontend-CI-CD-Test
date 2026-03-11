@@ -1,19 +1,19 @@
-import dayjs from "dayjs";
-import type { FC } from "react";
-import { useEffect, useMemo, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import { ChevronDown, Search, Settings } from "lucide-react";
-import { Link } from "react-router-dom";
-import StoreCard, { type StoreSummary } from "./StoreCard";
-import AdminDateRangeControl from "@/components/admin/AdminDateRangeControl";
-import { useAdminDateRange } from "@/hooks/useAdminDateRange";
+import dayjs from 'dayjs';
+import type { FC } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { ChevronDown, Search, Settings } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import StoreCard, { type StoreSummary } from './StoreCard';
+import AdminDateRangeControl from '@/components/admin/AdminDateRangeControl';
+import { useAdminDateRange } from '@/hooks/useAdminDateRange';
 import StoreLifecycleBoard, {
   MOCK_LIFECYCLE_DATA,
   type StoreLifecycleCard,
-} from "./StoreLifecycleBoard";
-import { clearAdminSession, fetchAdminJson } from "@/utils/adminAuth";
+} from './StoreLifecycleBoard';
+import { clearAdminSession, fetchAdminJson } from '@/utils/adminAuth';
 
-type StoreHealth = StoreSummary["health"];
+type StoreHealth = StoreSummary['health'];
 
 interface StoresAnalyticsResponse {
   stores: Array<{
@@ -37,67 +37,70 @@ interface StoresAnalyticsResponse {
 }
 
 const STORE_FILTER_OPTIONS = [
-  { value: "top", label: "Top performers" },
-  { value: "risk", label: "At risk" },
-  { value: "low", label: "Low adoption" },
+  { value: 'top', label: 'Top performers' },
+  { value: 'risk', label: 'At risk' },
+  { value: 'low', label: 'Low adoption' },
 ] as const;
 
 const formatNumber = (value?: number) => {
   if (value === null || value === undefined || Number.isNaN(value)) {
-    return "--";
+    return '--';
   }
   return value.toLocaleString();
 };
 
 const normalizeFranchiseId = (value: unknown) => {
-  const raw = value === null || value === undefined ? "" : String(value).trim();
-  return raw ? raw.toLowerCase() : "unassigned";
+  const raw = value === null || value === undefined ? '' : String(value).trim();
+  return raw ? raw.toLowerCase() : 'unassigned';
 };
 
 const normalizeStoreId = (value: unknown) => {
-  const raw = value === null || value === undefined ? "" : String(value).trim();
+  const raw = value === null || value === undefined ? '' : String(value).trim();
   return raw;
 };
 
 const formatLastActive = (value?: string | null) => {
   if (!value) {
-    return "Pending";
+    return 'Pending';
   }
   const parsed = dayjs(value);
-  return parsed.isValid() ? parsed.format("DD MMM, HH:mm") : "Pending";
+  return parsed.isValid() ? parsed.format('DD MMM, HH:mm') : 'Pending';
 };
 
-const formatTrialEndsLabel = (trialStarted?: string | null, trialPeriod?: number | string | null) => {
-  if (!trialStarted || trialPeriod === null || trialPeriod === undefined || trialPeriod === "") {
-    return "";
+const formatTrialEndsLabel = (
+  trialStarted?: string | null,
+  trialPeriod?: number | string | null
+) => {
+  if (!trialStarted || trialPeriod === null || trialPeriod === undefined || trialPeriod === '') {
+    return '';
   }
   const start = dayjs(trialStarted);
   const periodDays = Number(trialPeriod);
   if (!start.isValid() || Number.isNaN(periodDays)) {
-    return "";
+    return '';
   }
-  const end = start.add(periodDays, "day");
-  const daysLeft = Math.ceil(end.diff(dayjs(), "day", true));
+  const end = start.add(periodDays, 'day');
+  const daysLeft = Math.ceil(end.diff(dayjs(), 'day', true));
   if (daysLeft <= 0) {
-    return "Trial ended";
+    return 'Trial ended';
   }
-  return `Trial ends in ${daysLeft} day${daysLeft === 1 ? "" : "s"}`;
+  return `Trial ends in ${daysLeft} day${daysLeft === 1 ? '' : 's'}`;
 };
 
 const VIEW_TABS = [
-  { label: "Franchises", value: "franchises" },
-  { label: "Stores", value: "roster" },
-  { label: "Lifecycle", value: "lifecycle" },
+  { label: 'Franchises', value: 'franchises' },
+  { label: 'Stores', value: 'roster' },
+  { label: 'Lifecycle', value: 'lifecycle' },
 ] as const;
 
 const LIFECYCLE_RANGE_OPTIONS = [
-  { value: "today", label: "Today" },
-  { value: "7d", label: "Last 7 days" },
-  { value: "30d", label: "Last 30 days" },
-  { value: "90d", label: "Last 90 days" },
+  { value: 'today', label: 'Today' },
+  { value: '7d', label: 'Last 7 days' },
+  { value: '30d', label: 'Last 30 days' },
+  { value: '90d', label: 'Last 90 days' },
 ] as const;
 
-const LIFECYCLE_SEGMENT_OPTIONS = ["All segments", "City", "Category", "Partner"] as const;
+const LIFECYCLE_SEGMENT_OPTIONS = ['All segments', 'City', 'Category', 'Partner'] as const;
 
 const AdminStoresPage: FC = () => {
   const {
@@ -109,18 +112,20 @@ const AdminStoresPage: FC = () => {
     setCustomEnd,
     queryString,
     resetRange,
-  } = useAdminDateRange("today");
-  const [storeFilter, setStoreFilter] = useState<string>("top");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [stores, setStores] = useState<StoresAnalyticsResponse["stores"]>([]);
+  } = useAdminDateRange('today');
+  const [storeFilter, setStoreFilter] = useState<string>('top');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [stores, setStores] = useState<StoresAnalyticsResponse['stores']>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [activeView, setActiveView] = useState<(typeof VIEW_TABS)[number]["value"]>("franchises");
-  const [lifecycleRange, setLifecycleRange] = useState<(typeof LIFECYCLE_RANGE_OPTIONS)[number]["value"]>("30d");
-  const [lifecycleSegment, setLifecycleSegment] = useState<(typeof LIFECYCLE_SEGMENT_OPTIONS)[number]>("All segments");
-  const [lifecycleSearch, setLifecycleSearch] = useState("");
-  const [selectedFranchiseId, setSelectedFranchiseId] = useState("");
-  const [selectedStoreId, setSelectedStoreId] = useState("all");
+  const [activeView, setActiveView] = useState<(typeof VIEW_TABS)[number]['value']>('franchises');
+  const [lifecycleRange, setLifecycleRange] =
+    useState<(typeof LIFECYCLE_RANGE_OPTIONS)[number]['value']>('30d');
+  const [lifecycleSegment, setLifecycleSegment] =
+    useState<(typeof LIFECYCLE_SEGMENT_OPTIONS)[number]>('All segments');
+  const [lifecycleSearch, setLifecycleSearch] = useState('');
+  const [selectedFranchiseId, setSelectedFranchiseId] = useState('');
+  const [selectedStoreId, setSelectedStoreId] = useState('all');
   const [activeFranchiseDrilldown, setActiveFranchiseDrilldown] = useState<string | null>(null);
   const navigate = useNavigate();
   const location = useLocation();
@@ -137,10 +142,10 @@ const AdminStoresPage: FC = () => {
           if (result.isAuthError || result.isHtml) {
             clearAdminSession();
             const redirectFrom = `${location.pathname}${location.search}`;
-            navigate("/admin/login", { replace: true, state: { from: redirectFrom } });
+            navigate('/admin/login', { replace: true, state: { from: redirectFrom } });
             return;
           }
-          throw new Error(result.error || "Failed to load store analytics");
+          throw new Error(result.error || 'Failed to load store analytics');
         }
         const payload = (result.data || {}) as StoresAnalyticsResponse;
         setStores(payload.stores || []);
@@ -156,9 +161,9 @@ const AdminStoresPage: FC = () => {
 
   const franchiseOptions = useMemo(() => {
     const map = new Map<string, string>();
-    stores.forEach((store) => {
+    stores.forEach(store => {
       const id = normalizeFranchiseId(store.franchiseId);
-      const label = store.franchiseName || store.franchiseId || "Unassigned";
+      const label = store.franchiseName || store.franchiseId || 'Unassigned';
       if (!map.has(id)) {
         map.set(id, label);
       }
@@ -169,12 +174,12 @@ const AdminStoresPage: FC = () => {
   }, [stores]);
 
   const storeOptions = useMemo(() => {
-    const filtered = stores.filter((store) => {
+    const filtered = stores.filter(store => {
       const franchiseKey = normalizeFranchiseId(store.franchiseId);
       return franchiseKey === selectedFranchiseId;
     });
     return filtered
-      .map((store) => ({
+      .map(store => ({
         id: normalizeStoreId(store.storeId),
         label: store.name ? `${store.name} (${store.storeId})` : store.storeId,
       }))
@@ -182,26 +187,26 @@ const AdminStoresPage: FC = () => {
   }, [stores, selectedFranchiseId]);
 
   useEffect(() => {
-    if (selectedStoreId !== "all" && !storeOptions.some((option) => option.id === selectedStoreId)) {
-      setSelectedStoreId("all");
+    if (selectedStoreId !== 'all' && !storeOptions.some(option => option.id === selectedStoreId)) {
+      setSelectedStoreId('all');
     }
   }, [selectedStoreId, storeOptions]);
 
   useEffect(() => {
-    setSelectedStoreId("all");
+    setSelectedStoreId('all');
   }, [selectedFranchiseId]);
 
   useEffect(() => {
-    if (activeView === "roster") {
-      setSelectedFranchiseId((current) => current || franchiseOptions[0]?.id || "");
-      setSelectedStoreId("all");
+    if (activeView === 'roster') {
+      setSelectedFranchiseId(current => current || franchiseOptions[0]?.id || '');
+      setSelectedStoreId('all');
     }
   }, [activeView, franchiseOptions]);
 
   useEffect(() => {
     if (!selectedFranchiseId && franchiseOptions.length > 0) {
       setSelectedFranchiseId(franchiseOptions[0].id);
-      setSelectedStoreId("all");
+      setSelectedStoreId('all');
     }
   }, [selectedFranchiseId, franchiseOptions]);
 
@@ -209,13 +214,13 @@ const AdminStoresPage: FC = () => {
     if (!selectedFranchiseId) {
       return [];
     }
-    return stores.filter((store) => {
+    return stores.filter(store => {
       const franchiseKey = normalizeFranchiseId(store.franchiseId);
       if (franchiseKey !== selectedFranchiseId) {
         return false;
       }
       const storeKey = normalizeStoreId(store.storeId);
-      if (selectedStoreId !== "all" && storeKey !== selectedStoreId) {
+      if (selectedStoreId !== 'all' && storeKey !== selectedStoreId) {
         return false;
       }
       return true;
@@ -243,19 +248,18 @@ const AdminStoresPage: FC = () => {
 
     const healthRank: Record<StoreHealth, number> = { healthy: 0, watch: 1, risk: 2 };
 
-    scopedStores.forEach((store) => {
+    scopedStores.forEach(store => {
       const franchiseKey = normalizeFranchiseId(store.franchiseId);
-      const franchiseLabel =
-        store.franchiseName || store.franchiseId || "Unassigned";
-      const cityValue = store.city ? String(store.city) : "";
+      const franchiseLabel = store.franchiseName || store.franchiseId || 'Unassigned';
+      const cityValue = store.city ? String(store.city) : '';
 
       if (!groups.has(franchiseKey)) {
         groups.set(franchiseKey, {
-          franchiseId: store.franchiseId ? String(store.franchiseId) : "Unassigned",
+          franchiseId: store.franchiseId ? String(store.franchiseId) : 'Unassigned',
           franchiseName: franchiseLabel,
           cities: cityValue ? [cityValue] : [],
           storeCount: 0,
-          health: store.healthStatus ?? "watch",
+          health: store.healthStatus ?? 'watch',
           invoices: 0,
           ebillInvoices: 0,
           totalCustomers: 0,
@@ -271,7 +275,7 @@ const AdminStoresPage: FC = () => {
       if (cityValue && !entry.cities.includes(cityValue)) {
         entry.cities.push(cityValue);
       }
-      const nextHealth = store.healthStatus ?? "watch";
+      const nextHealth = store.healthStatus ?? 'watch';
       if (healthRank[nextHealth] > healthRank[entry.health]) {
         entry.health = nextHealth;
       }
@@ -290,22 +294,18 @@ const AdminStoresPage: FC = () => {
   const filteredFranchises = useMemo(() => {
     const normalized = searchQuery.trim().toLowerCase();
     let data = franchiseCards;
-    if (storeFilter === "risk") {
-      data = data.filter((item) => item.health === "risk");
-    } else if (storeFilter === "low") {
-      data = data.filter((item) => item.health === "watch");
+    if (storeFilter === 'risk') {
+      data = data.filter(item => item.health === 'risk');
+    } else if (storeFilter === 'low') {
+      data = data.filter(item => item.health === 'watch');
     }
     if (!normalized) {
       return data;
     }
-    return data.filter((item) => {
-      const haystack = [
-        item.franchiseName,
-        item.franchiseId,
-        item.cities.join(" "),
-      ]
+    return data.filter(item => {
+      const haystack = [item.franchiseName, item.franchiseId, item.cities.join(' ')]
         .filter(Boolean)
-        .join(" ")
+        .join(' ')
         .toLowerCase();
       return haystack.includes(normalized);
     });
@@ -318,31 +318,31 @@ const AdminStoresPage: FC = () => {
     if (!scopedStores.length) {
       return [
         {
-          id: "placeholder",
-          name: "Awaiting data",
-          storeId: "--",
-          city: "Pending",
-          health: "healthy",
-          badgeLabel: "Placeholder",
-          invoicesToday: "--",
-          ebillInvoices: "--",
-          totalCustomers: "--",
-          ebillCustomers: "--",
-          anonymousCustomers: "--",
-          campaignsSent: "--",
-          messagesSent: "--",
-          lastActiveLabel: "Pending",
-          trialEndsLabel: "",
-          campaigns7dLabel: "",
+          id: 'placeholder',
+          name: 'Awaiting data',
+          storeId: '--',
+          city: 'Pending',
+          health: 'healthy',
+          badgeLabel: 'Placeholder',
+          invoicesToday: '--',
+          ebillInvoices: '--',
+          totalCustomers: '--',
+          ebillCustomers: '--',
+          anonymousCustomers: '--',
+          campaignsSent: '--',
+          messagesSent: '--',
+          lastActiveLabel: 'Pending',
+          trialEndsLabel: '',
+          campaigns7dLabel: '',
         },
       ];
     }
-    return scopedStores.map((store) => ({
+    return scopedStores.map(store => ({
       id: store.storeId,
       name: store.name,
       storeId: store.storeId,
-      city: store.city ?? "—",
-      health: store.healthStatus ?? "watch",
+      city: store.city ?? '—',
+      health: store.healthStatus ?? 'watch',
       invoicesToday: formatNumber(store.invoices),
       ebillInvoices: formatNumber(store.ebillInvoices),
       totalCustomers: formatNumber(store.totalCustomers),
@@ -352,20 +352,23 @@ const AdminStoresPage: FC = () => {
       messagesSent: formatNumber(store.messagesSent),
       lastActiveLabel: formatLastActive(store.lastActiveAt),
       trialEndsLabel: formatTrialEndsLabel(store.trialStarted, store.trialPeriod),
-      campaigns7dLabel: "",
+      campaigns7dLabel: '',
     }));
   }, [scopedStores]);
 
   const filteredStores = useMemo(() => {
     const normalized = searchQuery.trim().toLowerCase();
-    return resolvedStores.filter((store) => {
-      if (storeFilter === "risk") {
-        return store.health === "risk";
+    return resolvedStores.filter(store => {
+      if (storeFilter === 'risk') {
+        return store.health === 'risk';
       }
-      if (storeFilter === "low") {
-        return store.health === "watch";
+      if (storeFilter === 'low') {
+        return store.health === 'watch';
       }
-      const haystack = [store.name, store.storeId, store.city].filter(Boolean).join(" ").toLowerCase();
+      const haystack = [store.name, store.storeId, store.city]
+        .filter(Boolean)
+        .join(' ')
+        .toLowerCase();
       if (!normalized) {
         return true;
       }
@@ -378,17 +381,17 @@ const AdminStoresPage: FC = () => {
       return [];
     }
     return scopedStores.filter(
-      (store) => normalizeFranchiseId(store.franchiseId) === activeFranchiseDrilldown
+      store => normalizeFranchiseId(store.franchiseId) === activeFranchiseDrilldown
     );
   }, [activeFranchiseDrilldown, scopedStores]);
 
   const filteredLifecycleData = useMemo<StoreLifecycleCard[]>(() => {
     const normalizedSearch = lifecycleSearch.trim().toLowerCase();
-    return MOCK_LIFECYCLE_DATA.filter((card) => {
-      const haystack = [card.storeName, card.storeId, card.city].join(" ").toLowerCase();
+    return MOCK_LIFECYCLE_DATA.filter(card => {
+      const haystack = [card.storeName, card.storeId, card.city].join(' ').toLowerCase();
       const matchesSearch = !normalizedSearch || haystack.includes(normalizedSearch);
       // Segment filtering placeholder: when future segments exist, apply more nuanced logic.
-      if (lifecycleSegment === "All segments") {
+      if (lifecycleSegment === 'All segments') {
         return matchesSearch;
       }
       return matchesSearch;
@@ -401,40 +404,46 @@ const AdminStoresPage: FC = () => {
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.4em] text-cyan-200/90">
-              {activeView === "roster" ? "Dashboard" : activeView === "franchises" ? "Franchise" : "Lifecycle"}
+              {activeView === 'roster'
+                ? 'Dashboard'
+                : activeView === 'franchises'
+                ? 'Franchise'
+                : 'Lifecycle'}
             </p>
             <h1 className="mt-2 text-3xl font-bold text-white sm:text-4xl">
-              {activeView === "roster"
-                ? "Stores"
-                : activeView === "franchises"
-                ? "Franchise Roster"
-                : "Store Lifecycle"}
+              {activeView === 'roster'
+                ? 'Stores'
+                : activeView === 'franchises'
+                ? 'Franchise Roster'
+                : 'Store Lifecycle'}
             </h1>
             <p className="mt-2 max-w-2xl text-sm text-white/70">
-              {activeView === "roster"
-                ? "Plug backend store metrics into these cards to monitor franchise health."
-                : activeView === "franchises"
-                ? "Review franchise health at a glance before drilling into stores."
-                : "Track stores from onboarding to churn and see where activity is getting stuck."}
+              {activeView === 'roster'
+                ? 'Plug backend store metrics into these cards to monitor franchise health.'
+                : activeView === 'franchises'
+                ? 'Review franchise health at a glance before drilling into stores.'
+                : 'Track stores from onboarding to churn and see where activity is getting stuck.'}
             </p>
           </div>
           <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:flex-wrap sm:items-center">
             <div className="inline-flex w-full flex-wrap rounded-full border border-white/10 bg-white/5 p-1 text-xs font-semibold uppercase tracking-[0.3em] text-white/70 sm:w-auto">
-              {VIEW_TABS.map((tab) => (
+              {VIEW_TABS.map(tab => (
                 <button
                   key={tab.value}
                   type="button"
                   onClick={() => setActiveView(tab.value)}
                   className={[
-                    "flex-1 rounded-full px-4 py-2 text-center transition sm:flex-none",
-                    activeView === tab.value ? "bg-gradient-to-r from-cyan-500/30 to-indigo-500/30 text-white" : "text-white/60",
-                  ].join(" ")}
+                    'flex-1 rounded-full px-4 py-2 text-center transition sm:flex-none',
+                    activeView === tab.value
+                      ? 'bg-gradient-to-r from-cyan-500/30 to-indigo-500/30 text-white'
+                      : 'text-white/60',
+                  ].join(' ')}
                 >
                   {tab.label}
                 </button>
               ))}
             </div>
-            {activeView === "roster" || activeView === "franchises" ? (
+            {activeView === 'roster' || activeView === 'franchises' ? (
               <>
                 <AdminDateRangeControl
                   value={dateRange}
@@ -446,10 +455,10 @@ const AdminStoresPage: FC = () => {
                 />
                 <select
                   value={selectedFranchiseId}
-                  onChange={(event) => setSelectedFranchiseId(event.target.value)}
+                  onChange={event => setSelectedFranchiseId(event.target.value)}
                   className="w-full rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-white sm:w-auto"
                 >
-                  {franchiseOptions.map((option) => (
+                  {franchiseOptions.map(option => (
                     <option key={option.id} value={option.id} className="bg-[#050816] text-white">
                       {option.label}
                     </option>
@@ -457,13 +466,13 @@ const AdminStoresPage: FC = () => {
                 </select>
                 <select
                   value={selectedStoreId}
-                  onChange={(event) => setSelectedStoreId(event.target.value)}
+                  onChange={event => setSelectedStoreId(event.target.value)}
                   className="w-full rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-white sm:w-auto"
                 >
                   <option value="all" className="bg-[#050816] text-white">
                     All stores
                   </option>
-                  {storeOptions.map((option) => (
+                  {storeOptions.map(option => (
                     <option key={option.id} value={option.id} className="bg-[#050816] text-white">
                       {option.label}
                     </option>
@@ -474,21 +483,25 @@ const AdminStoresPage: FC = () => {
               <>
                 <select
                   value={lifecycleRange}
-                  onChange={(event) => setLifecycleRange(event.target.value as typeof lifecycleRange)}
+                  onChange={event => setLifecycleRange(event.target.value as typeof lifecycleRange)}
                   className="w-full rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-white shadow-[0_10px_40px_rgba(2,6,23,0.5)] sm:w-auto"
                 >
-                  {LIFECYCLE_RANGE_OPTIONS.map((option) => (
-                    <option key={option.value} value={option.value} className="bg-[#050816] text-white">
+                  {LIFECYCLE_RANGE_OPTIONS.map(option => (
+                    <option
+                      key={option.value}
+                      value={option.value}
+                      className="bg-[#050816] text-white"
+                    >
                       {option.label}
                     </option>
                   ))}
                 </select>
                 <select
                   value={selectedFranchiseId}
-                  onChange={(event) => setSelectedFranchiseId(event.target.value)}
+                  onChange={event => setSelectedFranchiseId(event.target.value)}
                   className="w-full rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-white sm:w-auto"
                 >
-                  {franchiseOptions.map((option) => (
+                  {franchiseOptions.map(option => (
                     <option key={option.id} value={option.id} className="bg-[#050816] text-white">
                       {option.label}
                     </option>
@@ -496,13 +509,13 @@ const AdminStoresPage: FC = () => {
                 </select>
                 <select
                   value={selectedStoreId}
-                  onChange={(event) => setSelectedStoreId(event.target.value)}
+                  onChange={event => setSelectedStoreId(event.target.value)}
                   className="w-full rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-white sm:w-auto"
                 >
                   <option value="all" className="bg-[#050816] text-white">
                     All stores
                   </option>
-                  {storeOptions.map((option) => (
+                  {storeOptions.map(option => (
                     <option key={option.id} value={option.id} className="bg-[#050816] text-white">
                       {option.label}
                     </option>
@@ -513,16 +526,20 @@ const AdminStoresPage: FC = () => {
           </div>
         </div>
 
-        {activeView === "roster" ? (
+        {activeView === 'roster' ? (
           <div className="mt-4 flex flex-wrap items-center gap-3">
             <div className="relative">
               <select
                 value={storeFilter}
-                onChange={(event) => setStoreFilter(event.target.value)}
+                onChange={event => setStoreFilter(event.target.value)}
                 className="w-full appearance-none rounded-full border border-white/10 bg-white/5 px-4 py-2 pr-10 text-xs font-semibold uppercase tracking-wide text-white shadow-[0_10px_40px_rgba(2,6,23,0.5)] sm:w-auto"
               >
-                {STORE_FILTER_OPTIONS.map((option) => (
-                  <option key={option.value} value={option.value} className="bg-[#050816] text-white">
+                {STORE_FILTER_OPTIONS.map(option => (
+                  <option
+                    key={option.value}
+                    value={option.value}
+                    className="bg-[#050816] text-white"
+                  >
                     {option.label}
                   </option>
                 ))}
@@ -543,12 +560,14 @@ const AdminStoresPage: FC = () => {
           <div className="mt-4 flex flex-wrap items-center gap-3">
             <select
               value={lifecycleSegment}
-              onChange={(event) =>
-                setLifecycleSegment(event.target.value as (typeof LIFECYCLE_SEGMENT_OPTIONS)[number])
+              onChange={event =>
+                setLifecycleSegment(
+                  event.target.value as (typeof LIFECYCLE_SEGMENT_OPTIONS)[number]
+                )
               }
               className="w-full rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-white shadow-[0_10px_40px_rgba(2,6,23,0.5)] sm:w-auto"
             >
-              {LIFECYCLE_SEGMENT_OPTIONS.map((option) => (
+              {LIFECYCLE_SEGMENT_OPTIONS.map(option => (
                 <option key={option} value={option} className="bg-[#050816] text-white">
                   {option}
                 </option>
@@ -559,7 +578,7 @@ const AdminStoresPage: FC = () => {
               <input
                 type="text"
                 value={lifecycleSearch}
-                onChange={(event) => setLifecycleSearch(event.target.value)}
+                onChange={event => setLifecycleSearch(event.target.value)}
                 placeholder="Search by store name, ID, or phone…"
                 className="w-full rounded-full border border-white/10 bg-white/5 px-4 py-2 pl-10 text-sm text-white placeholder-white/40 focus:border-cyan-300/50 focus:outline-none"
               />
@@ -568,9 +587,11 @@ const AdminStoresPage: FC = () => {
         )}
       </header>
 
-      {activeView === "franchises" ? (
+      {activeView === 'franchises' ? (
         <section className="space-y-4">
-          <p className="text-xs font-semibold uppercase tracking-[0.4em] text-white/50">Franchise roster</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.4em] text-white/50">
+            Franchise roster
+          </p>
           <div className="rounded-3xl border border-white/5 bg-slate-950/60 p-5 sm:p-6">
             {error && <p className="mb-4 text-sm text-rose-300">{error}</p>}
             <div className="mb-4">
@@ -581,7 +602,7 @@ const AdminStoresPage: FC = () => {
                 id="franchise-search"
                 type="text"
                 value={searchQuery}
-                onChange={(event) => setSearchQuery(event.target.value)}
+                onChange={event => setSearchQuery(event.target.value)}
                 placeholder="Search franchise name, ID, or city"
                 className="w-full rounded-full border border-white/10 bg-white/5 px-5 py-3 text-sm text-white placeholder-white/40 shadow-[0_10px_35px_rgba(2,6,23,0.45)] focus:border-cyan-300/50 focus:outline-none"
               />
@@ -590,17 +611,17 @@ const AdminStoresPage: FC = () => {
               <p className="text-sm text-white/70">Loading franchises…</p>
             ) : (
               <div className="grid gap-5 lg:grid-cols-2 xl:grid-cols-3">
-                {filteredFranchises.map((franchise) => {
+                {filteredFranchises.map(franchise => {
                   const adoption =
                     franchise.invoices > 0
                       ? (franchise.ebillInvoices / franchise.invoices) * 100
                       : 0;
                   const badgeLabel =
-                    franchise.health === "risk"
-                      ? "AT_RISK"
-                      : franchise.health === "watch"
-                      ? "NEW"
-                      : "HEALTHY";
+                    franchise.health === 'risk'
+                      ? 'AT_RISK'
+                      : franchise.health === 'watch'
+                      ? 'NEW'
+                      : 'HEALTHY';
                   return (
                     <article
                       key={franchise.franchiseId}
@@ -608,10 +629,12 @@ const AdminStoresPage: FC = () => {
                     >
                       <div className="flex flex-wrap items-start justify-between gap-4 sm:gap-6">
                         <div>
-                          <h3 className="text-lg font-semibold sm:text-xl">{franchise.franchiseName}</h3>
+                          <h3 className="text-lg font-semibold sm:text-xl">
+                            {franchise.franchiseName}
+                          </h3>
                           <p className="text-sm text-white/70">
                             Franchise ID {franchise.franchiseId}
-                            {franchise.cities.length ? ` • ${franchise.cities.join(", ")}` : ""}
+                            {franchise.cities.length ? ` • ${franchise.cities.join(', ')}` : ''}
                           </p>
                           <p className="mt-2 text-xs uppercase tracking-[0.3em] text-white/50">
                             {franchise.storeCount} stores
@@ -624,45 +647,79 @@ const AdminStoresPage: FC = () => {
 
                       <dl className="grid grid-cols-2 gap-4 text-sm sm:grid-cols-3 sm:gap-6">
                         <div className="space-y-2">
-                          <dt className="text-white/50 text-[11px] font-semibold uppercase tracking-[0.3em]">Total invoices</dt>
-                          <dd className="text-lg font-semibold">{formatNumber(franchise.invoices)}</dd>
+                          <dt className="text-white/50 text-[11px] font-semibold uppercase tracking-[0.3em]">
+                            Total invoices
+                          </dt>
+                          <dd className="text-lg font-semibold">
+                            {formatNumber(franchise.invoices)}
+                          </dd>
                         </div>
                         <div className="space-y-2">
-                          <dt className="text-white/50 text-[11px] font-semibold uppercase tracking-[0.3em]">E-bill invoices</dt>
-                          <dd className="text-lg font-semibold">{formatNumber(franchise.ebillInvoices)}</dd>
+                          <dt className="text-white/50 text-[11px] font-semibold uppercase tracking-[0.3em]">
+                            E-bill invoices
+                          </dt>
+                          <dd className="text-lg font-semibold">
+                            {formatNumber(franchise.ebillInvoices)}
+                          </dd>
                         </div>
                         <div className="space-y-2">
-                          <dt className="text-white/50 text-[11px] font-semibold uppercase tracking-[0.3em]">Total customers</dt>
-                          <dd className="text-lg font-semibold">{formatNumber(franchise.totalCustomers)}</dd>
+                          <dt className="text-white/50 text-[11px] font-semibold uppercase tracking-[0.3em]">
+                            Total customers
+                          </dt>
+                          <dd className="text-lg font-semibold">
+                            {formatNumber(franchise.totalCustomers)}
+                          </dd>
                         </div>
                         <div className="space-y-2">
-                          <dt className="text-white/50 text-[11px] font-semibold uppercase tracking-[0.3em]">E-bill customers</dt>
-                          <dd className="text-lg font-semibold">{formatNumber(franchise.ebillCustomers)}</dd>
+                          <dt className="text-white/50 text-[11px] font-semibold uppercase tracking-[0.3em]">
+                            E-bill customers
+                          </dt>
+                          <dd className="text-lg font-semibold">
+                            {formatNumber(franchise.ebillCustomers)}
+                          </dd>
                         </div>
                         <div className="space-y-2">
-                          <dt className="text-white/50 text-[11px] font-semibold uppercase tracking-[0.3em]">Anonymous customers</dt>
-                          <dd className="text-lg font-semibold">{formatNumber(franchise.anonymousCustomers)}</dd>
+                          <dt className="text-white/50 text-[11px] font-semibold uppercase tracking-[0.3em]">
+                            Anonymous customers
+                          </dt>
+                          <dd className="text-lg font-semibold">
+                            {formatNumber(franchise.anonymousCustomers)}
+                          </dd>
                         </div>
                         <div className="space-y-2">
-                          <dt className="text-white/50 text-[11px] font-semibold uppercase tracking-[0.3em]">Campaigns sent</dt>
-                          <dd className="text-lg font-semibold">{formatNumber(franchise.campaignsSent)}</dd>
+                          <dt className="text-white/50 text-[11px] font-semibold uppercase tracking-[0.3em]">
+                            Campaigns sent
+                          </dt>
+                          <dd className="text-lg font-semibold">
+                            {formatNumber(franchise.campaignsSent)}
+                          </dd>
                         </div>
                         <div className="space-y-2">
-                          <dt className="text-white/50 text-[11px] font-semibold uppercase tracking-[0.3em]">Messages sent</dt>
-                          <dd className="text-lg font-semibold">{formatNumber(franchise.messagesSent)}</dd>
+                          <dt className="text-white/50 text-[11px] font-semibold uppercase tracking-[0.3em]">
+                            Messages sent
+                          </dt>
+                          <dd className="text-lg font-semibold">
+                            {formatNumber(franchise.messagesSent)}
+                          </dd>
                         </div>
                         <div className="space-y-2">
-                          <dt className="text-white/50 text-[11px] font-semibold uppercase tracking-[0.3em]">Adoption %</dt>
+                          <dt className="text-white/50 text-[11px] font-semibold uppercase tracking-[0.3em]">
+                            Adoption %
+                          </dt>
                           <dd className="text-lg font-semibold">{adoption.toFixed(1)}%</dd>
                         </div>
                       </dl>
 
                       <div className="flex flex-wrap items-center justify-between gap-3 text-sm text-white/70">
-                        <span>Worst health: {badgeLabel.replace("_", " ")}</span>
+                        <span>Worst health: {badgeLabel.replace('_', ' ')}</span>
                         <div className="flex flex-wrap items-center gap-2">
                           <button
                             type="button"
-                            onClick={() => setActiveFranchiseDrilldown(normalizeFranchiseId(franchise.franchiseId))}
+                            onClick={() =>
+                              setActiveFranchiseDrilldown(
+                                normalizeFranchiseId(franchise.franchiseId)
+                              )
+                            }
                             className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-white hover:bg-white/20"
                           >
                             View stores
@@ -683,9 +740,11 @@ const AdminStoresPage: FC = () => {
             )}
           </div>
         </section>
-      ) : activeView === "roster" ? (
+      ) : activeView === 'roster' ? (
         <section className="space-y-4">
-          <p className="text-xs font-semibold uppercase tracking-[0.4em] text-white/50">Store roster</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.4em] text-white/50">
+            Store roster
+          </p>
           <div className="rounded-3xl border border-white/5 bg-slate-950/60 p-5 sm:p-6">
             {error && <p className="mb-4 text-sm text-rose-300">{error}</p>}
             <div className="mb-4">
@@ -696,7 +755,7 @@ const AdminStoresPage: FC = () => {
                 id="store-search"
                 type="text"
                 value={searchQuery}
-                onChange={(event) => setSearchQuery(event.target.value)}
+                onChange={event => setSearchQuery(event.target.value)}
                 placeholder="Search store, ID, or city…"
                 className="w-full rounded-full border border-white/10 bg-white/5 px-5 py-3 text-sm text-white placeholder-white/40 shadow-[0_10px_35px_rgba(2,6,23,0.45)] focus:border-cyan-300/50 focus:outline-none"
               />
@@ -705,7 +764,7 @@ const AdminStoresPage: FC = () => {
               <p className="text-sm text-white/70">Loading stores…</p>
             ) : (
               <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-                {filteredStores.map((store) => (
+                {filteredStores.map(store => (
                   <StoreCard key={store.id} store={store} />
                 ))}
               </div>
@@ -734,15 +793,15 @@ const AdminStoresPage: FC = () => {
             </div>
             <div className="mt-6 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
               {drilldownStores.length ? (
-                drilldownStores.map((store) => (
+                drilldownStores.map(store => (
                   <StoreCard
                     key={store.storeId}
                     store={{
                       id: store.storeId,
                       name: store.name,
                       storeId: store.storeId,
-                      city: store.city ?? "--",
-                      health: store.healthStatus ?? "watch",
+                      city: store.city ?? '--',
+                      health: store.healthStatus ?? 'watch',
                       invoicesToday: formatNumber(store.invoices),
                       ebillInvoices: formatNumber(store.ebillInvoices),
                       totalCustomers: formatNumber(store.totalCustomers),
@@ -752,7 +811,7 @@ const AdminStoresPage: FC = () => {
                       messagesSent: formatNumber(store.messagesSent),
                       lastActiveLabel: formatLastActive(store.lastActiveAt),
                       trialEndsLabel: formatTrialEndsLabel(store.trialStarted, store.trialPeriod),
-                      campaigns7dLabel: "",
+                      campaigns7dLabel: '',
                     }}
                   />
                 ))

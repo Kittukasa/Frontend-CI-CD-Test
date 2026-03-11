@@ -35,14 +35,14 @@ type WorkflowLibraryItem = {
 const statusStyles: Record<WorkflowStatus, string> = {
   Draft: 'bg-amber-100 text-amber-700',
   Live: 'bg-emerald-100 text-emerald-700',
-  Paused: 'bg-gray-100 text-gray-600'
+  Paused: 'bg-gray-100 text-gray-600',
 };
 
 const triggerTypeLabels: Record<TriggerType, string> = {
   keyword: 'Keyword',
   webhook: 'Webhook',
   form_submit: 'Form Submit',
-  api_event: 'API Event'
+  api_event: 'API Event',
 };
 
 const messageTypeLabels: Record<MessageType, string> = {
@@ -52,7 +52,7 @@ const messageTypeLabels: Record<MessageType, string> = {
   product_list: 'Multi Product',
   image: 'Image',
   video: 'Video',
-  template: 'Template'
+  template: 'Template',
 };
 
 type ProductItem = {
@@ -75,7 +75,7 @@ const conditionOperators = [
   'in',
   'not_in',
   'greater_than',
-  'less_than'
+  'less_than',
 ] as const;
 
 type ConditionOperator = (typeof conditionOperators)[number];
@@ -113,9 +113,7 @@ const getStoredStoreId = () => {
     return '';
   }
   return (
-    window.localStorage.getItem('selectedStore') ||
-    window.localStorage.getItem('bb_store_id') ||
-    ''
+    window.localStorage.getItem('selectedStore') || window.localStorage.getItem('bb_store_id') || ''
   );
 };
 
@@ -130,7 +128,7 @@ const buildAuthHeaders = () => {
   const token = getAuthToken();
   return {
     'Content-Type': 'application/json',
-    ...(token ? { Authorization: `Bearer ${token}` } : {})
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
   } as HeadersInit;
 };
 
@@ -200,13 +198,13 @@ const Automation: React.FC = () => {
   const [emojiPickerOpen, setEmojiPickerOpen] = useState(false);
   const [variables, setVariables] = useState<VariableRow[]>([]);
   const [buttons, setButtons] = useState<ButtonConfig[]>([
-    { title: 'Track order', payload: 'TRACK_ORDER' }
+    { title: 'Track order', payload: 'TRACK_ORDER' },
   ]);
   const [listTitle, setListTitle] = useState('Choose an option');
   const [listButtonText, setListButtonText] = useState('Pick one');
   const [listRows, setListRows] = useState<ListRowConfig[]>([
     { title: 'Delivery update', description: 'Get live ETA', payload: 'DELIVERY_UPDATE' },
-    { title: 'Refund request', description: 'Start a return', payload: 'REFUND_REQUEST' }
+    { title: 'Refund request', description: 'Start a return', payload: 'REFUND_REQUEST' },
   ]);
   const [mediaUrl, setMediaUrl] = useState('');
   const [templateName, setTemplateName] = useState('support_quick_reply');
@@ -233,7 +231,9 @@ const Automation: React.FC = () => {
   const [conditionLeftValue, setConditionLeftValue] = useState('purchase_total');
   const [conditionOperator, setConditionOperator] = useState<ConditionOperator>('greater_than');
   const [conditionRightValue, setConditionRightValue] = useState('5000');
-  const [defaultReplyText, setDefaultReplyText] = useState('Let us know if you need anything else.');
+  const [defaultReplyText, setDefaultReplyText] = useState(
+    'Let us know if you need anything else.'
+  );
   const [applyActionsOnDefault, setApplyActionsOnDefault] = useState(false);
 
   const [updateFieldEnabled, setUpdateFieldEnabled] = useState(false);
@@ -252,7 +252,7 @@ const Automation: React.FC = () => {
   const [webhookEnabled, setWebhookEnabled] = useState(false);
   const [webhookId, setWebhookId] = useState('');
   const [webhookPayload, setWebhookPayload] = useState<WebhookPayloadItem[]>([
-    { key: 'customer_phone', value_source: 'last_user_message' }
+    { key: 'customer_phone', value_source: 'last_user_message' },
   ]);
 
   const [handoffEnabled, setHandoffEnabled] = useState(false);
@@ -282,8 +282,8 @@ const Automation: React.FC = () => {
         id: `${Date.now()}_${nextIndex}`,
         token,
         value: 'select',
-        fallback: ''
-      }
+        fallback: '',
+      },
     ]);
     setMessageText(prev => `${prev}${prev ? ' ' : ''}${token}`);
   };
@@ -346,7 +346,7 @@ const Automation: React.FC = () => {
   const loadCatalogConfig = async () => {
     try {
       const response = await fetch('/api/whatsapp/catalog', {
-        headers: buildAuthHeaders()
+        headers: buildAuthHeaders(),
       });
       if (!response.ok) {
         return '';
@@ -376,13 +376,13 @@ const Automation: React.FC = () => {
     setCatalogError(null);
     try {
       const query = new URLSearchParams({
-        catalogId: targetCatalogId.trim()
+        catalogId: targetCatalogId.trim(),
       });
       if (collectionId && collectionId !== 'all') {
         query.set('collectionId', collectionId);
       }
       const response = await fetch(`/api/whatsapp/catalog/products?${query.toString()}`, {
-        headers: buildAuthHeaders()
+        headers: buildAuthHeaders(),
       });
       if (!response.ok) {
         const payload = await response.json().catch(() => ({}));
@@ -395,7 +395,7 @@ const Automation: React.FC = () => {
         name: item.name,
         price: item.price,
         image: item.image,
-        product_retailer_id: item.product_retailer_id || item.id
+        product_retailer_id: item.product_retailer_id || item.id,
       }));
       setCatalogProducts(normalized);
     } catch (error) {
@@ -429,8 +429,7 @@ const Automation: React.FC = () => {
         .map((item: { id?: string; name?: string; product_count?: number | null }) => ({
           id: item.id || '',
           name: item.name || 'Untitled collection',
-          product_count:
-            typeof item.product_count === 'number' ? item.product_count : null
+          product_count: typeof item.product_count === 'number' ? item.product_count : null,
         }))
         .filter(item => item.id);
       setCatalogCollections(normalized);
@@ -532,7 +531,11 @@ const Automation: React.FC = () => {
     const messageDefaultId = 'message_default';
     const endId = 'end_1';
 
-    const addEdge = (from: string, to: string, condition: Record<string, unknown> = { type: 'always' }) => {
+    const addEdge = (
+      from: string,
+      to: string,
+      condition: Record<string, unknown> = { type: 'always' }
+    ) => {
       edges.push({ from, to, condition });
     };
 
@@ -549,7 +552,7 @@ const Automation: React.FC = () => {
           trigger_type: 'keyword',
           keywords,
           match: keywordMatch,
-          case_sensitive: false
+          case_sensitive: false,
         };
       }
       if (!triggerValue.trim()) {
@@ -570,12 +573,12 @@ const Automation: React.FC = () => {
         .map(row => ({
           token: row.token,
           value: row.value,
-          fallback: row.fallback || ''
+          fallback: row.fallback || '',
         }));
       const cleanedButtons = buttons
         .map(button => ({
           title: button.title.trim(),
-          payload: button.payload.trim() || buildPayloadFromTitle(button.title)
+          payload: button.payload.trim() || buildPayloadFromTitle(button.title),
         }))
         .filter(button => button.title && button.payload);
       const hasButtons = cleanedButtons.length > 0;
@@ -584,7 +587,7 @@ const Automation: React.FC = () => {
           ? {
               name: attachmentFileName,
               url: attachmentDataUrl,
-              mime_type: attachmentMimeType || null
+              mime_type: attachmentMimeType || null,
             }
           : null;
       if (!messageText.trim()) {
@@ -602,7 +605,7 @@ const Automation: React.FC = () => {
           text: messageText,
           buttons: cleanedButtons,
           variables: variablePayload,
-          attachment
+          attachment,
         };
       }
       if (messageType === 'product_list') {
@@ -622,10 +625,10 @@ const Automation: React.FC = () => {
             name: product.name,
             price: product.price,
             image: product.image,
-            product_retailer_id: product.product_retailer_id
+            product_retailer_id: product.product_retailer_id,
           })),
           variables: variablePayload,
-          attachment
+          attachment,
         };
       }
       if (messageType === 'list') {
@@ -640,11 +643,11 @@ const Automation: React.FC = () => {
           sections: [
             {
               title: listTitle,
-              rows: cleanedRows
-            }
+              rows: cleanedRows,
+            },
           ],
           variables: variablePayload,
-          attachment
+          attachment,
         };
       }
       if (messageType === 'image' || messageType === 'video') {
@@ -656,7 +659,7 @@ const Automation: React.FC = () => {
           text: messageText,
           media_url: mediaUrl.trim() || null,
           variables: variablePayload,
-          attachment
+          attachment,
         };
       }
       if (messageType === 'template') {
@@ -668,16 +671,16 @@ const Automation: React.FC = () => {
           template_id: templateName,
           language: templateLanguage,
           variables: {
-            store_name: 'BillBox'
+            store_name: 'BillBox',
           },
-          attachment
+          attachment,
         };
       }
       return {
         message_type: 'plain',
         text: messageText,
         variables: variablePayload,
-        attachment
+        attachment,
       };
     };
 
@@ -685,7 +688,7 @@ const Automation: React.FC = () => {
       id: triggerId,
       type: 'TRIGGER',
       name: 'Inbound trigger',
-      config: triggerConfig()
+      config: triggerConfig(),
     });
 
     if (logicEnabled) {
@@ -704,7 +707,7 @@ const Automation: React.FC = () => {
       const expression = {
         left,
         op: conditionOperator,
-        right: conditionRightValue
+        right: conditionRightValue,
       };
 
       nodes.push({
@@ -714,15 +717,15 @@ const Automation: React.FC = () => {
         config: {
           logic_type: 'condition',
           branches: [{ key: 'match', expression }],
-          default_branch: 'default'
-        }
+          default_branch: 'default',
+        },
       });
 
       nodes.push({
         id: messageMatchId,
         type: 'MESSAGE',
         name: 'Matched reply',
-        config: buildMessageConfig()
+        config: buildMessageConfig(),
       });
 
       nodes.push({
@@ -731,26 +734,26 @@ const Automation: React.FC = () => {
         name: 'Default reply',
         config: {
           message_type: 'plain',
-          text: defaultReplyText
-        }
+          text: defaultReplyText,
+        },
       });
 
       addEdge(triggerId, logicId);
       addEdge(logicId, messageMatchId, {
         type: 'branch',
         branch_key: 'match',
-        expression
+        expression,
       });
       addEdge(logicId, messageDefaultId, {
         type: 'branch',
-        branch_key: 'default'
+        branch_key: 'default',
       });
     } else {
       nodes.push({
         id: messageMatchId,
         type: 'MESSAGE',
         name: 'Auto reply',
-        config: buildMessageConfig()
+        config: buildMessageConfig(),
       });
       addEdge(triggerId, messageMatchId);
     }
@@ -771,9 +774,9 @@ const Automation: React.FC = () => {
             action_type: 'update_field',
             field: updateFieldName,
             value_source: updateFieldSource,
-            value: updateFieldValue
-          }
-        }
+            value: updateFieldValue,
+          },
+        },
       });
     }
 
@@ -790,9 +793,9 @@ const Automation: React.FC = () => {
           config: {
             action_type: 'set_tag',
             op: tagOperation,
-            tag: tagValue
-          }
-        }
+            tag: tagValue,
+          },
+        },
       });
     }
 
@@ -809,9 +812,9 @@ const Automation: React.FC = () => {
           config: {
             action_type: 'assign_agent',
             strategy: assignStrategy,
-            agent_id: assignStrategy === 'specific' ? assignAgentId : null
-          }
-        }
+            agent_id: assignStrategy === 'specific' ? assignAgentId : null,
+          },
+        },
       });
     }
 
@@ -835,9 +838,9 @@ const Automation: React.FC = () => {
           config: {
             action_type: 'trigger_webhook',
             webhook_id: webhookId,
-            payload_map: payloadMap
-          }
-        }
+            payload_map: payloadMap,
+          },
+        },
       });
     }
 
@@ -850,9 +853,9 @@ const Automation: React.FC = () => {
           name: 'Handoff to human',
           config: {
             action_type: 'handoff_to_human',
-            reason: handoffReason
-          }
-        }
+            reason: handoffReason,
+          },
+        },
       });
     }
 
@@ -890,7 +893,7 @@ const Automation: React.FC = () => {
       id: endId,
       type: 'END',
       name: 'End',
-      config: { end_type: 'stop' }
+      config: { end_type: 'stop' },
     });
 
     return {
@@ -901,16 +904,16 @@ const Automation: React.FC = () => {
         version: '1.0',
         channel: {
           type: 'whatsapp',
-          whatsapp_number_id: 'wa_primary'
+          whatsapp_number_id: 'wa_primary',
         },
         entry_point: triggerId,
         tags_used: setTagEnabled && tagValue.trim() ? [tagValue.trim()] : [],
         fields_used: updateFieldEnabled && updateFieldName.trim() ? [updateFieldName.trim()] : [],
-        assumptions: []
+        assumptions: [],
       },
       nodes,
       edges,
-      validation_warnings: warnings
+      validation_warnings: warnings,
     };
   };
 
@@ -953,7 +956,7 @@ const Automation: React.FC = () => {
     webhookId,
     webhookPayload,
     handoffEnabled,
-    handoffReason
+    handoffReason,
   ]);
 
   const filteredProducts = useMemo(() => {
@@ -961,9 +964,10 @@ const Automation: React.FC = () => {
     if (!query) {
       return catalogProducts;
     }
-    return catalogProducts.filter(product =>
-      product.name.toLowerCase().includes(query) ||
-      (product.product_retailer_id || '').toLowerCase().includes(query)
+    return catalogProducts.filter(
+      product =>
+        product.name.toLowerCase().includes(query) ||
+        (product.product_retailer_id || '').toLowerCase().includes(query)
     );
   }, [productSearch, catalogProducts]);
 
@@ -972,7 +976,7 @@ const Automation: React.FC = () => {
       total: library.length,
       live: 0,
       paused: 0,
-      draft: 0
+      draft: 0,
     };
     library.forEach(item => {
       if (item.status === 'Live') stats.live += 1;
@@ -986,7 +990,7 @@ const Automation: React.FC = () => {
     if (!product.product_retailer_id) {
       toast({
         title: 'Product missing retailer ID',
-        description: 'This product cannot be sent in a WhatsApp catalog message.'
+        description: 'This product cannot be sent in a WhatsApp catalog message.',
       });
       return;
     }
@@ -1016,9 +1020,7 @@ const Automation: React.FC = () => {
     if (!query) {
       return catalogCollections;
     }
-    return catalogCollections.filter(collection =>
-      collection.name.toLowerCase().includes(query)
-    );
+    return catalogCollections.filter(collection => collection.name.toLowerCase().includes(query));
   }, [catalogCollections, collectionSearch]);
 
   const responsePreview = useMemo(() => {
@@ -1054,7 +1056,7 @@ const Automation: React.FC = () => {
     buttons,
     listRows,
     selectedProducts,
-    mediaUrl
+    mediaUrl,
   ]);
 
   const resetWorkflow = () => {
@@ -1076,7 +1078,7 @@ const Automation: React.FC = () => {
     setListButtonText('Pick one');
     setListRows([
       { title: 'Delivery update', description: 'Get live ETA', payload: 'DELIVERY_UPDATE' },
-      { title: 'Refund request', description: 'Start a return', payload: 'REFUND_REQUEST' }
+      { title: 'Refund request', description: 'Start a return', payload: 'REFUND_REQUEST' },
     ]);
     setCatalogId('');
     setSelectedProducts([]);
@@ -1206,7 +1208,8 @@ const Automation: React.FC = () => {
     }
 
     const messageNodes = nodes.filter(node => node.type === 'MESSAGE');
-    const matchMessage = messageNodes.find(node => node.name?.includes('Matched')) || messageNodes[0];
+    const matchMessage =
+      messageNodes.find(node => node.name?.includes('Matched')) || messageNodes[0];
     const defaultMessage = messageNodes.find(node => node.name?.includes('Default'));
     if (matchMessage?.config) {
       const config = matchMessage.config;
@@ -1229,7 +1232,7 @@ const Automation: React.FC = () => {
             name: item.name || 'Product',
             price: item.price || '',
             image: item.image || '',
-            product_retailer_id: item.product_retailer_id || item.id || ''
+            product_retailer_id: item.product_retailer_id || item.id || '',
           }))
         );
       } else if (messageTypeRaw === 'list') {
@@ -1267,7 +1270,7 @@ const Automation: React.FC = () => {
             id: row.id || `${Date.now()}_${index + 1}`,
             token: row.token || `{{${index + 1}}}`,
             value: row.value || 'select',
-            fallback: row.fallback || ''
+            fallback: row.fallback || '',
           }))
         );
       } else if (recordVariables.length) {
@@ -1276,7 +1279,7 @@ const Automation: React.FC = () => {
             id: row.id || `${Date.now()}_${index + 1}`,
             token: row.token || `{{${index + 1}}}`,
             value: row.value || 'select',
-            fallback: row.fallback || ''
+            fallback: row.fallback || '',
           }))
         );
       } else {
@@ -1317,7 +1320,7 @@ const Automation: React.FC = () => {
       const payloadMap = webhook.config.payload_map || {};
       const payloadItems = Object.keys(payloadMap).map(key => ({
         key,
-        value_source: payloadMap[key]
+        value_source: payloadMap[key],
       }));
       setWebhookPayload(payloadItems.length ? payloadItems : [{ key: '', value_source: 'static' }]);
     }
@@ -1333,10 +1336,9 @@ const Automation: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(
-        `/api/automation/workflows?storeId=${encodeURIComponent(id)}`,
-        { headers: buildAuthHeaders() }
-      );
+      const response = await fetch(`/api/automation/workflows?storeId=${encodeURIComponent(id)}`, {
+        headers: buildAuthHeaders(),
+      });
       const payload = (await response.json()) as WorkflowResponse;
       if (!response.ok) {
         throw new Error(payload?.data ? 'Failed to load workflows.' : 'Unable to load workflows.');
@@ -1348,7 +1350,7 @@ const Automation: React.FC = () => {
         status: toUiStatus(item.status),
         updatedAt: parseIsoDate(item.updated_at || item.created_at || ''),
         triggerLabel: extractTriggerLabel(item.spec),
-        raw: item
+        raw: item,
       }));
       setLibrary(nextLibrary);
     } catch (err) {
@@ -1410,9 +1412,7 @@ const Automation: React.FC = () => {
       setError('Select a store to save workflows.');
       return;
     }
-    const invalidVariable = variables.find(
-      row => row.value === 'select' || !row.fallback.trim()
-    );
+    const invalidVariable = variables.find(row => row.value === 'select' || !row.fallback.trim());
     const invalidButton = buttons.find(button => !button.title.trim());
     if (invalidVariable || invalidButton) {
       window.alert('Fill all variable values/fallbacks and button text before saving.');
@@ -1420,10 +1420,7 @@ const Automation: React.FC = () => {
       return;
     }
     if (keywordMatch !== 'any' && keywords.length === 0) {
-      const label =
-        keywordMatch === 'contains'
-          ? 'Contains'
-          : 'Exact Match';
+      const label = keywordMatch === 'contains' ? 'Contains' : 'Exact Match';
       window.alert(`Add at least one ${label} keyword to save this workflow.`);
       updateAutomationInUrl({ view: 'edit', workflowId: activeWorkflowId });
       return;
@@ -1435,13 +1432,13 @@ const Automation: React.FC = () => {
       const storedButtons = buttons
         .map(button => ({
           title: button.title.trim(),
-          payload: button.payload.trim() || buildPayloadFromTitle(button.title)
+          payload: button.payload.trim() || buildPayloadFromTitle(button.title),
         }))
         .filter(button => button.title && button.payload);
       const storedVariables = variables.map(variable => ({
         token: variable.token,
         value: variable.value,
-        fallback: variable.fallback
+        fallback: variable.fallback,
       }));
       const payload = {
         name: workflowName,
@@ -1453,7 +1450,7 @@ const Automation: React.FC = () => {
         input_variations: storedKeywords.slice(1),
         message_text: messageText,
         buttons: storedButtons,
-        variables: storedVariables
+        variables: storedVariables,
       };
 
       let workflowId = activeWorkflowId;
@@ -1461,7 +1458,7 @@ const Automation: React.FC = () => {
         const createResponse = await fetch('/api/automation/workflows', {
           method: 'POST',
           headers: buildAuthHeaders(),
-          body: JSON.stringify(payload)
+          body: JSON.stringify(payload),
         });
         const createData = (await createResponse.json()) as WorkflowResponse;
         if (!createResponse.ok || !createData.data || Array.isArray(createData.data)) {
@@ -1474,7 +1471,7 @@ const Automation: React.FC = () => {
         const updateResponse = await fetch(`/api/automation/workflows/${workflowId}`, {
           method: 'PUT',
           headers: buildAuthHeaders(),
-          body: JSON.stringify(payload)
+          body: JSON.stringify(payload),
         });
         if (!updateResponse.ok) {
           throw new Error('Failed to update workflow.');
@@ -1482,13 +1479,10 @@ const Automation: React.FC = () => {
       }
 
       if (mode === 'publish' && workflowId) {
-        const publishResponse = await fetch(
-          `/api/automation/workflows/${workflowId}/publish`,
-          {
-            method: 'POST',
-            headers: buildAuthHeaders()
-          }
-        );
+        const publishResponse = await fetch(`/api/automation/workflows/${workflowId}/publish`, {
+          method: 'POST',
+          headers: buildAuthHeaders(),
+        });
         if (!publishResponse.ok) {
           throw new Error('Failed to publish workflow.');
         }
@@ -1498,7 +1492,7 @@ const Automation: React.FC = () => {
       if (mode === 'pause' && workflowId) {
         const pauseResponse = await fetch(`/api/automation/workflows/${workflowId}/pause`, {
           method: 'POST',
-          headers: buildAuthHeaders()
+          headers: buildAuthHeaders(),
         });
         if (!pauseResponse.ok) {
           throw new Error('Failed to pause workflow.');
@@ -1536,7 +1530,7 @@ const Automation: React.FC = () => {
     navigate(
       {
         pathname: location.pathname,
-        search: searchString ? `?${searchString}` : ''
+        search: searchString ? `?${searchString}` : '',
       },
       { replace: options?.replace ?? false }
     );
@@ -1575,7 +1569,7 @@ const Automation: React.FC = () => {
         `/api/automation/workflows/${deleteTarget.id}?storeId=${encodeURIComponent(storeId)}`,
         {
           method: 'DELETE',
-          headers: buildAuthHeaders()
+          headers: buildAuthHeaders(),
         }
       );
       if (!response.ok) {
@@ -1692,7 +1686,9 @@ const Automation: React.FC = () => {
                         </td>
                         <td className="px-4 py-4">
                           <span
-                            className={`rounded-full px-2 py-1 text-xs font-semibold ${statusStyles[item.status]}`}
+                            className={`rounded-full px-2 py-1 text-xs font-semibold ${
+                              statusStyles[item.status]
+                            }`}
                           >
                             {item.status}
                           </span>
@@ -1776,7 +1772,9 @@ const Automation: React.FC = () => {
                         </div>
                       </div>
                       <span
-                        className={`rounded-full px-2 py-1 text-[11px] font-semibold ${statusStyles[item.status]}`}
+                        className={`rounded-full px-2 py-1 text-[11px] font-semibold ${
+                          statusStyles[item.status]
+                        }`}
                       >
                         {item.status}
                       </span>
@@ -1849,559 +1847,572 @@ const Automation: React.FC = () => {
             </Button>
           </div>
 
-      <div className="rounded-lg bg-white p-6 shadow">
-        <div className="text-sm font-semibold text-gray-700">Trigger</div>
-        <p className="mt-2 text-xs text-gray-500">
-          How would you like to trigger the automation?
-        </p>
-        <div className="mt-4 flex flex-wrap gap-4 text-sm text-gray-700">
-          {[
-            { key: 'equals', label: 'Exact Match' },
-            { key: 'any', label: 'Any Keyword' },
-            { key: 'contains', label: 'Contains' }
-          ].map(option => (
-            <label key={option.key} className="flex items-center gap-2">
-              <input
-                type="radio"
-                name="keyword-match"
-                className="h-4 w-4"
-                checked={keywordMatch === option.key}
-                onChange={() => setKeywordMatch(option.key as typeof keywordMatch)}
-              />
-              {option.label}
-            </label>
-          ))}
-        </div>
-
-        <div className="mt-6 rounded-lg bg-gray-50 p-4">
-          <label className="text-sm font-semibold text-gray-700">
-            Enter the keywords that trigger this flow
-          </label>
-          <p className="mt-2 text-xs text-gray-500">
-            {keywordMatch === 'any'
-              ? 'Any Keyword: automation runs for any inbound customer message.'
-              : keywordMatch === 'contains'
-              ? 'Contains: automation runs if customer message contains any listed keyword as text.'
-              : 'Exact Match: automation runs only when the full message exactly equals one listed keyword.'}
-          </p>
-          {keywordMatch !== 'any' && keywords.length === 0 && (
-            <div className="mt-3 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-700">
-              {keywordMatch === 'contains'
-                ? 'Add at least one Contains keyword to activate this trigger.'
-                : 'Add at least one Exact Match keyword to activate this trigger.'}
-            </div>
-          )}
-          <div className="relative mt-3">
-            <input
-              className="w-full rounded-md border border-gray-300 px-3 py-2 pr-40 text-sm text-gray-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-              value={keywordInput}
-              disabled={keywordMatch === 'any'}
-              maxLength={100}
-              onChange={event => setKeywordInput(event.target.value)}
-              onKeyDown={event => {
-                if (event.key === 'Enter') {
-                  event.preventDefault();
-                  addKeyword(keywordInput);
-                  setKeywordInput('');
-                }
-              }}
-              placeholder={
-                keywordMatch === 'any'
-                  ? 'Disabled for Any Keyword mode'
-                  : 'Type a keyword and press Enter'
-              }
-            />
-            <div className="pointer-events-none absolute right-3 top-1/2 flex -translate-y-1/2 items-center gap-4 text-xs">
-              <span className="text-blue-600">&larr; Press Enter</span>
-              <span className="text-gray-400">{keywordInput.length}/100</span>
-            </div>
-          </div>
-          {keywords.length > 0 && (
-            <div className="mt-5 flex flex-wrap gap-2">
-              {keywords.map(keyword => (
-                <span
-                  key={keyword}
-                  className="inline-flex items-center gap-2 rounded-full border border-emerald-300 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700"
-                >
-                  {keyword}
-                  <button
-                    type="button"
-                    className="inline-flex h-6 w-6 items-center justify-center rounded-full text-xl font-black leading-none text-emerald-700 hover:bg-emerald-200 hover:text-emerald-900"
-                    onClick={() => removeKeyword(keyword)}
-                    aria-label={`Remove ${keyword}`}
-                  >
-                    ×
-                  </button>
-                </span>
+          <div className="rounded-lg bg-white p-6 shadow">
+            <div className="text-sm font-semibold text-gray-700">Trigger</div>
+            <p className="mt-2 text-xs text-gray-500">
+              How would you like to trigger the automation?
+            </p>
+            <div className="mt-4 flex flex-wrap gap-4 text-sm text-gray-700">
+              {[
+                { key: 'equals', label: 'Exact Match' },
+                { key: 'any', label: 'Any Keyword' },
+                { key: 'contains', label: 'Contains' },
+              ].map(option => (
+                <label key={option.key} className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    name="keyword-match"
+                    className="h-4 w-4"
+                    checked={keywordMatch === option.key}
+                    onChange={() => setKeywordMatch(option.key as typeof keywordMatch)}
+                  />
+                  {option.label}
+                </label>
               ))}
             </div>
-          )}
-        </div>
-      
-      </div>
 
-      <div className="rounded-lg bg-white p-6 shadow">
-        <h2 className="text-xl font-semibold text-gray-900">Custom Auto Reply</h2>
-        <p className="mt-2 text-sm text-gray-600">
-          Configure the type of auto reply triggered when the keyword match fires.
-        </p>
-
-        <div className="mt-6">
-          <p className="text-sm font-semibold text-gray-700">Select response type</p>
-            <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
-            {[
-              { key: 'custom', label: 'Custom Message' },
-              { key: 'multi_product', label: 'Multi Product Message' }
-            ].map(option => (
-              <label key={option.key} className="flex items-center gap-2 text-sm text-gray-700">
+            <div className="mt-6 rounded-lg bg-gray-50 p-4">
+              <label className="text-sm font-semibold text-gray-700">
+                Enter the keywords that trigger this flow
+              </label>
+              <p className="mt-2 text-xs text-gray-500">
+                {keywordMatch === 'any'
+                  ? 'Any Keyword: automation runs for any inbound customer message.'
+                  : keywordMatch === 'contains'
+                  ? 'Contains: automation runs if customer message contains any listed keyword as text.'
+                  : 'Exact Match: automation runs only when the full message exactly equals one listed keyword.'}
+              </p>
+              {keywordMatch !== 'any' && keywords.length === 0 && (
+                <div className="mt-3 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-700">
+                  {keywordMatch === 'contains'
+                    ? 'Add at least one Contains keyword to activate this trigger.'
+                    : 'Add at least one Exact Match keyword to activate this trigger.'}
+                </div>
+              )}
+              <div className="relative mt-3">
                 <input
-                  type="radio"
-                  name="response-type"
-                  className="h-4 w-4"
-                  checked={responseType === option.key}
-                  onChange={() => {
-                    setResponseType(option.key as typeof responseType);
-                    if (option.key === 'custom') {
-                      setMessageType('plain');
-                    } else if (option.key === 'multi_product') {
-                      setMessageType('product_list');
+                  className="w-full rounded-md border border-gray-300 px-3 py-2 pr-40 text-sm text-gray-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                  value={keywordInput}
+                  disabled={keywordMatch === 'any'}
+                  maxLength={100}
+                  onChange={event => setKeywordInput(event.target.value)}
+                  onKeyDown={event => {
+                    if (event.key === 'Enter') {
+                      event.preventDefault();
+                      addKeyword(keywordInput);
+                      setKeywordInput('');
                     }
                   }}
+                  placeholder={
+                    keywordMatch === 'any'
+                      ? 'Disabled for Any Keyword mode'
+                      : 'Type a keyword and press Enter'
+                  }
                 />
-                {option.label}
-              </label>
-            ))}
-          </div>
-        </div>
-
-        <div className="mt-6 max-w-2xl">
-          <label className="text-sm font-semibold text-gray-700">Message body</label>
-          {attachmentPreviewUrl && (
-            <div className="mt-3 rounded-md border border-gray-200 bg-gray-50 p-3">
-              <img
-                src={attachmentPreviewUrl}
-                alt={attachmentFileName || 'Selected attachment'}
-                className="max-h-48 w-auto rounded"
-              />
-              {attachmentFileName && (
-                <div className="mt-2 text-xs text-gray-500">{attachmentFileName}</div>
-              )}
-            </div>
-          )}
-          <div className="relative mt-3">
-            <textarea
-              ref={messageTextareaRef}
-              className="h-40 w-full resize-none rounded-md border border-gray-300 px-3 py-2 pr-16 text-sm text-gray-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-              value={messageText}
-              maxLength={1024}
-              onChange={event => setMessageText(event.target.value)}
-            />
-            <span className="pointer-events-none absolute right-3 bottom-2 text-xs text-gray-400">
-              {messageText.length}/1024
-            </span>
-          </div>
-          <div className="mt-3 flex items-center justify-between text-xs text-gray-500">
-            <button
-              type="button"
-              className="text-sm font-semibold text-emerald-600"
-              onClick={addVariableRow}
-            >
-              + Add variable
-            </button>
-            <div className="relative flex items-center gap-2 text-gray-400">
-              <button
-                type="button"
-                className="rounded border border-gray-200 px-2 py-1 text-[11px] text-gray-700"
-                onClick={() => setEmojiPickerOpen(prev => !prev)}
-                aria-label="Add emoji"
-              >
-                😊
-              </button>
-              <button
-                type="button"
-                className="rounded border border-gray-200 px-2 py-1 text-[11px] text-gray-700"
-                onClick={() => attachmentInputRef.current?.click()}
-              >
-                Attach
-              </button>
-              <input
-                ref={attachmentInputRef}
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={handleAttachmentSelect}
-              />
-              {emojiPickerOpen && (
-                <div className="absolute right-0 top-8 z-10 grid w-40 grid-cols-4 gap-2 rounded-md border border-gray-200 bg-white p-2 text-base shadow">
-                  {emojiOptions.map(emoji => (
-                    <button
-                      key={emoji}
-                      type="button"
-                      className="rounded p-1 hover:bg-gray-100"
-                      onClick={() => {
-                        insertIntoMessage(emoji);
-                        setEmojiPickerOpen(false);
-                      }}
+                <div className="pointer-events-none absolute right-3 top-1/2 flex -translate-y-1/2 items-center gap-4 text-xs">
+                  <span className="text-blue-600">&larr; Press Enter</span>
+                  <span className="text-gray-400">{keywordInput.length}/100</span>
+                </div>
+              </div>
+              {keywords.length > 0 && (
+                <div className="mt-5 flex flex-wrap gap-2">
+                  {keywords.map(keyword => (
+                    <span
+                      key={keyword}
+                      className="inline-flex items-center gap-2 rounded-full border border-emerald-300 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700"
                     >
-                      {emoji}
-                    </button>
+                      {keyword}
+                      <button
+                        type="button"
+                        className="inline-flex h-6 w-6 items-center justify-center rounded-full text-xl font-black leading-none text-emerald-700 hover:bg-emerald-200 hover:text-emerald-900"
+                        onClick={() => removeKeyword(keyword)}
+                        aria-label={`Remove ${keyword}`}
+                      >
+                        ×
+                      </button>
+                    </span>
                   ))}
                 </div>
               )}
             </div>
           </div>
-        </div>
 
-        {variables.length > 0 && (
-          <div className="mt-6 max-w-2xl space-y-4">
-            {variables.map(row => (
-              <div key={row.id} className="rounded-lg border border-gray-200 bg-gray-50 p-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold text-gray-600">Variable</span>
-                  <button
-                    type="button"
-                    className="text-lg font-bold text-red-500 hover:text-red-600"
-                    onClick={() => removeVariableRow(row.id)}
-                    aria-label="Remove variable"
-                  >
-                    ×
-                  </button>
-                </div>
-                <input
-                  className="mt-2 w-full rounded-md border border-gray-300 bg-gray-100 px-3 py-2 text-sm text-gray-700"
-                  value={row.token}
-                  readOnly
-                />
-                <div className="mt-4 grid gap-3 md:grid-cols-2">
-                  <div>
-                    <div className="text-xs font-semibold text-gray-600">Value</div>
-                    <select
-                      className="mt-2 w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-                      value={row.value}
-                      onChange={event =>
-                        updateVariableRow(row.id, {
-                          value: event.target.value as VariableRow['value']
-                        })
-                      }
-                    >
-                      <option value="select">Select option</option>
-                      <option value="id">id</option>
-                      <option value="user_id">User Id</option>
-                      <option value="phone">Phone Number</option>
-                      <option value="email">Email</option>
-                    </select>
-                  </div>
-                  <div>
-                    <div className="text-xs font-semibold text-gray-600">Fallback value</div>
+          <div className="rounded-lg bg-white p-6 shadow">
+            <h2 className="text-xl font-semibold text-gray-900">Custom Auto Reply</h2>
+            <p className="mt-2 text-sm text-gray-600">
+              Configure the type of auto reply triggered when the keyword match fires.
+            </p>
+
+            <div className="mt-6">
+              <p className="text-sm font-semibold text-gray-700">Select response type</p>
+              <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+                {[
+                  { key: 'custom', label: 'Custom Message' },
+                  { key: 'multi_product', label: 'Multi Product Message' },
+                ].map(option => (
+                  <label key={option.key} className="flex items-center gap-2 text-sm text-gray-700">
                     <input
-                      className="mt-2 w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-                      placeholder="Fallback value"
-                      value={row.fallback}
-                      onChange={event =>
-                        updateVariableRow(row.id, { fallback: event.target.value })
-                      }
+                      type="radio"
+                      name="response-type"
+                      className="h-4 w-4"
+                      checked={responseType === option.key}
+                      onChange={() => {
+                        setResponseType(option.key as typeof responseType);
+                        if (option.key === 'custom') {
+                          setMessageType('plain');
+                        } else if (option.key === 'multi_product') {
+                          setMessageType('product_list');
+                        }
+                      }}
                     />
-                  </div>
-                </div>
+                    {option.label}
+                  </label>
+                ))}
               </div>
-            ))}
-          </div>
-        )}
+            </div>
 
-        {responseType === 'multi_product' && (
-          <div className="mt-6 max-w-3xl space-y-4 rounded-lg border border-dashed border-gray-200 bg-gray-50 p-4">
-            <div className="flex flex-col gap-3">
-              <p className="text-xs font-semibold text-gray-600">
-                You can send upto 30 products in this message type
-              </p>
-              {selectedProducts.length === 0 ? (
-                <Button
-                  className="w-fit bg-emerald-600 px-4 py-1 text-sm text-white hover:bg-emerald-700"
-                  onClick={() => setProductModalOpen(true)}
-                >
-                  + Select Products
-                </Button>
-              ) : (
-                <div className="flex flex-col gap-2 text-sm text-emerald-700">
-                  <span className="inline-flex items-center gap-2 font-semibold">
-                    <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-emerald-100 text-emerald-700">
-                      ✓
-                    </span>
-                    {selectedProducts.length} products selected
-                  </span>
-                  <button
-                    type="button"
-                    className="w-fit text-sm font-semibold text-emerald-700 hover:text-emerald-800"
-                    onClick={() => setProductModalOpen(true)}
-                  >
-                    Edit Products →
-                  </button>
+            <div className="mt-6 max-w-2xl">
+              <label className="text-sm font-semibold text-gray-700">Message body</label>
+              {attachmentPreviewUrl && (
+                <div className="mt-3 rounded-md border border-gray-200 bg-gray-50 p-3">
+                  <img
+                    src={attachmentPreviewUrl}
+                    alt={attachmentFileName || 'Selected attachment'}
+                    className="max-h-48 w-auto rounded"
+                  />
+                  {attachmentFileName && (
+                    <div className="mt-2 text-xs text-gray-500">{attachmentFileName}</div>
+                  )}
                 </div>
               )}
-            </div>
-          </div>
-        )}
-
-        {responseType === 'custom' && (
-          <div className="mt-6 max-w-lg">
-            <label className="text-sm font-semibold text-gray-700">Buttons (Optional)</label>
-            <div className="mt-3 space-y-3">
-              {buttons.slice(0, 3).map((button, index) => (
-                <div key={`btn-${index}`} className="relative">
-                  <input
-                    className="w-full rounded-md border border-gray-300 px-3 py-2 pr-16 text-sm text-gray-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-                    value={button.title}
-                    maxLength={20}
-                    placeholder={`Button text ${index + 1}`}
-                    onChange={event =>
-                      updateButton(index, {
-                        title: event.target.value,
-                        payload: buildPayloadFromTitle(event.target.value)
-                      })
-                    }
-                  />
-                  <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400">
-                    {button.title.length}/20
-                  </span>
+              <div className="relative mt-3">
+                <textarea
+                  ref={messageTextareaRef}
+                  className="h-40 w-full resize-none rounded-md border border-gray-300 px-3 py-2 pr-16 text-sm text-gray-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                  value={messageText}
+                  maxLength={1024}
+                  onChange={event => setMessageText(event.target.value)}
+                />
+                <span className="pointer-events-none absolute right-3 bottom-2 text-xs text-gray-400">
+                  {messageText.length}/1024
+                </span>
+              </div>
+              <div className="mt-3 flex items-center justify-between text-xs text-gray-500">
+                <button
+                  type="button"
+                  className="text-sm font-semibold text-emerald-600"
+                  onClick={addVariableRow}
+                >
+                  + Add variable
+                </button>
+                <div className="relative flex items-center gap-2 text-gray-400">
                   <button
                     type="button"
-                    className="absolute right-12 top-1/2 -translate-y-1/2 text-lg font-bold text-red-500 hover:text-red-600"
-                    onClick={() => removeButton(index)}
-                    aria-label="Remove button"
+                    className="rounded border border-gray-200 px-2 py-1 text-[11px] text-gray-700"
+                    onClick={() => setEmojiPickerOpen(prev => !prev)}
+                    aria-label="Add emoji"
                   >
-                    ×
+                    😊
                   </button>
+                  <button
+                    type="button"
+                    className="rounded border border-gray-200 px-2 py-1 text-[11px] text-gray-700"
+                    onClick={() => attachmentInputRef.current?.click()}
+                  >
+                    Attach
+                  </button>
+                  <input
+                    ref={attachmentInputRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleAttachmentSelect}
+                  />
+                  {emojiPickerOpen && (
+                    <div className="absolute right-0 top-8 z-10 grid w-40 grid-cols-4 gap-2 rounded-md border border-gray-200 bg-white p-2 text-base shadow">
+                      {emojiOptions.map(emoji => (
+                        <button
+                          key={emoji}
+                          type="button"
+                          className="rounded p-1 hover:bg-gray-100"
+                          onClick={() => {
+                            insertIntoMessage(emoji);
+                            setEmojiPickerOpen(false);
+                          }}
+                        >
+                          {emoji}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
-              ))}
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={addButtonField}
-                disabled={buttons.length >= 3}
-              >
-                + Add Button
+              </div>
+            </div>
+
+            {variables.length > 0 && (
+              <div className="mt-6 max-w-2xl space-y-4">
+                {variables.map(row => (
+                  <div key={row.id} className="rounded-lg border border-gray-200 bg-gray-50 p-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-semibold text-gray-600">Variable</span>
+                      <button
+                        type="button"
+                        className="text-lg font-bold text-red-500 hover:text-red-600"
+                        onClick={() => removeVariableRow(row.id)}
+                        aria-label="Remove variable"
+                      >
+                        ×
+                      </button>
+                    </div>
+                    <input
+                      className="mt-2 w-full rounded-md border border-gray-300 bg-gray-100 px-3 py-2 text-sm text-gray-700"
+                      value={row.token}
+                      readOnly
+                    />
+                    <div className="mt-4 grid gap-3 md:grid-cols-2">
+                      <div>
+                        <div className="text-xs font-semibold text-gray-600">Value</div>
+                        <select
+                          className="mt-2 w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                          value={row.value}
+                          onChange={event =>
+                            updateVariableRow(row.id, {
+                              value: event.target.value as VariableRow['value'],
+                            })
+                          }
+                        >
+                          <option value="select">Select option</option>
+                          <option value="id">id</option>
+                          <option value="user_id">User Id</option>
+                          <option value="phone">Phone Number</option>
+                          <option value="email">Email</option>
+                        </select>
+                      </div>
+                      <div>
+                        <div className="text-xs font-semibold text-gray-600">Fallback value</div>
+                        <input
+                          className="mt-2 w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                          placeholder="Fallback value"
+                          value={row.fallback}
+                          onChange={event =>
+                            updateVariableRow(row.id, { fallback: event.target.value })
+                          }
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {responseType === 'multi_product' && (
+              <div className="mt-6 max-w-3xl space-y-4 rounded-lg border border-dashed border-gray-200 bg-gray-50 p-4">
+                <div className="flex flex-col gap-3">
+                  <p className="text-xs font-semibold text-gray-600">
+                    You can send upto 30 products in this message type
+                  </p>
+                  {selectedProducts.length === 0 ? (
+                    <Button
+                      className="w-fit bg-emerald-600 px-4 py-1 text-sm text-white hover:bg-emerald-700"
+                      onClick={() => setProductModalOpen(true)}
+                    >
+                      + Select Products
+                    </Button>
+                  ) : (
+                    <div className="flex flex-col gap-2 text-sm text-emerald-700">
+                      <span className="inline-flex items-center gap-2 font-semibold">
+                        <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-emerald-100 text-emerald-700">
+                          ✓
+                        </span>
+                        {selectedProducts.length} products selected
+                      </span>
+                      <button
+                        type="button"
+                        className="w-fit text-sm font-semibold text-emerald-700 hover:text-emerald-800"
+                        onClick={() => setProductModalOpen(true)}
+                      >
+                        Edit Products →
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {responseType === 'custom' && (
+              <div className="mt-6 max-w-lg">
+                <label className="text-sm font-semibold text-gray-700">Buttons (Optional)</label>
+                <div className="mt-3 space-y-3">
+                  {buttons.slice(0, 3).map((button, index) => (
+                    <div key={`btn-${index}`} className="relative">
+                      <input
+                        className="w-full rounded-md border border-gray-300 px-3 py-2 pr-16 text-sm text-gray-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                        value={button.title}
+                        maxLength={20}
+                        placeholder={`Button text ${index + 1}`}
+                        onChange={event =>
+                          updateButton(index, {
+                            title: event.target.value,
+                            payload: buildPayloadFromTitle(event.target.value),
+                          })
+                        }
+                      />
+                      <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400">
+                        {button.title.length}/20
+                      </span>
+                      <button
+                        type="button"
+                        className="absolute right-12 top-1/2 -translate-y-1/2 text-lg font-bold text-red-500 hover:text-red-600"
+                        onClick={() => removeButton(index)}
+                        aria-label="Remove button"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={addButtonField}
+                    disabled={buttons.length >= 3}
+                  >
+                    + Add Button
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            <div className="mt-8 flex items-center justify-end gap-3">
+              <Button onClick={() => saveWorkflow('publish')} disabled={saving}>
+                {saving ? 'Saving...' : 'Save'}
               </Button>
             </div>
           </div>
-        )}
 
-        <div className="mt-8 flex items-center justify-end gap-3">
-          <Button onClick={() => saveWorkflow('publish')} disabled={saving}>
-            {saving ? 'Saving...' : 'Save'}
-          </Button>
-        </div>
-      </div>
-
-      {productModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 lg:p-6">
-          <div className="flex h-[88vh] w-full max-w-[90vw] flex-col overflow-hidden rounded-xl bg-white shadow-xl lg:max-w-6xl">
-            <div className="flex items-start justify-between border-b border-gray-200 px-6 py-4">
-              <div>
-                <div className="text-lg font-semibold text-gray-900">Select Products</div>
-                <div className="text-xs text-gray-500">You can only select upto 30 products</div>
-              </div>
-              <button
-                type="button"
-                className="inline-flex h-10 w-10 items-center justify-center rounded-full text-3xl font-black leading-none text-gray-500 hover:bg-gray-100 hover:text-gray-700"
-                onClick={() => setProductModalOpen(false)}
-                aria-label="Close product selector"
-              >
-                ×
-              </button>
-            </div>
-
-            <div className="grid flex-1 min-h-0 gap-0 overflow-hidden lg:grid-cols-[2.6fr_1fr]">
-              <div className="flex min-h-0 flex-col border-r border-gray-200 px-6 py-5">
-                <div className="text-sm font-semibold text-gray-900">
-                  Browse products from your Facebook catalog
-                </div>
-                <div className="mt-2 text-xs text-gray-500">
-                  Catalog ID: {catalogId ? catalogId : 'Not set'}
-                </div>
-                <div className="mt-6">
-                  <div className="text-sm font-semibold text-gray-900">
-                    Start by Browsing and Adding Collection(s) by Name
+          {productModalOpen && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 lg:p-6">
+              <div className="flex h-[88vh] w-full max-w-[90vw] flex-col overflow-hidden rounded-xl bg-white shadow-xl lg:max-w-6xl">
+                <div className="flex items-start justify-between border-b border-gray-200 px-6 py-4">
+                  <div>
+                    <div className="text-lg font-semibold text-gray-900">Select Products</div>
+                    <div className="text-xs text-gray-500">
+                      You can only select upto 30 products
+                    </div>
                   </div>
-                  <div ref={collectionPickerRef} className="relative mt-3 w-full max-w-sm">
-                    <button
-                      type="button"
-                      className="inline-flex items-center gap-2 text-sm font-semibold text-emerald-600"
-                      onClick={() => setCollectionPickerOpen(prev => !prev)}
-                    >
-                      + Select Collection
-                    </button>
-                    {collectionPickerOpen && (
-                      <div className="absolute left-0 top-8 z-30 flex max-h-[52vh] w-[min(24rem,calc(100vw-4rem))] flex-col rounded-lg border border-gray-200 bg-white p-4 shadow-lg">
-                        <input
-                          className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100"
-                          placeholder="Search a collection"
-                          value={collectionSearch}
-                          onChange={event => setCollectionSearch(event.target.value)}
-                        />
-                        <div className="mt-4 flex-1 space-y-2 overflow-y-auto pr-1 text-sm text-gray-700">
-                          <label className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    className="inline-flex h-10 w-10 items-center justify-center rounded-full text-3xl font-black leading-none text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+                    onClick={() => setProductModalOpen(false)}
+                    aria-label="Close product selector"
+                  >
+                    ×
+                  </button>
+                </div>
+
+                <div className="grid flex-1 min-h-0 gap-0 overflow-hidden lg:grid-cols-[2.6fr_1fr]">
+                  <div className="flex min-h-0 flex-col border-r border-gray-200 px-6 py-5">
+                    <div className="text-sm font-semibold text-gray-900">
+                      Browse products from your Facebook catalog
+                    </div>
+                    <div className="mt-2 text-xs text-gray-500">
+                      Catalog ID: {catalogId ? catalogId : 'Not set'}
+                    </div>
+                    <div className="mt-6">
+                      <div className="text-sm font-semibold text-gray-900">
+                        Start by Browsing and Adding Collection(s) by Name
+                      </div>
+                      <div ref={collectionPickerRef} className="relative mt-3 w-full max-w-sm">
+                        <button
+                          type="button"
+                          className="inline-flex items-center gap-2 text-sm font-semibold text-emerald-600"
+                          onClick={() => setCollectionPickerOpen(prev => !prev)}
+                        >
+                          + Select Collection
+                        </button>
+                        {collectionPickerOpen && (
+                          <div className="absolute left-0 top-8 z-30 flex max-h-[52vh] w-[min(24rem,calc(100vw-4rem))] flex-col rounded-lg border border-gray-200 bg-white p-4 shadow-lg">
                             <input
-                              type="radio"
-                              name="collection"
-                              checked={selectedCollectionId === 'all'}
-                              onChange={() => applyCollectionSelection('all')}
+                              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100"
+                              placeholder="Search a collection"
+                              value={collectionSearch}
+                              onChange={event => setCollectionSearch(event.target.value)}
                             />
-                            All Products
-                          </label>
-                          {collectionLoading && (
-                            <div className="text-xs text-gray-400">Loading collections...</div>
-                          )}
-                          {!collectionLoading && collectionError && (
-                            <div className="text-xs text-red-500">{collectionError}</div>
-                          )}
-                          {!collectionLoading && !collectionError && filteredCollections.length === 0 && (
-                            <div className="text-xs text-gray-400">No collections found.</div>
-                          )}
-                          {!collectionLoading &&
-                            !collectionError &&
-                            filteredCollections.map(collection => (
-                              <label key={collection.id} className="flex items-center gap-2">
+                            <div className="mt-4 flex-1 space-y-2 overflow-y-auto pr-1 text-sm text-gray-700">
+                              <label className="flex items-center gap-2">
                                 <input
                                   type="radio"
                                   name="collection"
-                                  checked={selectedCollectionId === collection.id}
-                                  onChange={() => applyCollectionSelection(collection.id)}
+                                  checked={selectedCollectionId === 'all'}
+                                  onChange={() => applyCollectionSelection('all')}
                                 />
-                                <span className="flex-1">{collection.name}</span>
-                                {typeof collection.product_count === 'number' && (
-                                  <span className="text-xs text-gray-400">
-                                    {collection.product_count}
-                                  </span>
-                                )}
+                                All Products
                               </label>
-                            ))}
-                        </div>
+                              {collectionLoading && (
+                                <div className="text-xs text-gray-400">Loading collections...</div>
+                              )}
+                              {!collectionLoading && collectionError && (
+                                <div className="text-xs text-red-500">{collectionError}</div>
+                              )}
+                              {!collectionLoading &&
+                                !collectionError &&
+                                filteredCollections.length === 0 && (
+                                  <div className="text-xs text-gray-400">No collections found.</div>
+                                )}
+                              {!collectionLoading &&
+                                !collectionError &&
+                                filteredCollections.map(collection => (
+                                  <label key={collection.id} className="flex items-center gap-2">
+                                    <input
+                                      type="radio"
+                                      name="collection"
+                                      checked={selectedCollectionId === collection.id}
+                                      onChange={() => applyCollectionSelection(collection.id)}
+                                    />
+                                    <span className="flex-1">{collection.name}</span>
+                                    {typeof collection.product_count === 'number' && (
+                                      <span className="text-xs text-gray-400">
+                                        {collection.product_count}
+                                      </span>
+                                    )}
+                                  </label>
+                                ))}
+                            </div>
+                          </div>
+                        )}
                       </div>
-                    )}
+                    </div>
+                    <div className="mt-4 text-xs font-semibold text-gray-600">Search by</div>
+                    <input
+                      className="mt-2 w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                      placeholder="Enter the Product Name here"
+                      value={productSearch}
+                      onChange={event => setProductSearch(event.target.value)}
+                    />
+
+                    <div className="mt-5 flex-1 min-h-0 overflow-hidden rounded-lg border border-gray-200 bg-gray-50 p-4">
+                      {catalogLoading ? (
+                        <div className="flex h-48 items-center justify-center text-sm text-gray-400">
+                          Loading catalog products...
+                        </div>
+                      ) : catalogError ? (
+                        <div className="flex h-48 items-center justify-center text-sm text-gray-400">
+                          {catalogError}
+                        </div>
+                      ) : filteredProducts.length === 0 ? (
+                        <div className="flex h-48 items-center justify-center text-sm text-gray-400">
+                          No products found for this catalog.
+                        </div>
+                      ) : (
+                        <div className="h-full overflow-y-auto pr-2 pb-2">
+                          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5">
+                            {filteredProducts.map(product => {
+                              const isSelected = selectedProducts.some(
+                                item => item.id === product.id
+                              );
+                              return (
+                                <button
+                                  key={product.id}
+                                  type="button"
+                                  className={`relative rounded-md border bg-white p-2 text-left shadow-sm ${
+                                    isSelected
+                                      ? 'border-emerald-600 ring-2 ring-emerald-200'
+                                      : 'border-gray-200'
+                                  }`}
+                                  onClick={() => toggleProductSelection(product)}
+                                >
+                                  <div className="relative h-24 w-full overflow-hidden rounded-md bg-white">
+                                    <img
+                                      src={product.image}
+                                      alt={product.name}
+                                      className="h-full w-full object-cover"
+                                      loading="lazy"
+                                      decoding="async"
+                                    />
+                                    <span
+                                      className={`absolute right-2 top-2 inline-flex h-5 w-5 items-center justify-center rounded border text-xs ${
+                                        isSelected
+                                          ? 'border-emerald-600 bg-emerald-600 text-white'
+                                          : 'border-gray-300 bg-white text-gray-400'
+                                      }`}
+                                    >
+                                      ✓
+                                    </span>
+                                  </div>
+                                  <div className="mt-2 text-xs font-semibold text-gray-800">
+                                    {product.name}
+                                  </div>
+                                  <div className="text-xs text-gray-500">{product.price}</div>
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="flex min-h-0 flex-col px-6 py-5">
+                    <div className="flex items-center justify-between text-sm font-semibold text-gray-900">
+                      <span>Selected Products</span>
+                      <span className="text-xs text-gray-500">{selectedProducts.length} / 30</span>
+                    </div>
+                    <div className="mt-4 flex-1 min-h-0 overflow-hidden">
+                      {selectedProducts.length === 0 ? (
+                        <div className="flex h-64 flex-col items-center justify-center gap-3 text-sm text-gray-400">
+                          <div className="text-2xl">[ ]</div>
+                          <div>No products are selected to preview</div>
+                        </div>
+                      ) : (
+                        <div className="h-full overflow-y-auto pr-2 pb-2">
+                          <div className="grid gap-3">
+                            {selectedProducts.map(product => (
+                              <div
+                                key={product.id}
+                                className="flex items-center gap-3 rounded-md border border-gray-200 p-2"
+                              >
+                                <div className="h-12 w-12 overflow-hidden rounded-md bg-gray-100">
+                                  <img
+                                    src={product.image}
+                                    alt={product.name}
+                                    className="h-full w-full object-cover"
+                                    loading="lazy"
+                                    decoding="async"
+                                  />
+                                </div>
+                                <div className="flex-1">
+                                  <div className="text-xs font-semibold text-gray-800">
+                                    {product.name}
+                                  </div>
+                                  <div className="text-xs text-gray-500">{product.price}</div>
+                                </div>
+                                <button
+                                  type="button"
+                                  className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-red-200 text-xl font-black leading-none text-red-600 hover:bg-red-50 hover:text-red-700"
+                                  onClick={() => toggleProductSelection(product)}
+                                  aria-label={`Remove ${product.name}`}
+                                >
+                                  ×
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
-                <div className="mt-4 text-xs font-semibold text-gray-600">Search by</div>
-                <input
-                  className="mt-2 w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-                  placeholder="Enter the Product Name here"
-                  value={productSearch}
-                  onChange={event => setProductSearch(event.target.value)}
-                />
 
-                <div className="mt-5 flex-1 min-h-0 overflow-hidden rounded-lg border border-gray-200 bg-gray-50 p-4">
-                  {catalogLoading ? (
-                    <div className="flex h-48 items-center justify-center text-sm text-gray-400">
-                      Loading catalog products...
-                    </div>
-                  ) : catalogError ? (
-                    <div className="flex h-48 items-center justify-center text-sm text-gray-400">
-                      {catalogError}
-                    </div>
-                  ) : filteredProducts.length === 0 ? (
-                    <div className="flex h-48 items-center justify-center text-sm text-gray-400">
-                      No products found for this catalog.
-                    </div>
-                  ) : (
-                    <div className="h-full overflow-y-auto pr-2 pb-2">
-                      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5">
-                      {filteredProducts.map(product => {
-                        const isSelected = selectedProducts.some(item => item.id === product.id);
-                        return (
-                          <button
-                            key={product.id}
-                            type="button"
-                            className={`relative rounded-md border bg-white p-2 text-left shadow-sm ${
-                              isSelected ? 'border-emerald-600 ring-2 ring-emerald-200' : 'border-gray-200'
-                            }`}
-                            onClick={() => toggleProductSelection(product)}
-                          >
-                            <div className="relative h-24 w-full overflow-hidden rounded-md bg-white">
-                              <img
-                                src={product.image}
-                                alt={product.name}
-                                className="h-full w-full object-cover"
-                                loading="lazy"
-                                decoding="async"
-                              />
-                              <span
-                                className={`absolute right-2 top-2 inline-flex h-5 w-5 items-center justify-center rounded border text-xs ${
-                                  isSelected ? 'border-emerald-600 bg-emerald-600 text-white' : 'border-gray-300 bg-white text-gray-400'
-                                }`}
-                              >
-                                ✓
-                              </span>
-                            </div>
-                            <div className="mt-2 text-xs font-semibold text-gray-800">{product.name}</div>
-                            <div className="text-xs text-gray-500">{product.price}</div>
-                          </button>
-                        );
-                      })}
-                      </div>
-                    </div>
-                  )}
+                <div className="flex justify-end px-6 py-4">
+                  <Button
+                    className="bg-emerald-600 text-white hover:bg-emerald-700"
+                    onClick={() => setProductModalOpen(false)}
+                  >
+                    Done
+                  </Button>
                 </div>
               </div>
-
-              <div className="flex min-h-0 flex-col px-6 py-5">
-                <div className="flex items-center justify-between text-sm font-semibold text-gray-900">
-                  <span>Selected Products</span>
-                  <span className="text-xs text-gray-500">
-                    {selectedProducts.length} / 30
-                  </span>
-                </div>
-                <div className="mt-4 flex-1 min-h-0 overflow-hidden">
-                  {selectedProducts.length === 0 ? (
-                    <div className="flex h-64 flex-col items-center justify-center gap-3 text-sm text-gray-400">
-                      <div className="text-2xl">[ ]</div>
-                      <div>No products are selected to preview</div>
-                    </div>
-                  ) : (
-                    <div className="h-full overflow-y-auto pr-2 pb-2">
-                      <div className="grid gap-3">
-                        {selectedProducts.map(product => (
-                          <div key={product.id} className="flex items-center gap-3 rounded-md border border-gray-200 p-2">
-                            <div className="h-12 w-12 overflow-hidden rounded-md bg-gray-100">
-                            <img
-                              src={product.image}
-                              alt={product.name}
-                              className="h-full w-full object-cover"
-                              loading="lazy"
-                              decoding="async"
-                            />
-                            </div>
-                          <div className="flex-1">
-                            <div className="text-xs font-semibold text-gray-800">{product.name}</div>
-                            <div className="text-xs text-gray-500">{product.price}</div>
-                          </div>
-                          <button
-                            type="button"
-                            className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-red-200 text-xl font-black leading-none text-red-600 hover:bg-red-50 hover:text-red-700"
-                            onClick={() => toggleProductSelection(product)}
-                            aria-label={`Remove ${product.name}`}
-                          >
-                            ×
-                          </button>
-                        </div>
-                      ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-
             </div>
-
-            <div className="flex justify-end px-6 py-4">
-              <Button
-                className="bg-emerald-600 text-white hover:bg-emerald-700"
-                onClick={() => setProductModalOpen(false)}
-              >
-                Done
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
+          )}
         </>
       )}
     </div>
@@ -2409,10 +2420,3 @@ const Automation: React.FC = () => {
 };
 
 export default Automation;
-
-
-
-
-
-
-

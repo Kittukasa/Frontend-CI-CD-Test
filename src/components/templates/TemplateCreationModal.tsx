@@ -1,21 +1,30 @@
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState
-} from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/use-toast';
 import { cn } from '@/lib/utils';
 import { CreateTemplateRequest } from '@/services/templateService';
-import { AlertTriangle, ArrowDown, ArrowLeft, ArrowUp, Bold as BoldIcon, Check, ChevronDown, ExternalLink, Italic as ItalicIcon, Loader2, Plus, Smile, Trash2, X } from 'lucide-react';
+import {
+  AlertTriangle,
+  ArrowDown,
+  ArrowLeft,
+  ArrowUp,
+  Bold as BoldIcon,
+  Check,
+  ChevronDown,
+  ExternalLink,
+  Italic as ItalicIcon,
+  Loader2,
+  Plus,
+  Smile,
+  Trash2,
+  X,
+} from 'lucide-react';
 import {
   TEMPLATE_BUTTON_TYPE_OPTIONS,
   TemplateButtonTypeValue,
   TEMPLATE_CATEGORY_OPTIONS,
   TemplateCategoryValue,
-  TemplateEditFormData
+  TemplateEditFormData,
 } from '@/types/templateEditor';
 type TemplateHeaderType = 'NONE' | 'TEXT' | 'IMAGE' | 'VIDEO' | 'DOCUMENT';
 type TemplateButtonType = 'QUICK_REPLY' | 'URL' | 'PHONE_NUMBER';
@@ -108,7 +117,7 @@ const buildAuthHeaders = (includeJson = false) => {
     throw new Error('Missing authentication token. Please log in again.');
   }
   const headers: Record<string, string> = {
-    Authorization: `Bearer ${token}`
+    Authorization: `Bearer ${token}`,
   };
   if (includeJson) {
     headers['Content-Type'] = 'application/json';
@@ -148,7 +157,7 @@ const createCarouselButtonDraft = (
   utmMedium: seed?.utmMedium || '',
   utmCampaign: seed?.utmCampaign || '',
   utmTerm: seed?.utmTerm || '',
-  utmContent: seed?.utmContent || ''
+  utmContent: seed?.utmContent || '',
 });
 
 const createCarouselCardDraft = (seed?: Partial<CarouselCardDraft>): CarouselCardDraft => ({
@@ -160,10 +169,9 @@ const createCarouselCardDraft = (seed?: Partial<CarouselCardDraft>): CarouselCar
   mediaHandle: seed?.mediaHandle || '',
   mediaPreviewUrl: seed?.mediaPreviewUrl || '',
   bodyText: seed?.bodyText || '',
-  buttons:
-    seed?.buttons?.length
-      ? seed.buttons.map(button => createCarouselButtonDraft(button.type, button))
-      : []
+  buttons: seed?.buttons?.length
+    ? seed.buttons.map(button => createCarouselButtonDraft(button.type, button))
+    : [],
 });
 
 const deriveCarouselButtonLayout = (cards: CarouselCardDraft[]): CarouselButtonLayout => {
@@ -213,10 +221,7 @@ const createEmptyFormState = (): TemplateFormState => ({
   ltoUtmContent: '',
   carouselMediaType: 'IMAGE',
   carouselButtonLayout: 'URL',
-  carouselCards: [
-    createCarouselCardDraft(),
-    createCarouselCardDraft()
-  ]
+  carouselCards: [createCarouselCardDraft(), createCarouselCardDraft()],
 });
 
 const buildUrlWithUtmParameters = (
@@ -244,7 +249,7 @@ const buildUrlWithUtmParameters = (
       ['utm_medium', utmValues.medium],
       ['utm_campaign', utmValues.campaign],
       ['utm_term', utmValues.term],
-      ['utm_content', utmValues.content]
+      ['utm_content', utmValues.content],
     ];
     entries.forEach(([key, value]) => {
       const nextValue = value.trim();
@@ -286,7 +291,7 @@ const normalizePlaceholders = (input: string) => {
   if (!input) {
     return {
       text: input,
-      order: [] as string[]
+      order: [] as string[],
     };
   }
 
@@ -333,7 +338,7 @@ const normalizePlaceholders = (input: string) => {
 
   return {
     text: processed,
-    order
+    order,
   };
 };
 
@@ -366,10 +371,12 @@ const createButtonDraft = (
   urlMode: seed?.urlMode || 'Static',
   phoneNumber: seed?.phoneNumber || '',
   countryCode: seed?.countryCode || '+91',
-  example: seed?.example || ''
+  example: seed?.example || '',
 });
 
-const buildFormStateFromTemplate = (template: TemplateEditFormData | undefined | null): TemplateFormState => {
+const buildFormStateFromTemplate = (
+  template: TemplateEditFormData | undefined | null
+): TemplateFormState => {
   if (!template) {
     return createEmptyFormState();
   }
@@ -398,17 +405,17 @@ const buildFormStateFromTemplate = (template: TemplateEditFormData | undefined |
               subType: 'WEBSITE_URL',
               text: button.text || '',
               url: button.url || '',
-              example: Array.isArray((button as any).example) ? (button as any).example[0] : ''
+              example: Array.isArray((button as any).example) ? (button as any).example[0] : '',
             }
           : button.type === 'PHONE_NUMBER'
           ? {
               subType: 'PHONE_NUMBER',
               text: button.text || '',
-              phoneNumber: button.phone_number || ''
+              phoneNumber: button.phone_number || '',
             }
           : {
               subType: 'QUICK_REPLY',
-              text: button.text || ''
+              text: button.text || '',
             }
       )
     ) || [];
@@ -429,10 +436,10 @@ const buildFormStateFromTemplate = (template: TemplateEditFormData | undefined |
       typeof template.buttonType === 'string' && template.buttonType.trim()
         ? template.buttonType.trim()
         : template.carousel?.cards?.length
-          ? 'Carousel'
+        ? 'Carousel'
         : buttons.length > 0
-          ? 'Copy Code, URL, Quick Replies etc'
-          : 'None',
+        ? 'Copy Code, URL, Quick Replies etc'
+        : 'None',
     sendProductsMode: 'specific',
     language: template.language || 'en_US',
     headerType: headerType === 'NONE' ? 'NONE' : headerType,
@@ -451,10 +458,10 @@ const buildFormStateFromTemplate = (template: TemplateEditFormData | undefined |
     ltoButtonLabel: coerceTemplateTextValue(template.limitedTimeOffer?.buttonLabel),
     ltoShowUtmBuilder: Boolean(
       template.limitedTimeOffer?.utmSource ||
-      template.limitedTimeOffer?.utmMedium ||
-      template.limitedTimeOffer?.utmCampaign ||
-      template.limitedTimeOffer?.utmTerm ||
-      template.limitedTimeOffer?.utmContent
+        template.limitedTimeOffer?.utmMedium ||
+        template.limitedTimeOffer?.utmCampaign ||
+        template.limitedTimeOffer?.utmTerm ||
+        template.limitedTimeOffer?.utmContent
     ),
     ltoUtmSource: coerceTemplateTextValue(template.limitedTimeOffer?.utmSource),
     ltoUtmMedium: coerceTemplateTextValue(template.limitedTimeOffer?.utmMedium),
@@ -463,34 +470,37 @@ const buildFormStateFromTemplate = (template: TemplateEditFormData | undefined |
     ltoUtmContent: coerceTemplateTextValue(template.limitedTimeOffer?.utmContent),
     carouselMediaType: template.carousel?.mediaType || 'IMAGE',
     carouselButtonLayout: template.carousel?.buttonLayout || 'URL',
-    carouselCards:
-      template.carousel?.cards?.length
-        ? template.carousel.cards.map(card =>
-            createCarouselCardDraft({
-              id: card.id,
-              mediaHandle: coerceTemplateTextValue(card.mediaHandle),
-              mediaPreviewUrl: coerceTemplateTextValue(card.mediaUrl),
-              bodyText: coerceTemplateTextValue(card.bodyText),
-              buttons:
-                card.buttons?.map(button =>
-                  createCarouselButtonDraft(button.type, {
-                    text: coerceTemplateTextValue(button.text),
-                    url: coerceTemplateTextValue(button.url),
-                    urlType: button.urlType || 'Static',
-                    phoneNumber: coerceTemplateTextValue(button.phone_number),
-                    showUtmBuilder: Boolean(
-                      button.utmSource || button.utmMedium || button.utmCampaign || button.utmTerm || button.utmContent
-                    ),
-                    utmSource: coerceTemplateTextValue(button.utmSource),
-                    utmMedium: coerceTemplateTextValue(button.utmMedium),
-                    utmCampaign: coerceTemplateTextValue(button.utmCampaign),
-                    utmTerm: coerceTemplateTextValue(button.utmTerm),
-                    utmContent: coerceTemplateTextValue(button.utmContent)
-                  })
-                ) || []
-            })
-          )
-        : [createCarouselCardDraft(), createCarouselCardDraft()]
+    carouselCards: template.carousel?.cards?.length
+      ? template.carousel.cards.map(card =>
+          createCarouselCardDraft({
+            id: card.id,
+            mediaHandle: coerceTemplateTextValue(card.mediaHandle),
+            mediaPreviewUrl: coerceTemplateTextValue(card.mediaUrl),
+            bodyText: coerceTemplateTextValue(card.bodyText),
+            buttons:
+              card.buttons?.map(button =>
+                createCarouselButtonDraft(button.type, {
+                  text: coerceTemplateTextValue(button.text),
+                  url: coerceTemplateTextValue(button.url),
+                  urlType: button.urlType || 'Static',
+                  phoneNumber: coerceTemplateTextValue(button.phone_number),
+                  showUtmBuilder: Boolean(
+                    button.utmSource ||
+                      button.utmMedium ||
+                      button.utmCampaign ||
+                      button.utmTerm ||
+                      button.utmContent
+                  ),
+                  utmSource: coerceTemplateTextValue(button.utmSource),
+                  utmMedium: coerceTemplateTextValue(button.utmMedium),
+                  utmCampaign: coerceTemplateTextValue(button.utmCampaign),
+                  utmTerm: coerceTemplateTextValue(button.utmTerm),
+                  utmContent: coerceTemplateTextValue(button.utmContent),
+                })
+              ) || [],
+          })
+        )
+      : [createCarouselCardDraft(), createCarouselCardDraft()],
   };
 };
 
@@ -503,7 +513,7 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
   onSubmit,
   isBusy = false,
   onMetaTemplateCreated,
-  onStoreTemplateDraft
+  onStoreTemplateDraft,
 }) => {
   const [form, setForm] = useState<TemplateFormState>(() => createEmptyFormState());
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -530,7 +540,7 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
 
   const humanizeErrorMessage = (rawMessage: string): string => {
     if (!rawMessage) {
-      return 'We couldn\'t submit this template. Please try again later.';
+      return "We couldn't submit this template. Please try again later.";
     }
 
     const normalized = rawMessage.trim();
@@ -555,11 +565,7 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
   const detectedPlaceholders = useMemo(() => {
     const matches = form.bodyText.match(/{{\s*([\w.-]+)\s*}}/g) || [];
     return Array.from(
-      new Set(
-        matches
-          .map(token => token.replace(/[{}]/g, '').trim())
-          .filter(Boolean)
-      )
+      new Set(matches.map(token => token.replace(/[{}]/g, '').trim()).filter(Boolean))
     );
   }, [form.bodyText]);
 
@@ -579,7 +585,7 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
         }
         return {
           ...prev,
-          bodyExampleMap: {}
+          bodyExampleMap: {},
         };
       }
 
@@ -611,7 +617,7 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
 
       return {
         ...prev,
-        bodyExampleMap: nextMap
+        bodyExampleMap: nextMap,
       };
     });
   }, [placeholderNumberKeys]);
@@ -693,7 +699,7 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
     ) => {
       setForm(prev => ({
         ...prev,
-        [field]: value
+        [field]: value,
       }));
       if (field === 'headerType') {
         setHeaderUploadError(null);
@@ -761,19 +767,22 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
           subType: 'WEBSITE_URL',
           text: '',
           url: '',
-          urlMode: 'Static'
+          urlMode: 'Static',
         },
         PHONE_NUMBER: {
           type: 'PHONE_NUMBER',
           subType: 'PHONE_NUMBER',
           text: '',
           phoneNumber: '',
-          countryCode: '+91'
+          countryCode: '+91',
         },
-        QUICK_REPLY: { type: 'QUICK_REPLY', subType: 'QUICK_REPLY', text: '' }
+        QUICK_REPLY: { type: 'QUICK_REPLY', subType: 'QUICK_REPLY', text: '' },
       };
       const seed = seedBySubType[subType];
-      handleChange('buttons', [...form.buttons, createButtonDraft(seed.type || 'QUICK_REPLY', seed)]);
+      handleChange('buttons', [
+        ...form.buttons,
+        createButtonDraft(seed.type || 'QUICK_REPLY', seed),
+      ]);
     },
     [form.buttons, handleChange]
   );
@@ -791,17 +800,20 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
       ...prev,
       bodyExampleMap: {
         ...prev.bodyExampleMap,
-        [key]: value
-      }
+        [key]: value,
+      },
     }));
   };
 
-  const updateCarouselCards = useCallback((updater: (cards: CarouselCardDraft[]) => CarouselCardDraft[]) => {
-    setForm(prev => ({
-      ...prev,
-      carouselCards: updater(prev.carouselCards)
-    }));
-  }, []);
+  const updateCarouselCards = useCallback(
+    (updater: (cards: CarouselCardDraft[]) => CarouselCardDraft[]) => {
+      setForm(prev => ({
+        ...prev,
+        carouselCards: updater(prev.carouselCards),
+      }));
+    },
+    []
+  );
 
   const updateCarouselCard = useCallback(
     (cardId: string, updates: Partial<CarouselCardDraft>) => {
@@ -821,7 +833,7 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
                 ...card,
                 buttons: card.buttons.map(button =>
                   button.id === buttonId ? { ...button, ...updates } : button
-                )
+                ),
               }
             : card
         )
@@ -830,26 +842,23 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
     [updateCarouselCards]
   );
 
-  const addCarouselCardButton = useCallback(
-    (cardId: string, type: CarouselButtonDraft['type']) => {
-      setForm(prev => ({
-        ...prev,
-        carouselCards: prev.carouselCards.map(card => {
-          if (card.id !== cardId) {
-            return card;
-          }
-          if (card.buttons.length >= 2) {
-            return card;
-          }
-          return {
-            ...card,
-            buttons: [...card.buttons, createCarouselButtonDraft(type)]
-          };
-        })
-      }));
-    },
-    []
-  );
+  const addCarouselCardButton = useCallback((cardId: string, type: CarouselButtonDraft['type']) => {
+    setForm(prev => ({
+      ...prev,
+      carouselCards: prev.carouselCards.map(card => {
+        if (card.id !== cardId) {
+          return card;
+        }
+        if (card.buttons.length >= 2) {
+          return card;
+        }
+        return {
+          ...card,
+          buttons: [...card.buttons, createCarouselButtonDraft(type)],
+        };
+      }),
+    }));
+  }, []);
 
   const removeCarouselCardButton = useCallback((cardId: string, buttonId: string) => {
     setForm(prev => ({
@@ -858,7 +867,7 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
         card.id === cardId
           ? { ...card, buttons: card.buttons.filter(button => button.id !== buttonId) }
           : card
-      )
+      ),
     }));
   }, []);
 
@@ -869,7 +878,7 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
       }
       return {
         ...prev,
-        carouselCards: [...prev.carouselCards, createCarouselCardDraft()]
+        carouselCards: [...prev.carouselCards, createCarouselCardDraft()],
       };
     });
   }, []);
@@ -881,7 +890,7 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
       carouselCards:
         prev.carouselCards.length <= CAROUSEL_MIN_CARDS
           ? prev.carouselCards
-          : prev.carouselCards.filter(card => card.id !== cardId)
+          : prev.carouselCards.filter(card => card.id !== cardId),
     }));
   }, []);
 
@@ -897,7 +906,7 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
       nextCards.splice(nextIndex, 0, card);
       return {
         ...prev,
-        carouselCards: nextCards
+        carouselCards: nextCards,
       };
     });
   }, []);
@@ -914,7 +923,7 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
       nextCards.splice(targetIndex, 0, movedCard);
       return {
         ...prev,
-        carouselCards: nextCards
+        carouselCards: nextCards,
       };
     });
   }, []);
@@ -933,7 +942,7 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
       const response = await fetch('/api/whatsapp/media/upload', {
         method: 'POST',
         headers,
-        body: formData
+        body: formData,
       });
 
       const result = await response.json().catch(() => ({}));
@@ -943,14 +952,16 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
 
       updateCarouselCard(cardId, {
         mediaHandle: result.mediaHandle || '',
-        mediaPreviewUrl: URL.createObjectURL(file)
+        mediaPreviewUrl: URL.createObjectURL(file),
       });
     },
     [form.carouselMediaType, updateCarouselCard]
   );
 
   const handleInsertNamePlaceholder = () => {
-    const tokens = Array.from(form.bodyText.matchAll(/{{\s*([\w.-]+)\s*}}/g)).map(match => match[1]?.trim());
+    const tokens = Array.from(form.bodyText.matchAll(/{{\s*([\w.-]+)\s*}}/g)).map(match =>
+      match[1]?.trim()
+    );
     const numericTokens = tokens
       .filter((token): token is string => Boolean(token) && /^\d+$/.test(token))
       .map(token => Number(token));
@@ -963,24 +974,27 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
     handleChange('bodyText', updatedBody);
   };
 
-  const handleInsertCarouselCardVariable = useCallback((cardId: string) => {
-    const card = form.carouselCards.find(item => item.id === cardId);
-    if (!card) return;
+  const handleInsertCarouselCardVariable = useCallback(
+    (cardId: string) => {
+      const card = form.carouselCards.find(item => item.id === cardId);
+      if (!card) return;
 
-    const tokens = Array.from(card.bodyText.matchAll(/{{\s*(\d+)\s*}}/g)).map(match =>
-      Number(match[1])
-    );
-    const maxNumeric = tokens.length > 0 ? Math.max(...tokens) : 0;
-    const nextPlaceholder = `{{${maxNumeric + 1}}}`;
-    const needsSpace = card.bodyText.trim().length > 0 && !card.bodyText.endsWith(' ');
+      const tokens = Array.from(card.bodyText.matchAll(/{{\s*(\d+)\s*}}/g)).map(match =>
+        Number(match[1])
+      );
+      const maxNumeric = tokens.length > 0 ? Math.max(...tokens) : 0;
+      const nextPlaceholder = `{{${maxNumeric + 1}}}`;
+      const needsSpace = card.bodyText.trim().length > 0 && !card.bodyText.endsWith(' ');
 
-    updateCarouselCard(cardId, {
-      bodyText: `${card.bodyText}${needsSpace ? ' ' : ''}${nextPlaceholder}`.slice(
-        0,
-        CAROUSEL_CARD_BODY_MAX_LENGTH
-      )
-    });
-  }, [form.carouselCards, updateCarouselCard]);
+      updateCarouselCard(cardId, {
+        bodyText: `${card.bodyText}${needsSpace ? ' ' : ''}${nextPlaceholder}`.slice(
+          0,
+          CAROUSEL_CARD_BODY_MAX_LENGTH
+        ),
+      });
+    },
+    [form.carouselCards, updateCarouselCard]
+  );
 
   const bodyPreview = useMemo(() => {
     return form.bodyText.trim();
@@ -998,7 +1012,7 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
           toast({
             title: 'Upload failed',
             description: message,
-            variant: 'destructive'
+            variant: 'destructive',
           });
         }
         return null;
@@ -1021,7 +1035,7 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
         const response = await fetch('/api/whatsapp/media/upload', {
           method: 'POST',
           headers,
-          body: formData
+          body: formData,
         });
 
         const result = await response.json().catch(() => ({}));
@@ -1062,7 +1076,7 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
         if (!options.silent) {
           toast({
             title: 'Header media uploaded',
-            description: 'Media handle inserted into the template automatically.'
+            description: 'Media handle inserted into the template automatically.',
           });
         }
         setHeaderSelectedFileName(file.name || 'Selected file');
@@ -1075,7 +1089,7 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
           toast({
             title: 'Upload failed',
             description: message,
-            variant: 'destructive'
+            variant: 'destructive',
           });
         }
         return null;
@@ -1119,16 +1133,21 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
   const websiteButtons = getButtonsBySubType('WEBSITE_URL');
   const phoneButtons = getButtonsBySubType('PHONE_NUMBER');
   const quickReplyButtons = getButtonsBySubType('QUICK_REPLY');
-  const totalStandardButtons = couponButtons.length + websiteButtons.length + phoneButtons.length + quickReplyButtons.length;
+  const totalStandardButtons =
+    couponButtons.length + websiteButtons.length + phoneButtons.length + quickReplyButtons.length;
   const ctaButtonsCount = websiteButtons.length + phoneButtons.length;
   const hasCopyCodeButton = couponButtons.length > 0;
   const hasQuickReplyButtons = quickReplyButtons.length > 0;
   const hasCtaButtons = ctaButtonsCount > 0;
-  const canAddCopyCodeButton = !hasQuickReplyButtons && phoneButtons.length === 0 && couponButtons.length < MAX_COPY_CODE_BUTTONS;
+  const canAddCopyCodeButton =
+    !hasQuickReplyButtons &&
+    phoneButtons.length === 0 &&
+    couponButtons.length < MAX_COPY_CODE_BUTTONS;
   const canAddUrlButton =
     !hasQuickReplyButtons &&
     (hasCopyCodeButton ? websiteButtons.length < 1 : ctaButtonsCount < MAX_CTA_BUTTONS);
-  const canAddPhoneButton = !hasQuickReplyButtons && !hasCopyCodeButton && ctaButtonsCount < MAX_CTA_BUTTONS;
+  const canAddPhoneButton =
+    !hasQuickReplyButtons && !hasCopyCodeButton && ctaButtonsCount < MAX_CTA_BUTTONS;
   const canAddQuickReplyButton =
     !hasCopyCodeButton && !hasCtaButtons && quickReplyButtons.length < MAX_QUICK_REPLY_BUTTONS;
   const disableNameField = isEditMode && editContext === 'custom';
@@ -1142,7 +1161,7 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
         medium: form.ltoUtmMedium,
         campaign: form.ltoUtmCampaign,
         term: form.ltoUtmTerm,
-        content: form.ltoUtmContent
+        content: form.ltoUtmContent,
       }),
     [
       form.ltoUrl,
@@ -1150,7 +1169,7 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
       form.ltoUtmMedium,
       form.ltoUtmCampaign,
       form.ltoUtmTerm,
-      form.ltoUtmContent
+      form.ltoUtmContent,
     ]
   );
   const modalTitle = isEditMode ? 'Edit Template' : 'Create Template Draft';
@@ -1166,10 +1185,14 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
     : 'Create Template Draft';
 
   const validateCarouselCards = useCallback(() => {
-    if (form.carouselCards.length < CAROUSEL_MIN_CARDS || form.carouselCards.length > CAROUSEL_MAX_CARDS) {
+    if (
+      form.carouselCards.length < CAROUSEL_MIN_CARDS ||
+      form.carouselCards.length > CAROUSEL_MAX_CARDS
+    ) {
       return `Carousel templates require between ${CAROUSEL_MIN_CARDS} and ${CAROUSEL_MAX_CARDS} cards.`;
     }
-    const baseSignature = form.carouselCards[0]?.buttons?.map(button => button.type).join('|') || '';
+    const baseSignature =
+      form.carouselCards[0]?.buttons?.map(button => button.type).join('|') || '';
 
     for (const [index, card] of form.carouselCards.entries()) {
       if (!card.mediaHandle.trim()) {
@@ -1179,7 +1202,9 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
         return `Card ${index + 1} is missing body text.`;
       }
       if (card.bodyText.trim().length > CAROUSEL_CARD_BODY_MAX_LENGTH) {
-        return `Card ${index + 1} body text cannot exceed ${CAROUSEL_CARD_BODY_MAX_LENGTH} characters.`;
+        return `Card ${
+          index + 1
+        } body text cannot exceed ${CAROUSEL_CARD_BODY_MAX_LENGTH} characters.`;
       }
       if (!Array.isArray(card.buttons) || card.buttons.length < 1) {
         return `Card ${index + 1} must include at least one button.`;
@@ -1197,7 +1222,9 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
           return `Card ${index + 1}, button ${buttonIndex + 1} is missing label text.`;
         }
         if (button.text.trim().length > CAROUSEL_BUTTON_LABEL_MAX_LENGTH) {
-          return `Card ${index + 1}, button ${buttonIndex + 1} label cannot exceed ${CAROUSEL_BUTTON_LABEL_MAX_LENGTH} characters.`;
+          return `Card ${index + 1}, button ${
+            buttonIndex + 1
+          } label cannot exceed ${CAROUSEL_BUTTON_LABEL_MAX_LENGTH} characters.`;
         }
         if (button.type === 'URL' && !button.url?.trim()) {
           return `Card ${index + 1}, button ${buttonIndex + 1} is missing a URL.`;
@@ -1245,7 +1272,7 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
     phoneButtons.length,
     quickReplyButtons.length,
     totalStandardButtons,
-    websiteButtons.length
+    websiteButtons.length,
   ]);
 
   const showButtonValidationWarning = useCallback((message: string) => {
@@ -1253,7 +1280,7 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
     toast({
       title: 'Invalid button combination',
       description: message,
-      variant: 'destructive'
+      variant: 'destructive',
     });
   }, []);
 
@@ -1311,7 +1338,9 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
 
       if (subType === 'QUICK_REPLY') {
         if (hasCopyCodeButton || hasCtaButtons) {
-          showButtonValidationWarning('Quick Replies cannot be combined with Copy Code, URL, or Phone buttons.');
+          showButtonValidationWarning(
+            'Quick Replies cannot be combined with Copy Code, URL, or Phone buttons.'
+          );
           return;
         }
         if (quickReplyButtons.length >= MAX_QUICK_REPLY_BUTTONS) {
@@ -1334,7 +1363,7 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
       quickReplyButtons.length,
       showButtonValidationWarning,
       totalStandardButtons,
-      websiteButtons.length
+      websiteButtons.length,
     ]
   );
 
@@ -1346,7 +1375,7 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
       toast({
         title: 'Missing required fields',
         description: 'Template name and body are required.',
-        variant: 'destructive'
+        variant: 'destructive',
       });
       return;
     }
@@ -1355,7 +1384,7 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
       toast({
         title: 'Category required',
         description: 'Please choose a template category.',
-        variant: 'destructive'
+        variant: 'destructive',
       });
       return;
     }
@@ -1363,8 +1392,10 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
     if ((isLimitedTimeOfferButtonType || isCarouselButtonType) && form.category !== 'MARKETING') {
       toast({
         title: 'Marketing category required',
-        description: `${isCarouselButtonType ? 'Carousel' : 'Limited Time Offer'} templates must use the MARKETING category.`,
-        variant: 'destructive'
+        description: `${
+          isCarouselButtonType ? 'Carousel' : 'Limited Time Offer'
+        } templates must use the MARKETING category.`,
+        variant: 'destructive',
       });
       return;
     }
@@ -1373,19 +1404,21 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
       toast({
         title: 'Header text required',
         description: 'Provide header text or switch the header type to image.',
-        variant: 'destructive'
+        variant: 'destructive',
       });
       return;
     }
 
     if (
-      (form.headerType === 'IMAGE' || form.headerType === 'VIDEO' || form.headerType === 'DOCUMENT') &&
+      (form.headerType === 'IMAGE' ||
+        form.headerType === 'VIDEO' ||
+        form.headerType === 'DOCUMENT') &&
       !form.headerMediaHandle.trim()
     ) {
       toast({
         title: 'Header media handle required',
         description: 'Provide the uploaded media handle for the header.',
-        variant: 'destructive'
+        variant: 'destructive',
       });
       return;
     }
@@ -1396,7 +1429,7 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
         toast({
           title: 'Invalid button combination',
           description: buttonValidationError,
-          variant: 'destructive'
+          variant: 'destructive',
         });
         return;
       }
@@ -1412,7 +1445,7 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
         toast({
           title: 'Incomplete button details',
           description: 'Each button needs text and any required URL or phone number.',
-          variant: 'destructive'
+          variant: 'destructive',
         });
         return;
       }
@@ -1423,7 +1456,7 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
         toast({
           title: 'Offer heading required',
           description: 'Add the Limited Time Offer heading text.',
-          variant: 'destructive'
+          variant: 'destructive',
         });
         return;
       }
@@ -1432,7 +1465,7 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
         toast({
           title: 'Offer code required',
           description: 'Add the Limited Time Offer code.',
-          variant: 'destructive'
+          variant: 'destructive',
         });
         return;
       }
@@ -1441,7 +1474,7 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
         toast({
           title: 'Offer URL required',
           description: 'Add the destination URL for the Limited Time Offer button.',
-          variant: 'destructive'
+          variant: 'destructive',
         });
         return;
       }
@@ -1450,7 +1483,7 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
         toast({
           title: 'Button label required',
           description: 'Add the CTA label for the Limited Time Offer button.',
-          variant: 'destructive'
+          variant: 'destructive',
         });
         return;
       }
@@ -1462,7 +1495,7 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
         toast({
           title: 'Carousel validation failed',
           description: carouselValidationError,
-          variant: 'destructive'
+          variant: 'destructive',
         });
         return;
       }
@@ -1472,10 +1505,11 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
     setSubmissionError(null);
     try {
       const components: any[] = [];
-      const mediaPreviewUrl = form.headerType === 'IMAGE' ? headerPreviewUrl || undefined : undefined;
+      const mediaPreviewUrl =
+        form.headerType === 'IMAGE' ? headerPreviewUrl || undefined : undefined;
       const placeholderKeys = placeholderNumberKeys;
-      const orderedBodyExampleValues = placeholderKeys.map(
-        key => (form.bodyExampleMap[key] || '').trim()
+      const orderedBodyExampleValues = placeholderKeys.map(key =>
+        (form.bodyExampleMap[key] || '').trim()
       );
       const sanitizedBodyExampleValues = orderedBodyExampleValues.filter(value => value.length > 0);
       const bodyExampleTextValue =
@@ -1484,19 +1518,19 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
       if (!isCarouselButtonType && form.headerType !== 'NONE') {
         const headerComponent: any = {
           type: 'HEADER',
-          format: form.headerType
+          format: form.headerType,
         };
 
         if (form.headerType === 'TEXT') {
           headerComponent.text = form.headerText.trim();
           if (form.headerExampleText.trim()) {
             headerComponent.example = {
-              header_text: [form.headerExampleText.trim()]
+              header_text: [form.headerExampleText.trim()],
             };
           }
         } else if (form.headerMediaHandle.trim()) {
           headerComponent.example = {
-            header_handle: [form.headerMediaHandle.trim()]
+            header_handle: [form.headerMediaHandle.trim()],
           };
         }
 
@@ -1515,12 +1549,12 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
 
       const bodyComponent: any = {
         type: 'BODY',
-        text: normalizedBody.text
+        text: normalizedBody.text,
       };
 
       if (sanitizedBodyExampleValues.length > 0) {
         bodyComponent.example = {
-          body_text: [sanitizedBodyExampleValues]
+          body_text: [sanitizedBodyExampleValues],
         };
       }
 
@@ -1529,11 +1563,11 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
       if (!isLimitedTimeOfferButtonType && !isCarouselButtonType && form.footerText.trim()) {
         const footerComponent: any = {
           type: 'FOOTER',
-          text: form.footerText.trim()
+          text: form.footerText.trim(),
         };
         if (form.footerExample.trim()) {
           footerComponent.example = {
-            footer_text: [form.footerExample.trim()]
+            footer_text: [form.footerExample.trim()],
           };
         }
         components.push(footerComponent);
@@ -1543,7 +1577,7 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
         const buttonsForApi = form.buttons.map(button => {
           const base = {
             type: button.type,
-            text: button.text.trim()
+            text: button.text.trim(),
           } as any;
 
           if (button.type === 'URL') {
@@ -1564,7 +1598,7 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
 
         components.push({
           type: 'BUTTONS',
-          buttons: buttonsForApi
+          buttons: buttonsForApi,
         });
       }
 
@@ -1578,22 +1612,22 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
           type: 'LIMITED_TIME_OFFER',
           limited_time_offer: {
             text: offerHeading,
-            has_expiration: false
-          }
+            has_expiration: false,
+          },
         });
         components.push({
           type: 'BUTTONS',
           buttons: [
             {
               type: 'copy_code',
-              example: offerCode
+              example: offerCode,
             },
             {
               type: 'URL',
               text: buttonLabel,
-              url: destinationUrl
-            }
-          ]
+              url: destinationUrl,
+            },
+          ],
         });
       }
 
@@ -1606,12 +1640,12 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
                 type: 'HEADER',
                 format: form.carouselMediaType,
                 example: {
-                  header_handle: [card.mediaHandle.trim()]
-                }
+                  header_handle: [card.mediaHandle.trim()],
+                },
               },
               {
                 type: 'BODY',
-                text: card.bodyText.trim()
+                text: card.bodyText.trim(),
               },
               {
                 type: 'BUTTONS',
@@ -1622,12 +1656,12 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
                       medium: button.utmMedium || '',
                       campaign: button.utmCampaign || '',
                       term: button.utmTerm || '',
-                      content: button.utmContent || ''
+                      content: button.utmContent || '',
                     });
                     return {
                       type: 'URL',
                       text: button.text.trim(),
-                      url: urlWithUtm.trim() || button.url?.trim() || ''
+                      url: urlWithUtm.trim() || button.url?.trim() || '',
                     };
                   }
                   if (button.type === 'PHONE_NUMBER') {
@@ -1636,17 +1670,17 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
                     return {
                       type: 'PHONE_NUMBER',
                       text: button.text.trim(),
-                      phone_number: rawPhone && cc ? `${cc}${rawPhone}` : rawPhone
+                      phone_number: rawPhone && cc ? `${cc}${rawPhone}` : rawPhone,
                     };
                   }
                   return {
                     type: 'QUICK_REPLY',
-                    text: button.text.trim()
+                    text: button.text.trim(),
                   };
-                })
-              }
-            ]
-          }))
+                }),
+              },
+            ],
+          })),
         });
       }
 
@@ -1665,7 +1699,7 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
           ? {
               ...(headerExamples ? { headerText: headerExamples } : {}),
               ...(footerExamples ? { footerText: footerExamples } : {}),
-              ...(bodyExampleTextValue ? { body: [bodyExampleTextValue] } : {})
+              ...(bodyExampleTextValue ? { body: [bodyExampleTextValue] } : {}),
             }
           : undefined;
 
@@ -1678,11 +1712,17 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
         headerText:
           !isCarouselButtonType && form.headerType === 'TEXT' ? form.headerText.trim() : undefined,
         headerImageUrl:
-          !isCarouselButtonType && form.headerType === 'IMAGE' ? form.headerMediaHandle.trim() : undefined,
+          !isCarouselButtonType && form.headerType === 'IMAGE'
+            ? form.headerMediaHandle.trim()
+            : undefined,
         headerVideoUrl:
-          !isCarouselButtonType && form.headerType === 'VIDEO' ? form.headerMediaHandle.trim() : undefined,
+          !isCarouselButtonType && form.headerType === 'VIDEO'
+            ? form.headerMediaHandle.trim()
+            : undefined,
         headerDocumentUrl:
-          !isCarouselButtonType && form.headerType === 'DOCUMENT' ? form.headerMediaHandle.trim() : undefined,
+          !isCarouselButtonType && form.headerType === 'DOCUMENT'
+            ? form.headerMediaHandle.trim()
+            : undefined,
         bodyText: normalizedBody.text,
         footerText:
           isLimitedTimeOfferButtonType || isCarouselButtonType
@@ -1701,7 +1741,7 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
                         const cc = (button.countryCode || '').trim();
                         return rawPhone && cc ? `${cc}${rawPhone}` : rawPhone || undefined;
                       })()
-                    : undefined
+                    : undefined,
               }))
             : undefined,
         variables: orderedVariables.map(variable => variable.trim()),
@@ -1724,7 +1764,7 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
               utmMedium: form.ltoUtmMedium.trim() || undefined,
               utmCampaign: form.ltoUtmCampaign.trim() || undefined,
               utmTerm: form.ltoUtmTerm.trim() || undefined,
-              utmContent: form.ltoUtmContent.trim() || undefined
+              utmContent: form.ltoUtmContent.trim() || undefined,
             }
           : undefined,
         carousel: isCarouselButtonType
@@ -1743,17 +1783,18 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
                   urlType: button.type === 'URL' ? button.urlType || 'Static' : undefined,
                   phone_number:
                     button.type === 'PHONE_NUMBER'
-                      ? `${(button.countryCode || '').trim()}${button.phoneNumber?.trim() || ''}` || undefined
+                      ? `${(button.countryCode || '').trim()}${button.phoneNumber?.trim() || ''}` ||
+                        undefined
                       : undefined,
                   utmSource: button.utmSource?.trim() || undefined,
                   utmMedium: button.utmMedium?.trim() || undefined,
                   utmCampaign: button.utmCampaign?.trim() || undefined,
                   utmTerm: button.utmTerm?.trim() || undefined,
-                  utmContent: button.utmContent?.trim() || undefined
-                }))
-              }))
+                  utmContent: button.utmContent?.trim() || undefined,
+                })),
+              })),
             }
-          : undefined
+          : undefined,
       };
 
       if (onSubmit) {
@@ -1767,13 +1808,13 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
         buttonType: form.buttonType,
         language: form.language.trim() || 'en_US',
         components,
-        ...(mediaPreviewUrl ? { previewImageUrl: mediaPreviewUrl } : {})
+        ...(mediaPreviewUrl ? { previewImageUrl: mediaPreviewUrl } : {}),
       };
 
       const response = await fetch('/api/whatsapp/templates', {
         method: 'POST',
         headers: buildAuthHeaders(true),
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
       });
 
       const result = await response.json().catch(() => ({}));
@@ -1790,11 +1831,17 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
         headerText:
           !isCarouselButtonType && form.headerType === 'TEXT' ? form.headerText.trim() : undefined,
         headerImageUrl:
-          !isCarouselButtonType && form.headerType === 'IMAGE' ? form.headerMediaHandle.trim() : undefined,
+          !isCarouselButtonType && form.headerType === 'IMAGE'
+            ? form.headerMediaHandle.trim()
+            : undefined,
         headerVideoUrl:
-          !isCarouselButtonType && form.headerType === 'VIDEO' ? form.headerMediaHandle.trim() : undefined,
+          !isCarouselButtonType && form.headerType === 'VIDEO'
+            ? form.headerMediaHandle.trim()
+            : undefined,
         headerDocumentUrl:
-          !isCarouselButtonType && form.headerType === 'DOCUMENT' ? form.headerMediaHandle.trim() : undefined,
+          !isCarouselButtonType && form.headerType === 'DOCUMENT'
+            ? form.headerMediaHandle.trim()
+            : undefined,
         bodyText: normalizedBody.text,
         footerText:
           isLimitedTimeOfferButtonType || isCarouselButtonType
@@ -1804,7 +1851,7 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
         variables: orderedVariables.map(variable => variable.trim()),
         examples: examplesPayload,
         limitedTimeOffer: templatePayload.limitedTimeOffer,
-        carousel: templatePayload.carousel
+        carousel: templatePayload.carousel,
       };
 
       if (onStoreTemplateDraft) {
@@ -1817,7 +1864,7 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
 
       toast({
         title: 'Template created',
-        description: 'Template draft saved successfully.'
+        description: 'Template draft saved successfully.',
       });
 
       onClose();
@@ -1830,13 +1877,21 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
     }
   };
 
-    if (!open) {
+  if (!open) {
     return null;
   }
 
   return (
-    <div className="fixed right-0 left-0 bottom-0 top-16 z-30 bg-[#f4f6f8] lg:left-16" role="presentation">
-      <form role="dialog" aria-modal="true" className="flex h-full flex-col overflow-hidden" onSubmit={handleSubmit}>
+    <div
+      className="fixed right-0 left-0 bottom-0 top-16 z-30 bg-[#f4f6f8] lg:left-16"
+      role="presentation"
+    >
+      <form
+        role="dialog"
+        aria-modal="true"
+        className="flex h-full flex-col overflow-hidden"
+        onSubmit={handleSubmit}
+      >
         <div className="relative flex h-16 shrink-0 items-center border-b border-[#d9dee5] bg-white px-6">
           <div className="flex min-w-0 items-center gap-3 pr-72 text-slate-900">
             <button
@@ -1895,7 +1950,9 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
           <div className="space-y-5 px-6 pb-6 pt-8">
             <div className="grid gap-5 lg:grid-cols-3">
               <div>
-                <label className="block text-sm font-medium leading-5 text-slate-900">Template Name</label>
+                <label className="block text-sm font-medium leading-5 text-slate-900">
+                  Template Name
+                </label>
                 <input
                   type="text"
                   value={form.name}
@@ -1908,28 +1965,32 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
               </div>
 
               <div>
-                <label className="block text-sm font-medium leading-5 text-slate-900">Category</label>
+                <label className="block text-sm font-medium leading-5 text-slate-900">
+                  Category
+                </label>
                 <select
                   value={form.category}
                   onChange={event =>
                     handleChange(
                       'category',
-                      event.target.value
-                        ? (event.target.value as TemplateCategoryValue)
-                        : ''
+                      event.target.value ? (event.target.value as TemplateCategoryValue) : ''
                     )
                   }
                   className="mt-2 h-11 w-full rounded border border-[#cfd6df] bg-white px-4 text-sm text-slate-900 outline-none focus:border-[#8ea4d7]"
                 >
                   <option value="">Choose Category</option>
                   {TEMPLATE_CATEGORY_OPTIONS.map(option => (
-                    <option key={option} value={option}>{option}</option>
+                    <option key={option} value={option}>
+                      {option}
+                    </option>
                   ))}
                 </select>
               </div>
 
-                <div className="relative" ref={buttonTypeDropdownRef}>
-                <label className="block text-sm font-medium leading-5 text-slate-900">Button Type(Optional)</label>
+              <div className="relative" ref={buttonTypeDropdownRef}>
+                <label className="block text-sm font-medium leading-5 text-slate-900">
+                  Button Type(Optional)
+                </label>
                 <button
                   type="button"
                   onClick={() => setButtonTypeDropdownOpen(prev => !prev)}
@@ -1977,10 +2038,16 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
             <div>
               <p className="text-base font-semibold leading-6 text-slate-900">Template(s)</p>
               <div className="mt-3 flex items-center gap-4 border-b border-[#d7dde6] pb-2">
-                <button type="button" className="border-b-2 border-[#356ae6] px-5 pb-2 text-sm font-medium text-[#356ae6]">
+                <button
+                  type="button"
+                  className="border-b-2 border-[#356ae6] px-5 pb-2 text-sm font-medium text-[#356ae6]"
+                >
                   English
                 </button>
-                <button type="button" className="inline-flex items-center gap-2 rounded-full border border-dashed border-[#55a278] px-4 py-1 text-sm text-[#1f7f50]">
+                <button
+                  type="button"
+                  className="inline-flex items-center gap-2 rounded-full border border-dashed border-[#55a278] px-4 py-1 text-sm text-[#1f7f50]"
+                >
                   <Plus className="h-3 w-3" /> English <ChevronDown className="h-4 w-4" />
                 </button>
               </div>
@@ -1989,14 +2056,21 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
             <div className="grid gap-4 xl:grid-cols-[minmax(0,1.55fr)_minmax(380px,1fr)]">
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-2xl font-semibold leading-8 text-slate-900">Template for English language</h3>
-                  <button type="button" className="rounded-md bg-[#2f8f58] px-6 py-2 text-sm font-semibold text-white hover:bg-[#287c4c]">
+                  <h3 className="text-2xl font-semibold leading-8 text-slate-900">
+                    Template for English language
+                  </h3>
+                  <button
+                    type="button"
+                    className="rounded-md bg-[#2f8f58] px-6 py-2 text-sm font-semibold text-white hover:bg-[#287c4c]"
+                  >
                     Add Sample
                   </button>
                 </div>
 
                 <section className="rounded-md border border-[#d3dae4] bg-white p-4">
-                  <h4 className="text-base font-semibold leading-6 text-slate-900">Header (Optional)</h4>
+                  <h4 className="text-base font-semibold leading-6 text-slate-900">
+                    Header (Optional)
+                  </h4>
                   <p className="mt-1 text-sm leading-5 text-slate-700">
                     {isCarouselButtonType
                       ? 'Carousel templates use media inside each card, so the standard template header is disabled.'
@@ -2008,9 +2082,12 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
                         {[
                           { value: 'NONE' as TemplateHeaderType, label: 'None' },
                           { value: 'TEXT' as TemplateHeaderType, label: 'Text' },
-                          { value: 'IMAGE' as TemplateHeaderType, label: 'Image' }
+                          { value: 'IMAGE' as TemplateHeaderType, label: 'Image' },
                         ].map(option => (
-                          <label key={option.value} className="inline-flex cursor-pointer items-center gap-2">
+                          <label
+                            key={option.value}
+                            className="inline-flex cursor-pointer items-center gap-2"
+                          >
                             <input
                               type="radio"
                               checked={form.headerType === option.value}
@@ -2065,7 +2142,10 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
                             <span className="text-sm text-slate-500">{headerSelectedFileName}</span>
                           </div>
                           <p className="text-sm leading-6 text-slate-800">
-                            This media file will be sent as a sample to WhatsApp, for approval. At the time of sending the template, you can change the media file, if required. You can also send separate media files for each customer in a campaign.
+                            This media file will be sent as a sample to WhatsApp, for approval. At
+                            the time of sending the template, you can change the media file, if
+                            required. You can also send separate media files for each customer in a
+                            campaign.
                           </p>
                         </div>
                       )}
@@ -2085,7 +2165,9 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
                     required
                     className="mt-3 w-full rounded border border-[#cfd6df] px-3 py-3 text-sm text-slate-900 outline-none focus:border-[#8ea4d7]"
                   />
-                  <div className="mt-2 text-right text-xs text-slate-500">{bodyCharacterCount}/1024</div>
+                  <div className="mt-2 text-right text-xs text-slate-500">
+                    {bodyCharacterCount}/1024
+                  </div>
                   <div className="mt-2 flex items-center justify-between">
                     <button
                       type="button"
@@ -2101,7 +2183,9 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
                     <div className="mt-4 space-y-2 rounded border border-dashed border-[#cfd6df] bg-[#fbfcfe] p-3">
                       {placeholderNumberKeys.map((key, index) => (
                         <div key={key} className="flex items-center gap-3">
-                          <span className="w-20 text-xs font-semibold text-slate-700">{`{{${index + 1}}}`}</span>
+                          <span className="w-20 text-xs font-semibold text-slate-700">{`{{${
+                            index + 1
+                          }}}`}</span>
                           <input
                             type="text"
                             value={form.bodyExampleMap[key] || ''}
@@ -2117,11 +2201,15 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
 
                 <section className="rounded-md border border-[#d3dae4] bg-white p-4">
                   <h4 className="text-sm font-semibold leading-5 text-slate-900">
-                    {isLimitedTimeOfferButtonType || isCarouselButtonType ? 'Footer unavailable' : 'Footer (Optional)'}
+                    {isLimitedTimeOfferButtonType || isCarouselButtonType
+                      ? 'Footer unavailable'
+                      : 'Footer (Optional)'}
                   </h4>
                   <p className="mt-1 text-sm leading-5 text-slate-700">
                     {isLimitedTimeOfferButtonType || isCarouselButtonType
-                      ? `Footer is not supported for ${isCarouselButtonType ? 'Carousel' : 'Limited Time Offer'} templates.`
+                      ? `Footer is not supported for ${
+                          isCarouselButtonType ? 'Carousel' : 'Limited Time Offer'
+                        } templates.`
                       : 'Add a short line of text to the bottom of your message template.'}
                   </p>
                   {!isLimitedTimeOfferButtonType && !isCarouselButtonType ? (
@@ -2133,7 +2221,9 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
                         className="mt-3 h-11 w-full rounded border border-[#cfd6df] px-3 text-sm"
                         placeholder="T&C apply"
                       />
-                      <div className="mt-2 text-right text-xs text-slate-500">{footerCharacterCount}/60</div>
+                      <div className="mt-2 text-right text-xs text-slate-500">
+                        {footerCharacterCount}/60
+                      </div>
                     </>
                   ) : (
                     <div className="mt-2" />
@@ -2142,13 +2232,16 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
 
                 {isStandardButtonType && (
                   <section className="rounded-md border border-[#d3dae4] bg-white p-4">
-                    <h4 className="text-base font-semibold leading-6 text-slate-900">Copy Code, URL, Quick Replies etc</h4>
+                    <h4 className="text-base font-semibold leading-6 text-slate-900">
+                      Copy Code, URL, Quick Replies etc
+                    </h4>
                     <p className="mt-1 text-sm text-slate-700">
                       Create buttons that let customers respond to your message or take action.
                     </p>
                     <div className="mt-4 flex items-center justify-between rounded border border-dashed border-[#cfd6df] bg-[#f8fafc] px-4 py-3 text-sm text-slate-700">
                       <span>
-                        Total buttons: 10 max. Quick Replies: 3 max. CTA buttons: 2 max. Copy Code: 1 max.
+                        Total buttons: 10 max. Quick Replies: 3 max. CTA buttons: 2 max. Copy Code:
+                        1 max.
                         <button type="button" className="ml-2 text-[#356ae6]">
                           Learn More
                         </button>
@@ -2167,7 +2260,11 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
                           <input
                             type="checkbox"
                             checked={couponButtons.length > 0}
-                            disabled={couponButtons.length === 0 && (!canAddCopyCodeButton || totalStandardButtons >= MAX_STANDARD_BUTTONS)}
+                            disabled={
+                              couponButtons.length === 0 &&
+                              (!canAddCopyCodeButton ||
+                                totalStandardButtons >= MAX_STANDARD_BUTTONS)
+                            }
                             onChange={event => {
                               if (event.target.checked) {
                                 tryAddButtonBySubType('COUPON_CODE');
@@ -2185,7 +2282,10 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
                           </p>
                         )}
                         {couponButtons.map(button => (
-                          <div key={button.id} className="mt-2 grid gap-2 md:grid-cols-[220px_minmax(0,1fr)]">
+                          <div
+                            key={button.id}
+                            className="mt-2 grid gap-2 md:grid-cols-[220px_minmax(0,1fr)]"
+                          >
                             <input
                               value="Copy Code"
                               disabled
@@ -2194,7 +2294,11 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
                             <div className="relative">
                               <input
                                 value={button.example || ''}
-                                onChange={event => upsertButton(button.id, { example: event.target.value.slice(0, 15) })}
+                                onChange={event =>
+                                  upsertButton(button.id, {
+                                    example: event.target.value.slice(0, 15),
+                                  })
+                                }
                                 placeholder="Enter text for coupon code"
                                 className="h-10 w-full rounded border border-[#cfd6df] px-3 pr-12 text-sm"
                               />
@@ -2211,10 +2315,14 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
                           <input
                             type="checkbox"
                             checked={websiteButtons.length > 0}
-                            disabled={websiteButtons.length === 0 && (!canAddUrlButton || totalStandardButtons >= MAX_STANDARD_BUTTONS)}
+                            disabled={
+                              websiteButtons.length === 0 &&
+                              (!canAddUrlButton || totalStandardButtons >= MAX_STANDARD_BUTTONS)
+                            }
                             onChange={event => {
                               if (event.target.checked) {
-                                if (websiteButtons.length === 0) tryAddButtonBySubType('WEBSITE_URL');
+                                if (websiteButtons.length === 0)
+                                  tryAddButtonBySubType('WEBSITE_URL');
                               } else {
                                 setButtonRuleWarning(null);
                                 websiteButtons.forEach(button => removeButtonById(button.id));
@@ -2232,11 +2340,18 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
                         )}
                         <div className="mt-2 space-y-3">
                           {websiteButtons.map(button => (
-                            <div key={button.id} className="space-y-2 rounded border border-[#d7dde6] p-3">
+                            <div
+                              key={button.id}
+                              className="space-y-2 rounded border border-[#d7dde6] p-3"
+                            >
                               <div className="grid gap-2 md:grid-cols-[160px_minmax(0,1fr)]">
                                 <select
                                   value={button.urlMode || 'Static'}
-                                  onChange={event => upsertButton(button.id, { urlMode: event.target.value as 'Static' })}
+                                  onChange={event =>
+                                    upsertButton(button.id, {
+                                      urlMode: event.target.value as 'Static',
+                                    })
+                                  }
                                   className="h-10 rounded border border-[#cfd6df] px-3 text-sm"
                                 >
                                   <option value="Static">Static</option>
@@ -2244,7 +2359,9 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
                                 <div className="relative">
                                   <input
                                     value={button.url || ''}
-                                    onChange={event => upsertButton(button.id, { url: event.target.value })}
+                                    onChange={event =>
+                                      upsertButton(button.id, { url: event.target.value })
+                                    }
                                     placeholder="Enter url, example: https://example.com/test"
                                     className="h-10 w-full rounded border border-[#cfd6df] px-3 pr-14 text-sm"
                                   />
@@ -2259,12 +2376,22 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
                               <div className="flex items-center gap-2">
                                 <input
                                   value={button.text || ''}
-                                  onChange={event => upsertButton(button.id, { text: event.target.value.slice(0, 25) })}
+                                  onChange={event =>
+                                    upsertButton(button.id, {
+                                      text: event.target.value.slice(0, 25),
+                                    })
+                                  }
                                   placeholder="Enter text for the button"
                                   className="h-10 flex-1 rounded border border-[#cfd6df] px-3 text-sm"
                                 />
-                                <span className="text-xs text-slate-500">{(button.text || '').length}/25</span>
-                                <button type="button" onClick={() => removeButtonById(button.id)} className="text-red-500">
+                                <span className="text-xs text-slate-500">
+                                  {(button.text || '').length}/25
+                                </span>
+                                <button
+                                  type="button"
+                                  onClick={() => removeButtonById(button.id)}
+                                  className="text-red-500"
+                                >
                                   <X className="h-4 w-4" />
                                 </button>
                               </div>
@@ -2274,7 +2401,9 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
                             <button
                               type="button"
                               onClick={() => tryAddButtonBySubType('WEBSITE_URL')}
-                              disabled={totalStandardButtons >= MAX_STANDARD_BUTTONS || !canAddUrlButton}
+                              disabled={
+                                totalStandardButtons >= MAX_STANDARD_BUTTONS || !canAddUrlButton
+                              }
                               className="text-sm font-semibold text-[#2f9a69] disabled:opacity-50"
                             >
                               + Add Another Website URL
@@ -2288,10 +2417,14 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
                           <input
                             type="checkbox"
                             checked={phoneButtons.length > 0}
-                            disabled={phoneButtons.length === 0 && (!canAddPhoneButton || totalStandardButtons >= MAX_STANDARD_BUTTONS)}
+                            disabled={
+                              phoneButtons.length === 0 &&
+                              (!canAddPhoneButton || totalStandardButtons >= MAX_STANDARD_BUTTONS)
+                            }
                             onChange={event => {
                               if (event.target.checked) {
-                                if (phoneButtons.length === 0) tryAddButtonBySubType('PHONE_NUMBER');
+                                if (phoneButtons.length === 0)
+                                  tryAddButtonBySubType('PHONE_NUMBER');
                               } else {
                                 setButtonRuleWarning(null);
                                 phoneButtons.forEach(button => removeButtonById(button.id));
@@ -2309,17 +2442,26 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
                         )}
                         <div className="mt-2 space-y-3">
                           {phoneButtons.map(button => (
-                            <div key={button.id} className="space-y-2 rounded border border-[#d7dde6] p-3">
+                            <div
+                              key={button.id}
+                              className="space-y-2 rounded border border-[#d7dde6] p-3"
+                            >
                               <div className="grid gap-2 md:grid-cols-[90px_minmax(0,1fr)]">
                                 <input
                                   value={button.countryCode || '+91'}
-                                  onChange={event => upsertButton(button.id, { countryCode: event.target.value })}
+                                  onChange={event =>
+                                    upsertButton(button.id, { countryCode: event.target.value })
+                                  }
                                   className="h-10 rounded border border-[#cfd6df] px-3 text-sm"
                                 />
                                 <div className="relative">
                                   <input
                                     value={button.phoneNumber || ''}
-                                    onChange={event => upsertButton(button.id, { phoneNumber: event.target.value.slice(0, 20) })}
+                                    onChange={event =>
+                                      upsertButton(button.id, {
+                                        phoneNumber: event.target.value.slice(0, 20),
+                                      })
+                                    }
                                     placeholder="Enter phone number"
                                     className="h-10 w-full rounded border border-[#cfd6df] px-3 pr-12 text-sm"
                                   />
@@ -2331,12 +2473,22 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
                               <div className="flex items-center gap-2">
                                 <input
                                   value={button.text || ''}
-                                  onChange={event => upsertButton(button.id, { text: event.target.value.slice(0, 25) })}
+                                  onChange={event =>
+                                    upsertButton(button.id, {
+                                      text: event.target.value.slice(0, 25),
+                                    })
+                                  }
                                   placeholder="Enter text for the button"
                                   className="h-10 flex-1 rounded border border-[#cfd6df] px-3 text-sm"
                                 />
-                                <span className="text-xs text-slate-500">{(button.text || '').length}/25</span>
-                                <button type="button" onClick={() => removeButtonById(button.id)} className="text-red-500">
+                                <span className="text-xs text-slate-500">
+                                  {(button.text || '').length}/25
+                                </span>
+                                <button
+                                  type="button"
+                                  onClick={() => removeButtonById(button.id)}
+                                  className="text-red-500"
+                                >
                                   <X className="h-4 w-4" />
                                 </button>
                               </div>
@@ -2346,7 +2498,9 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
                             <button
                               type="button"
                               onClick={() => tryAddButtonBySubType('PHONE_NUMBER')}
-                              disabled={totalStandardButtons >= MAX_STANDARD_BUTTONS || !canAddPhoneButton}
+                              disabled={
+                                totalStandardButtons >= MAX_STANDARD_BUTTONS || !canAddPhoneButton
+                              }
                               className="text-sm font-semibold text-[#2f9a69] disabled:opacity-50"
                             >
                               + Add Another Phone Number
@@ -2360,10 +2514,15 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
                           <input
                             type="checkbox"
                             checked={quickReplyButtons.length > 0}
-                            disabled={quickReplyButtons.length === 0 && (!canAddQuickReplyButton || totalStandardButtons >= MAX_STANDARD_BUTTONS)}
+                            disabled={
+                              quickReplyButtons.length === 0 &&
+                              (!canAddQuickReplyButton ||
+                                totalStandardButtons >= MAX_STANDARD_BUTTONS)
+                            }
                             onChange={event => {
                               if (event.target.checked) {
-                                if (quickReplyButtons.length === 0) tryAddButtonBySubType('QUICK_REPLY');
+                                if (quickReplyButtons.length === 0)
+                                  tryAddButtonBySubType('QUICK_REPLY');
                               } else {
                                 setButtonRuleWarning(null);
                                 quickReplyButtons.forEach(button => removeButtonById(button.id));
@@ -2382,12 +2541,20 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
                             <div key={button.id} className="flex items-center gap-2">
                               <input
                                 value={button.text || ''}
-                                onChange={event => upsertButton(button.id, { text: event.target.value.slice(0, 25) })}
+                                onChange={event =>
+                                  upsertButton(button.id, { text: event.target.value.slice(0, 25) })
+                                }
                                 placeholder="Enter quick reply text"
                                 className="h-10 flex-1 rounded border border-[#cfd6df] px-3 text-sm"
                               />
-                              <span className="text-xs text-slate-500">{(button.text || '').length}/25</span>
-                              <button type="button" onClick={() => removeButtonById(button.id)} className="text-red-500">
+                              <span className="text-xs text-slate-500">
+                                {(button.text || '').length}/25
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => removeButtonById(button.id)}
+                                className="text-red-500"
+                              >
                                 <X className="h-4 w-4" />
                               </button>
                             </div>
@@ -2396,7 +2563,10 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
                             <button
                               type="button"
                               onClick={() => tryAddButtonBySubType('QUICK_REPLY')}
-                              disabled={totalStandardButtons >= MAX_STANDARD_BUTTONS || !canAddQuickReplyButton}
+                              disabled={
+                                totalStandardButtons >= MAX_STANDARD_BUTTONS ||
+                                !canAddQuickReplyButton
+                              }
                               className="text-sm font-semibold text-[#2f9a69] disabled:opacity-50"
                             >
                               + Add Another Quick Reply
@@ -2410,13 +2580,16 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
 
                 {isSendProductsButtonType && (
                   <section className="rounded-md border border-[#d3dae4] bg-white p-4">
-                    <h4 className="text-base font-semibold leading-6 text-slate-900">Send Products</h4>
+                    <h4 className="text-base font-semibold leading-6 text-slate-900">
+                      Send Products
+                    </h4>
                     <p className="mt-1 text-sm text-slate-700">
                       Create buttons that let customers respond to your message or take action.
                     </p>
                     <div className="mt-4 rounded bg-[#eef1f5] p-4">
                       <div className="rounded border border-dashed border-[#cfd6df] bg-white px-4 py-3 text-sm font-medium text-slate-800">
-                        Customise your campaign or inbox messages by selecting up to 30 products to showcase.
+                        Customise your campaign or inbox messages by selecting up to 30 products to
+                        showcase.
                       </div>
                       <div className="mt-4 space-y-3">
                         <label className="flex items-center gap-3">
@@ -2427,7 +2600,9 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
                             onChange={() => handleChange('sendProductsMode', 'specific')}
                             className="h-4 w-4"
                           />
-                          <span className="text-sm font-semibold text-slate-900">Send Specific Products</span>
+                          <span className="text-sm font-semibold text-slate-900">
+                            Send Specific Products
+                          </span>
                         </label>
                         <label className="flex items-center gap-3">
                           <input
@@ -2437,7 +2612,9 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
                             onChange={() => handleChange('sendProductsMode', 'catalog')}
                             className="h-4 w-4"
                           />
-                          <span className="text-sm font-semibold text-slate-900">Send Entire Catalog</span>
+                          <span className="text-sm font-semibold text-slate-900">
+                            Send Entire Catalog
+                          </span>
                         </label>
                       </div>
                     </div>
@@ -2446,7 +2623,9 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
 
                 {isLimitedTimeOfferButtonType && (
                   <section className="rounded-md border border-[#d3dae4] bg-white p-4">
-                    <h4 className="text-base font-semibold leading-6 text-slate-900">Limited Time Offer</h4>
+                    <h4 className="text-base font-semibold leading-6 text-slate-900">
+                      Limited Time Offer
+                    </h4>
                     <p className="mt-1 text-sm text-slate-700">
                       Configure the offer details shown with your promotional CTA.
                     </p>
@@ -2463,7 +2642,12 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
                         <input
                           type="text"
                           value={form.ltoOfferHeading}
-                          onChange={event => handleChange('ltoOfferHeading', event.target.value.slice(0, LTO_OFFER_HEADING_MAX_LENGTH))}
+                          onChange={event =>
+                            handleChange(
+                              'ltoOfferHeading',
+                              event.target.value.slice(0, LTO_OFFER_HEADING_MAX_LENGTH)
+                            )
+                          }
                           placeholder="Exclusive offer"
                           className="mt-2 h-11 w-full rounded border border-[#cfd6df] px-3 text-sm"
                         />
@@ -2481,7 +2665,12 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
                         <input
                           type="text"
                           value={form.ltoOfferCode}
-                          onChange={event => handleChange('ltoOfferCode', event.target.value.slice(0, LTO_OFFER_CODE_MAX_LENGTH).toUpperCase())}
+                          onChange={event =>
+                            handleChange(
+                              'ltoOfferCode',
+                              event.target.value.slice(0, LTO_OFFER_CODE_MAX_LENGTH).toUpperCase()
+                            )
+                          }
                           placeholder="BB100"
                           className="mt-2 h-11 w-full rounded border border-[#cfd6df] px-3 text-sm uppercase"
                         />
@@ -2494,7 +2683,9 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
                           </label>
                           <select
                             value={form.ltoUrlType}
-                            onChange={event => handleChange('ltoUrlType', event.target.value as 'Static' | 'Dynamic')}
+                            onChange={event =>
+                              handleChange('ltoUrlType', event.target.value as 'Static' | 'Dynamic')
+                            }
                             className="mt-2 h-11 w-full rounded border border-[#cfd6df] bg-white px-3 text-sm"
                           >
                             <option value="Static">Static</option>
@@ -2513,13 +2704,19 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
                           <input
                             type="text"
                             value={form.ltoUrl}
-                            onChange={event => handleChange('ltoUrl', event.target.value.slice(0, LTO_URL_MAX_LENGTH))}
+                            onChange={event =>
+                              handleChange(
+                                'ltoUrl',
+                                event.target.value.slice(0, LTO_URL_MAX_LENGTH)
+                              )
+                            }
                             placeholder="https://www.billbox.co.in/"
                             className="mt-2 h-11 w-full rounded border border-[#cfd6df] px-3 text-sm"
                           />
                           {form.ltoUrlType === 'Dynamic' && (
                             <p className="mt-1 text-xs text-slate-500">
-                              Use a Meta-supported variable in the URL if this CTA needs per-user personalization.
+                              Use a Meta-supported variable in the URL if this CTA needs per-user
+                              personalization.
                             </p>
                           )}
                         </div>
@@ -2586,7 +2783,12 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
                         <input
                           type="text"
                           value={form.ltoButtonLabel}
-                          onChange={event => handleChange('ltoButtonLabel', event.target.value.slice(0, LTO_BUTTON_LABEL_MAX_LENGTH))}
+                          onChange={event =>
+                            handleChange(
+                              'ltoButtonLabel',
+                              event.target.value.slice(0, LTO_BUTTON_LABEL_MAX_LENGTH)
+                            )
+                          }
                           placeholder="visit"
                           className="mt-2 h-11 w-full rounded border border-[#cfd6df] px-3 text-sm"
                         />
@@ -2627,7 +2829,9 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
 
                     <div className="mt-4">
                       <div>
-                        <label className="text-xs font-semibold uppercase tracking-wide text-slate-600">Media type</label>
+                        <label className="text-xs font-semibold uppercase tracking-wide text-slate-600">
+                          Media type
+                        </label>
                         <div className="mt-2 flex gap-4 text-sm">
                           {(['IMAGE', 'VIDEO'] as CarouselMediaType[]).map(option => (
                             <label key={option} className="inline-flex items-center gap-2">
@@ -2663,7 +2867,9 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
                           )}
                         >
                           <div className="flex items-center justify-between">
-                            <h5 className="text-sm font-semibold text-slate-900">Card {cardIndex + 1}</h5>
+                            <h5 className="text-sm font-semibold text-slate-900">
+                              Card {cardIndex + 1}
+                            </h5>
                             <div className="flex items-center gap-2">
                               <button
                                 type="button"
@@ -2701,7 +2907,11 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
                                 <label className="mt-2 inline-flex cursor-pointer items-center rounded border border-dashed border-[#2f8f58] px-3 py-2 text-sm font-medium text-[#0a8f69]">
                                   <input
                                     type="file"
-                                    accept={form.carouselMediaType === 'IMAGE' ? '.jpg,.jpeg,.png' : '.mp4'}
+                                    accept={
+                                      form.carouselMediaType === 'IMAGE'
+                                        ? '.jpg,.jpeg,.png'
+                                        : '.mp4'
+                                    }
                                     onChange={async event => {
                                       const file = event.target.files?.[0];
                                       if (!file) return;
@@ -2716,7 +2926,7 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
                                             form.carouselMediaType === 'IMAGE'
                                               ? 'Image size must be 5MB or less.'
                                               : 'Video size must be 16MB or less.',
-                                          variant: 'destructive'
+                                          variant: 'destructive',
                                         });
                                         event.target.value = '';
                                         return;
@@ -2726,8 +2936,9 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
                                       } catch (error: any) {
                                         toast({
                                           title: 'Media upload failed',
-                                          description: error?.message || 'Unable to upload carousel media.',
-                                          variant: 'destructive'
+                                          description:
+                                            error?.message || 'Unable to upload carousel media.',
+                                          variant: 'destructive',
                                         });
                                       }
                                     }}
@@ -2735,7 +2946,9 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
                                   />
                                   Choose file
                                 </label>
-                                <p className="mt-2 text-xs text-slate-500">Media will be cropped to a wide ratio.</p>
+                                <p className="mt-2 text-xs text-slate-500">
+                                  Media will be cropped to a wide ratio.
+                                </p>
                               </div>
 
                               <div>
@@ -2751,7 +2964,10 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
                                   value={card.bodyText}
                                   onChange={event =>
                                     updateCarouselCard(card.id, {
-                                      bodyText: event.target.value.slice(0, CAROUSEL_CARD_BODY_MAX_LENGTH)
+                                      bodyText: event.target.value.slice(
+                                        0,
+                                        CAROUSEL_CARD_BODY_MAX_LENGTH
+                                      ),
                                     })
                                   }
                                   placeholder="Write the text for card body"
@@ -2793,7 +3009,7 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
                                     {[
                                       { label: 'CTA', type: 'URL' as const },
                                       { label: 'Quick Reply', type: 'QUICK_REPLY' as const },
-                                      { label: 'Phone Number', type: 'PHONE_NUMBER' as const }
+                                      { label: 'Phone Number', type: 'PHONE_NUMBER' as const },
                                     ].map(option => (
                                       <button
                                         key={option.label}
@@ -2803,7 +3019,7 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
                                             toast({
                                               title: 'Button limit reached',
                                               description: 'Each card can have at most 2 buttons.',
-                                              variant: 'destructive'
+                                              variant: 'destructive',
                                             });
                                             setCarouselButtonPickerCardId(null);
                                             return;
@@ -2819,7 +3035,10 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
                                   </div>
                                 )}
                                 {card.buttons.map((button, buttonIndex) => (
-                                  <div key={button.id} className="rounded border border-[#e2e8f0] p-3">
+                                  <div
+                                    key={button.id}
+                                    className="rounded border border-[#e2e8f0] p-3"
+                                  >
                                     <p className="text-xs font-semibold uppercase tracking-wide text-slate-600">
                                       Button {buttonIndex + 1}: {button.type.replace('_', ' ')}
                                     </p>
@@ -2839,7 +3058,7 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
                                             value={button.urlType || 'Static'}
                                             onChange={event =>
                                               updateCarouselCardButton(card.id, button.id, {
-                                                urlType: event.target.value as 'Static' | 'Dynamic'
+                                                urlType: event.target.value as 'Static' | 'Dynamic',
                                               })
                                             }
                                             className="h-10 w-full rounded border border-[#cfd6df] px-3 text-sm"
@@ -2851,7 +3070,10 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
                                             value={button.url || ''}
                                             onChange={event =>
                                               updateCarouselCardButton(card.id, button.id, {
-                                                url: event.target.value.slice(0, CAROUSEL_URL_MAX_LENGTH)
+                                                url: event.target.value.slice(
+                                                  0,
+                                                  CAROUSEL_URL_MAX_LENGTH
+                                                ),
                                               })
                                             }
                                             placeholder="https://www.billbox.co.in/"
@@ -2861,22 +3083,32 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
                                             type="button"
                                             onClick={() =>
                                               updateCarouselCardButton(card.id, button.id, {
-                                                showUtmBuilder: !button.showUtmBuilder
+                                                showUtmBuilder: !button.showUtmBuilder,
                                               })
                                             }
                                             className="text-sm font-medium text-[#2f9a69]"
                                           >
-                                            {button.showUtmBuilder ? 'Hide UTM Parameters' : 'Add UTM Parameters'}
+                                            {button.showUtmBuilder
+                                              ? 'Hide UTM Parameters'
+                                              : 'Add UTM Parameters'}
                                           </button>
                                           {button.showUtmBuilder && (
                                             <div className="grid gap-2 md:grid-cols-2">
-                                              {(['utmSource', 'utmMedium', 'utmCampaign', 'utmTerm', 'utmContent'] as const).map(field => (
+                                              {(
+                                                [
+                                                  'utmSource',
+                                                  'utmMedium',
+                                                  'utmCampaign',
+                                                  'utmTerm',
+                                                  'utmContent',
+                                                ] as const
+                                              ).map(field => (
                                                 <input
                                                   key={field}
                                                   value={button[field] || ''}
                                                   onChange={event =>
                                                     updateCarouselCardButton(card.id, button.id, {
-                                                      [field]: event.target.value
+                                                      [field]: event.target.value,
                                                     } as Partial<CarouselButtonDraft>)
                                                   }
                                                   placeholder={field}
@@ -2897,7 +3129,7 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
                                             value={button.countryCode || '+91'}
                                             onChange={event =>
                                               updateCarouselCardButton(card.id, button.id, {
-                                                countryCode: event.target.value
+                                                countryCode: event.target.value,
                                               })
                                             }
                                             className="h-10 rounded border border-[#cfd6df] px-3 text-sm"
@@ -2906,7 +3138,7 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
                                             value={button.phoneNumber || ''}
                                             onChange={event =>
                                               updateCarouselCardButton(card.id, button.id, {
-                                                phoneNumber: event.target.value.slice(0, 20)
+                                                phoneNumber: event.target.value.slice(0, 20),
                                               })
                                             }
                                             className="h-10 rounded border border-[#cfd6df] px-3 text-sm"
@@ -2920,10 +3152,17 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
                                           value={button.text}
                                           onChange={event =>
                                             updateCarouselCardButton(card.id, button.id, {
-                                              text: event.target.value.slice(0, CAROUSEL_BUTTON_LABEL_MAX_LENGTH)
+                                              text: event.target.value.slice(
+                                                0,
+                                                CAROUSEL_BUTTON_LABEL_MAX_LENGTH
+                                              ),
                                             })
                                           }
-                                          placeholder={button.type === 'QUICK_REPLY' ? 'Quick reply text' : 'Button label text'}
+                                          placeholder={
+                                            button.type === 'QUICK_REPLY'
+                                              ? 'Quick reply text'
+                                              : 'Button label text'
+                                          }
                                           className="h-10 flex-1 rounded border border-[#cfd6df] px-3 text-sm"
                                         />
                                         <span className="text-xs text-slate-500">
@@ -2940,7 +3179,11 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
                               <div className="aspect-[4/3] overflow-hidden rounded-lg bg-white">
                                 {card.mediaPreviewUrl ? (
                                   form.carouselMediaType === 'IMAGE' ? (
-                                    <img src={card.mediaPreviewUrl} alt={`Carousel card ${cardIndex + 1}`} className="h-full w-full object-cover" />
+                                    <img
+                                      src={card.mediaPreviewUrl}
+                                      alt={`Carousel card ${cardIndex + 1}`}
+                                      className="h-full w-full object-cover"
+                                    />
                                   ) : (
                                     <div className="flex h-full items-center justify-center bg-slate-900 text-sm text-white">
                                       Video attached
@@ -2948,7 +3191,9 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
                                   )
                                 ) : (
                                   <div className="flex h-full items-center justify-center bg-slate-200 text-sm text-slate-500">
-                                    {form.carouselMediaType === 'IMAGE' ? 'Image placeholder' : 'Video placeholder'}
+                                    {form.carouselMediaType === 'IMAGE'
+                                      ? 'Image placeholder'
+                                      : 'Video placeholder'}
                                   </div>
                                 )}
                               </div>
@@ -2986,7 +3231,9 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
 
                 {isNoButtonType && <p className="text-sm text-slate-600">No buttons selected.</p>}
                 {isAdvancedButtonType && (
-                  <p className="text-sm text-slate-600">Advanced button types will be enabled soon.</p>
+                  <p className="text-sm text-slate-600">
+                    Advanced button types will be enabled soon.
+                  </p>
                 )}
               </div>
 
@@ -2994,8 +3241,12 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
                 <div className="flex items-center justify-between border-b border-[#d6dce6] px-3 py-2">
                   <h4 className="text-base font-semibold leading-6 text-slate-900">Preview</h4>
                   <div className="flex items-center gap-2">
-                    <div className="rounded border border-[#356ae6] px-2 py-1 text-xs text-[#356ae6]">android</div>
-                    <div className="rounded border border-[#d6dce6] px-2 py-1 text-xs text-slate-400">apple</div>
+                    <div className="rounded border border-[#356ae6] px-2 py-1 text-xs text-[#356ae6]">
+                      android
+                    </div>
+                    <div className="rounded border border-[#d6dce6] px-2 py-1 text-xs text-slate-400">
+                      apple
+                    </div>
                   </div>
                 </div>
                 <div className="flex justify-center p-6">
@@ -3022,14 +3273,18 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
                             {bodyPreview || 'Body content will appear here'}
                           </div>
                         )}
-                        {!isLimitedTimeOfferButtonType && !isCarouselButtonType && form.footerText.trim() && (
-                          <p className="px-1 text-xs text-slate-500">{form.footerText.trim()}</p>
-                        )}
+                        {!isLimitedTimeOfferButtonType &&
+                          !isCarouselButtonType &&
+                          form.footerText.trim() && (
+                            <p className="px-1 text-xs text-slate-500">{form.footerText.trim()}</p>
+                          )}
                         {isLimitedTimeOfferButtonType && (
                           <div className="rounded-md bg-white px-3 py-3 text-sm text-slate-700 shadow">
                             <div className="flex items-center justify-between gap-3">
                               <div>
-                                <p className="text-xs uppercase tracking-wide text-slate-500">Limited time offer</p>
+                                <p className="text-xs uppercase tracking-wide text-slate-500">
+                                  Limited time offer
+                                </p>
                                 <p className="font-semibold text-slate-900">
                                   {form.ltoOfferHeading.trim() || 'Exclusive offer'}
                                 </p>
@@ -3051,11 +3306,18 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
                             <div className="overflow-x-auto">
                               <div className="flex gap-3 pb-1">
                                 {form.carouselCards.map(card => (
-                                  <div key={card.id} className="w-[220px] flex-shrink-0 rounded-xl bg-white p-2">
+                                  <div
+                                    key={card.id}
+                                    className="w-[220px] flex-shrink-0 rounded-xl bg-white p-2"
+                                  >
                                     <div className="aspect-[4/3] overflow-hidden rounded-lg bg-slate-200">
                                       {card.mediaPreviewUrl ? (
                                         form.carouselMediaType === 'IMAGE' ? (
-                                          <img src={card.mediaPreviewUrl} alt="Carousel preview" className="h-full w-full object-cover" />
+                                          <img
+                                            src={card.mediaPreviewUrl}
+                                            alt="Carousel preview"
+                                            className="h-full w-full object-cover"
+                                          />
                                         ) : (
                                           <div className="flex h-full items-center justify-center bg-slate-900 text-xs text-white">
                                             Video
@@ -3132,4 +3394,3 @@ export const TemplateCreationModal: React.FC<TemplateCreationModalProps> = ({
 };
 
 export default TemplateCreationModal;
-

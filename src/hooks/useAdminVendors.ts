@@ -1,12 +1,12 @@
-import { useEffect, useState } from "react";
-import { withAdminAuthHeaders } from "@/utils/adminAuth";
+import { useEffect, useState } from 'react';
+import { withAdminAuthHeaders } from '@/utils/adminAuth';
 
 export interface AdminVendor {
   franchise_id: string | null;
   vendor_name: string;
   store_id: string;
   store_name: string;
-  onboarding_status: "Active" | "Pending" | "Disabled" | string;
+  onboarding_status: 'Active' | 'Pending' | 'Disabled' | string;
   brand_name?: string | null;
 }
 
@@ -26,12 +26,12 @@ export const useAdminVendors = (): UseAdminVendorsResult => {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await fetch("/api/admin/vendors", {
-        credentials: "include",
+      const response = await fetch('/api/admin/vendors', {
+        credentials: 'include',
         headers: withAdminAuthHeaders(),
       });
       if (!response.ok) {
-        throw new Error("Failed to load vendors");
+        throw new Error('Failed to load vendors');
       }
       const data = (await response.json()) as AdminVendor[];
       setVendors(data);

@@ -7,7 +7,7 @@ import {
   clearPostLoginRedirect,
   consumeSessionNotice,
   getPostLoginRedirect,
-  setSessionNotice
+  setSessionNotice,
 } from '@/lib/session';
 
 interface LoginAuditEntry {
@@ -21,7 +21,7 @@ interface LoginAuditEntry {
 const Login: React.FC = () => {
   const [formData, setFormData] = useState({
     store_id: '',
-    password: ''
+    password: '',
   });
   const [error, setError] = useState('');
   const [passwordError, setPasswordError] = useState(false);
@@ -38,7 +38,7 @@ const Login: React.FC = () => {
     phone: '',
     otp: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
   });
   const [maskedPhone, setMaskedPhone] = useState('');
   const [showResetPassword, setShowResetPassword] = useState(false);
@@ -56,7 +56,6 @@ const Login: React.FC = () => {
   const redirectFrom = (location.state as { from?: string } | undefined)?.from;
   const [sessionNotice] = useState(() => consumeSessionNotice() || '');
   const storeIdForReset = (formData.store_id || resetForm.store_id).trim();
-
 
   useEffect(() => {
     let cancelled = false;
@@ -100,7 +99,7 @@ const Login: React.FC = () => {
         storeId,
         platform: navigator.platform || 'Unknown device',
         userAgent: navigator.userAgent || 'Unknown agent',
-        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'Local time'
+        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'Local time',
       };
 
       const existing = localStorage.getItem('bb_login_history');
@@ -115,7 +114,7 @@ const Login: React.FC = () => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
     setError(''); // Clear error when user types
     if (e.target.name === 'password') {
@@ -139,7 +138,7 @@ const Login: React.FC = () => {
     try {
       const payload: Record<string, string> = {
         store_id: formData.store_id.trim(),
-        password: formData.password.trim()
+        password: formData.password.trim(),
       };
 
       const endpoint = twoStepVerificationEnabled
@@ -186,7 +185,10 @@ const Login: React.FC = () => {
         localStorage.setItem('bb_store_name', data.store_name ?? '');
         localStorage.setItem('bb_trial_started', data.trial_started ?? data.trail_started ?? '');
         localStorage.setItem('bb_trial_period', data.trial_period ?? '');
-        localStorage.setItem('bb_webhook_config', data.webhook_config ? JSON.stringify(data.webhook_config) : '');
+        localStorage.setItem(
+          'bb_webhook_config',
+          data.webhook_config ? JSON.stringify(data.webhook_config) : ''
+        );
         persistCustomerTypeConfig(data.customer_type_config || undefined);
         recordLoginAudit(data.store_id);
 
@@ -213,7 +215,7 @@ const Login: React.FC = () => {
         setMissingStore(false);
       } else {
         setError(data.error || 'Login failed');
-      setPasswordError((data.error || '').toLowerCase().includes('password'));
+        setPasswordError((data.error || '').toLowerCase().includes('password'));
         setMissingStore(response.status === 404);
       }
     } catch (error) {
@@ -228,7 +230,7 @@ const Login: React.FC = () => {
   const handleForgotPasswordOpen = () => {
     setResetForm(prev => ({
       ...prev,
-      store_id: formData.store_id || prev.store_id
+      store_id: formData.store_id || prev.store_id,
     }));
     setResetError('');
     setResetSuccess('');
@@ -247,7 +249,7 @@ const Login: React.FC = () => {
       phone: '',
       otp: '',
       password: '',
-      confirmPassword: ''
+      confirmPassword: '',
     });
     setMaskedPhone('');
   };
@@ -275,7 +277,7 @@ const Login: React.FC = () => {
       const response = await fetch('/api/auth/login/password/send-otp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ store_id: storeId, password: formData.password.trim() })
+        body: JSON.stringify({ store_id: storeId, password: formData.password.trim() }),
       });
       const data = await response.json().catch(() => ({}));
       if (!response.ok) {
@@ -284,9 +286,7 @@ const Login: React.FC = () => {
       setLoginOtp('');
       setLoginOtpSent(true);
       setLoginOtpCooldown(90);
-      setLoginOtpStatus(
-        `OTP sent to ${data?.masked_phone || 'your registered phone number'}.`
-      );
+      setLoginOtpStatus(`OTP sent to ${data?.masked_phone || 'your registered phone number'}.`);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unable to send login OTP.');
     } finally {
@@ -298,7 +298,7 @@ const Login: React.FC = () => {
     const { name, value } = e.target;
     setResetForm(prev => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
 
     setResetError('');
@@ -328,7 +328,7 @@ const Login: React.FC = () => {
       const response = await fetch('/api/auth/send-otp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ store_id: trimmedStoreId, phone: trimmedPhone })
+        body: JSON.stringify({ store_id: trimmedStoreId, phone: trimmedPhone }),
       });
       const data = await response.json();
 
@@ -388,7 +388,9 @@ const Login: React.FC = () => {
       /[^A-Za-z0-9]/.test(trimmedPassword);
 
     if (!passwordRequirementsMet) {
-      setResetError('Password must be 8+ characters with a letter, a number, and a special character.');
+      setResetError(
+        'Password must be 8+ characters with a letter, a number, and a special character.'
+      );
       return;
     }
 
@@ -409,8 +411,8 @@ const Login: React.FC = () => {
           store_id: trimmedStoreId,
           phone: trimmedPhone,
           password: trimmedPassword,
-          otp: trimmedOtp
-        })
+          otp: trimmedOtp,
+        }),
       });
       const data = await response.json();
 
@@ -423,7 +425,9 @@ const Login: React.FC = () => {
       alert('Password reset successfully. Please log in with your new password.');
       handleForgotPasswordClose();
     } catch (err) {
-      setResetError(err instanceof Error ? err.message : 'Unable to reset password. Please try again.');
+      setResetError(
+        err instanceof Error ? err.message : 'Unable to reset password. Please try again.'
+      );
     } finally {
       setResettingPassword(false);
     }
@@ -463,9 +467,7 @@ const Login: React.FC = () => {
         <div className="max-w-md w-full space-y-8 bg-white rounded-lg shadow-md p-8">
           <div className="text-center mb-8">
             <h2 className="text-3xl font-bold text-gray-900">Billbox Login</h2>
-            <p className="mt-2 text-sm text-gray-600">
-              Sign in to your store account
-            </p>
+            <p className="mt-2 text-sm text-gray-600">Sign in to your store account</p>
           </div>
 
           {sessionNotice && (
@@ -491,7 +493,9 @@ const Login: React.FC = () => {
               />
               {formData.store_id.trim() && (
                 <p className="mt-1 text-xs text-gray-500">
-                  {twoStepVerificationEnabled ? 'We’ll send a 6-digit OTP to the registered store mobile number.' : 'Login requires your store password.'}
+                  {twoStepVerificationEnabled
+                    ? 'We’ll send a 6-digit OTP to the registered store mobile number.'
+                    : 'Login requires your store password.'}
                 </p>
               )}
             </div>
@@ -522,58 +526,60 @@ const Login: React.FC = () => {
               </div>
             </div>
             {twoStepVerificationEnabled && (
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700">One-Time Password</label>
-              <div className="flex items-center gap-3 mt-1">
-                <input
-                  type="text"
-                  value={loginOtp}
-                  onChange={event => {
-                    setLoginOtp(event.target.value.replace(/\D/g, '').slice(0, 6));
-                    setError('');
-                  }}
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="Enter 6-digit OTP"
-                  inputMode="numeric"
-                />
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={handleSendLoginOtp}
-                  disabled={
-                    loginOtpSending || !twoStepVerificationEnabled || !formData.store_id.trim() || !formData.password.trim() || loginOtpCooldown > 0
-                  }
-                >
-                  {loginOtpSending
-                    ? 'Sending…'
-                    : loginOtpCooldown > 0
+              <div>
+                <label className="block text-sm font-medium text-gray-700">One-Time Password</label>
+                <div className="flex items-center gap-3 mt-1">
+                  <input
+                    type="text"
+                    value={loginOtp}
+                    onChange={event => {
+                      setLoginOtp(event.target.value.replace(/\D/g, '').slice(0, 6));
+                      setError('');
+                    }}
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="Enter 6-digit OTP"
+                    inputMode="numeric"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={handleSendLoginOtp}
+                    disabled={
+                      loginOtpSending ||
+                      !twoStepVerificationEnabled ||
+                      !formData.store_id.trim() ||
+                      !formData.password.trim() ||
+                      loginOtpCooldown > 0
+                    }
+                  >
+                    {loginOtpSending
+                      ? 'Sending…'
+                      : loginOtpCooldown > 0
                       ? `Resend in ${loginOtpCooldown}s`
                       : loginOtpSent
-                        ? 'Resend OTP'
-                        : 'Send OTP'}
-                </Button>
-              </div>
-              {loginOtpStatus ? (
-                <p className="mt-1 text-xs text-green-600">{loginOtpStatus}</p>
-              ) : (
-                <p className="mt-1 text-xs text-gray-500">
-                  We will send the OTP to the registered store mobile number.
-                </p>
-              )}
-            </div>
-
-                        )}
-
-            {error && (
-              <div className="text-red-600 text-sm text-center">
-                {error}
+                      ? 'Resend OTP'
+                      : 'Send OTP'}
+                  </Button>
+                </div>
+                {loginOtpStatus ? (
+                  <p className="mt-1 text-xs text-green-600">{loginOtpStatus}</p>
+                ) : (
+                  <p className="mt-1 text-xs text-gray-500">
+                    We will send the OTP to the registered store mobile number.
+                  </p>
+                )}
               </div>
             )}
+
+            {error && <div className="text-red-600 text-sm text-center">{error}</div>}
             {passwordError && (
               <div className="mt-1 text-xs text-blue-600 text-center flex flex-col gap-1">
-                <button type="button" className="underline" onClick={handleForgotPasswordOpen}>Forgot password?</button>
-                <button type="button" className="underline" onClick={handleForgotPasswordOpen}>Reset with OTP</button>
+                <button type="button" className="underline" onClick={handleForgotPasswordOpen}>
+                  Forgot password?
+                </button>
+                <button type="button" className="underline" onClick={handleForgotPasswordOpen}>
+                  Reset with OTP
+                </button>
               </div>
             )}
             {missingStore && (
@@ -631,14 +637,21 @@ const Login: React.FC = () => {
               <div className="rounded-md bg-blue-50 px-3 py-2 text-sm text-blue-800">
                 {storeIdForReset ? (
                   <>
-                    Resetting password for Store ID <span className="font-semibold">{storeIdForReset}</span>. Update the ID in the login form if this is not your store.
+                    Resetting password for Store ID{' '}
+                    <span className="font-semibold">{storeIdForReset}</span>. Update the ID in the
+                    login form if this is not your store.
                   </>
                 ) : (
-                  <>Enter your Store ID in the login form first, then reopen this dialog to reset your password.</>
+                  <>
+                    Enter your Store ID in the login form first, then reopen this dialog to reset
+                    your password.
+                  </>
                 )}
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Registered Phone Number</label>
+                <label className="block text-sm font-medium text-gray-700">
+                  Registered Phone Number
+                </label>
                 <div className="mt-1 flex gap-2">
                   <input
                     type="tel"
@@ -664,7 +677,8 @@ const Login: React.FC = () => {
                 </p>
                 {otpSent && maskedPhone && (
                   <p className="mt-1 text-xs text-green-600">
-                    OTP sent to number ending with <span className="font-semibold">{maskedPhone.slice(-3)}</span>.
+                    OTP sent to number ending with{' '}
+                    <span className="font-semibold">{maskedPhone.slice(-3)}</span>.
                   </p>
                 )}
               </div>
@@ -700,11 +714,16 @@ const Login: React.FC = () => {
                       className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 hover:text-gray-700"
                       aria-label={showResetPassword ? 'Hide password' : 'Show password'}
                     >
-                      {showResetPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      {showResetPassword ? (
+                        <EyeOff className="h-4 w-4" />
+                      ) : (
+                        <Eye className="h-4 w-4" />
+                      )}
                     </button>
                   </div>
                   <p className="mt-1 text-xs text-gray-500">
-                    Use at least 8 characters, including a letter, a number, and a special character.
+                    Use at least 8 characters, including a letter, a number, and a special
+                    character.
                   </p>
                   {resetForm.password && (
                     <p
@@ -719,7 +738,9 @@ const Login: React.FC = () => {
                   )}
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Confirm Password</label>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Confirm Password
+                  </label>
                   <div className="relative mt-1">
                     <input
                       type={showResetConfirmPassword ? 'text' : 'password'}
@@ -736,25 +757,23 @@ const Login: React.FC = () => {
                       className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 hover:text-gray-700"
                       aria-label={showResetConfirmPassword ? 'Hide password' : 'Show password'}
                     >
-                      {showResetConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      {showResetConfirmPassword ? (
+                        <EyeOff className="h-4 w-4" />
+                      ) : (
+                        <Eye className="h-4 w-4" />
+                      )}
                     </button>
                   </div>
                   {resetForm.confirmPassword && !passwordsMatch && (
-                    <p className="mt-1 text-xs font-semibold text-red-500">Passwords do not match.</p>
+                    <p className="mt-1 text-xs font-semibold text-red-500">
+                      Passwords do not match.
+                    </p>
                   )}
                 </div>
               </div>
 
-              {resetError && (
-                <div className="text-sm text-red-600">
-                  {resetError}
-                </div>
-              )}
-              {resetSuccess && (
-                <div className="text-sm text-green-600">
-                  {resetSuccess}
-                </div>
-              )}
+              {resetError && <div className="text-sm text-red-600">{resetError}</div>}
+              {resetSuccess && <div className="text-sm text-green-600">{resetSuccess}</div>}
 
               <div className="flex justify-end gap-3">
                 <button

@@ -6,13 +6,13 @@ import {
   DialogDescription,
   DialogFooter,
   DialogHeader,
-  DialogTitle
+  DialogTitle,
 } from '@/components/ui/dialog';
 import { maskPhoneNumber } from '@/lib/maskPhone';
 import dayjs, {
   parseInvoiceDate as parseInvoiceDateDayjs,
   parseDateInputLocal as parseDateInputLocalDayjs,
-  toDateOrNull
+  toDateOrNull,
 } from '@/lib/date';
 import { Loader2, MessageCircle, X } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
@@ -72,11 +72,7 @@ const readStoredInvoiceDateFilter = (): StoredInvoiceDateFilter | null => {
       preset?: unknown;
     };
 
-    if (
-      !dateRange ||
-      typeof dateRange.start !== 'string' ||
-      typeof dateRange.end !== 'string'
-    ) {
+    if (!dateRange || typeof dateRange.start !== 'string' || typeof dateRange.end !== 'string') {
       return null;
     }
 
@@ -89,9 +85,9 @@ const readStoredInvoiceDateFilter = (): StoredInvoiceDateFilter | null => {
     return {
       dateRange: {
         start: dateRange.start,
-        end: dateRange.end
+        end: dateRange.end,
       },
-      preset: safePreset
+      preset: safePreset,
     };
   } catch {
     return null;
@@ -137,9 +133,13 @@ const formatInvoiceTimestampDisplay = (value?: string | null) => {
 const digitsOnly = (value?: string | null) => (value ?? '').toString().replace(/\D/g, '');
 const DAILY_END_HISTORY_STORAGE_PREFIX = 'bb:daily-end-history';
 const getHistoryStorageKey = (storeId?: string | null) =>
-  `${DAILY_END_HISTORY_STORAGE_PREFIX}:${storeId && storeId.toString().trim() ? storeId.toString().trim() : 'default'}`;
+  `${DAILY_END_HISTORY_STORAGE_PREFIX}:${
+    storeId && storeId.toString().trim() ? storeId.toString().trim() : 'default'
+  }`;
 const dismissedNoticeKey = (storeId: string | null) =>
-  `bb:invoices:lastDismissedExcludedCount:${storeId && storeId.trim() ? storeId.trim() : 'default'}`;
+  `bb:invoices:lastDismissedExcludedCount:${
+    storeId && storeId.trim() ? storeId.trim() : 'default'
+  }`;
 
 const readDismissedExcludedCount = (storeId: string | null) => {
   if (typeof window === 'undefined') {
@@ -170,7 +170,10 @@ const readDailyEndHistory = (storeId?: string | null): Record<string, string> =>
   return {};
 };
 
-const writeDailyEndHistory = (storeId: string | null | undefined, history: Record<string, string>) => {
+const writeDailyEndHistory = (
+  storeId: string | null | undefined,
+  history: Record<string, string>
+) => {
   if (typeof window === 'undefined') {
     return;
   }
@@ -205,7 +208,8 @@ const formatDailyEndTimestamp = (value?: string | null) => {
   return parsed.format('DD MMM YYYY, hh:mm A');
 };
 const ANONYMOUS_PHONE_DIGITS = '0000000000';
-const isAnonymousInvoicePhone = (value?: string | null) => digitsOnly(value) === ANONYMOUS_PHONE_DIGITS;
+const isAnonymousInvoicePhone = (value?: string | null) =>
+  digitsOnly(value) === ANONYMOUS_PHONE_DIGITS;
 
 const Invoices: React.FC<InvoicesProps> = ({
   selectedStore,
@@ -221,7 +225,7 @@ const Invoices: React.FC<InvoicesProps> = ({
   onClearFilters,
   kpiData,
   revenueUnlocked,
-  onRequestRevenueUnlock
+  onRequestRevenueUnlock,
 }) => {
   const renderRevenueValue = (content: React.ReactNode) => {
     if (revenueUnlocked) {
@@ -245,7 +249,7 @@ const Invoices: React.FC<InvoicesProps> = ({
   const handleFilterChange = <K extends keyof FiltersState>(field: K, value: FiltersState[K]) => {
     onFiltersChange({
       ...filters,
-      [field]: value
+      [field]: value,
     });
   };
 
@@ -253,7 +257,7 @@ const Invoices: React.FC<InvoicesProps> = ({
     const today = new Date();
     return {
       start: formatDateInput(today),
-      end: formatDateInput(today)
+      end: formatDateInput(today),
     };
   };
 
@@ -262,19 +266,33 @@ const Invoices: React.FC<InvoicesProps> = ({
     storedInvoiceFilterRef.current = readStoredInvoiceDateFilter();
   }
 
-  const [sortColumn, setSortColumn] = useState<'invoice_timestamp' | 'bill_id' | 'total_amount' | 'customer_phone'>('invoice_timestamp');
+  const [sortColumn, setSortColumn] = useState<
+    'invoice_timestamp' | 'bill_id' | 'total_amount' | 'customer_phone'
+  >('invoice_timestamp');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
-  const [dateRange, setDateRange] = useState(() => storedInvoiceFilterRef.current?.dateRange ?? getDefaultInvoiceDateRange());
-  const [selectedRangePreset, setSelectedRangePreset] = useState<DateRangePreset>(() => storedInvoiceFilterRef.current?.preset ?? 'today');
+  const [dateRange, setDateRange] = useState(
+    () => storedInvoiceFilterRef.current?.dateRange ?? getDefaultInvoiceDateRange()
+  );
+  const [selectedRangePreset, setSelectedRangePreset] = useState<DateRangePreset>(
+    () => storedInvoiceFilterRef.current?.preset ?? 'today'
+  );
   const [sendingInvoiceId, setSendingInvoiceId] = useState<string | null>(null);
   const [updatingExclusionId, setUpdatingExclusionId] = useState<string | null>(null);
-  const [exclusionDialog, setExclusionDialog] = useState<{ invoice: Invoice; rowKey: string; mode: 'regular' | 'dailyRestore' } | null>(null);
+  const [exclusionDialog, setExclusionDialog] = useState<{
+    invoice: Invoice;
+    rowKey: string;
+    mode: 'regular' | 'dailyRestore';
+  } | null>(null);
   const [dailyEndReportLoading, setDailyEndReportLoading] = useState(false);
   const [invoicePage, setInvoicePage] = useState(0);
   const [invoiceView, setInvoiceView] = useState<'regular' | 'daily'>('regular');
-  const [dailyEndHistory, setDailyEndHistory] = useState<Record<string, string>>(() => readDailyEndHistory(selectedStore));
+  const [dailyEndHistory, setDailyEndHistory] = useState<Record<string, string>>(() =>
+    readDailyEndHistory(selectedStore)
+  );
   const [showExcludedNotice, setShowExcludedNotice] = useState(false);
-  const [lastDismissedExcludedCount, setLastDismissedExcludedCount] = useState(() => readDismissedExcludedCount(selectedStore));
+  const [lastDismissedExcludedCount, setLastDismissedExcludedCount] = useState(() =>
+    readDismissedExcludedCount(selectedStore)
+  );
   const [showExcludedOnly, setShowExcludedOnly] = useState(false);
   const INVOICE_PAGE_SIZE = 20;
 
@@ -334,7 +352,7 @@ const Invoices: React.FC<InvoicesProps> = ({
     }
     const payload: StoredInvoiceDateFilter = {
       dateRange,
-      preset: selectedRangePreset
+      preset: selectedRangePreset,
     };
     window.localStorage.setItem(INVOICES_DATE_FILTER_STORAGE_KEY, JSON.stringify(payload));
   }, [dateRange, selectedRangePreset]);
@@ -369,7 +387,7 @@ const Invoices: React.FC<InvoicesProps> = ({
 
     setDateRange({
       start: formatDateInput(start),
-      end: formatDateInput(today)
+      end: formatDateInput(today),
     });
   };
 
@@ -408,7 +426,7 @@ const Invoices: React.FC<InvoicesProps> = ({
     customer_phone: invoice.customer_phone,
     total_amount: invoice.total_amount,
     fingerprint: invoice.fingerprint ?? null,
-    is_daily_end_report: Boolean(invoice.is_daily_end_report)
+    is_daily_end_report: Boolean(invoice.is_daily_end_report),
   });
 
   const promptPhoneNumber = (defaultDigits: string) =>
@@ -428,7 +446,8 @@ const Invoices: React.FC<InvoicesProps> = ({
       modal.style.boxShadow = '0 12px 30px rgba(15, 23, 42, 0.25)';
       modal.style.padding = '24px';
       modal.style.width = 'min(90vw, 360px)';
-      modal.style.fontFamily = "'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
+      modal.style.fontFamily =
+        "'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
       overlay.appendChild(modal);
 
       const title = document.createElement('h3');
@@ -523,7 +542,7 @@ const Invoices: React.FC<InvoicesProps> = ({
 
   const invoiceViewOptions: { key: 'regular' | 'daily'; label: string }[] = [
     { key: 'regular', label: 'Invoices' },
-    { key: 'daily', label: 'Daily End Reports' }
+    { key: 'daily', label: 'Daily End Reports' },
   ];
 
   const invoiceDataset =
@@ -532,13 +551,13 @@ const Invoices: React.FC<InvoicesProps> = ({
           label: 'Daily End Reports',
           invoices: dailyEndInvoices,
           filtered: dailyEndFilteredInvoices,
-          loading: dailyEndReportsLoading
+          loading: dailyEndReportsLoading,
         }
       : {
           label: 'Invoices',
           invoices,
           filtered: filteredInvoices,
-          loading
+          loading,
         };
   const baseInvoices = invoiceDataset.invoices;
   const searchFilteredInvoices = invoiceDataset.filtered;
@@ -555,10 +574,8 @@ const Invoices: React.FC<InvoicesProps> = ({
         : '';
     const existingDigits = digitsOnly(originalPhoneRaw);
     const lastTenDigits = existingDigits.slice(-10);
-    const hasStoredNonZeroNumber =
-      existingDigits.length >= 10 && !/^0+$/.test(lastTenDigits);
-    const isZeroPlaceholder =
-      existingDigits.length >= 10 && /^0+$/.test(lastTenDigits);
+    const hasStoredNonZeroNumber = existingDigits.length >= 10 && !/^0+$/.test(lastTenDigits);
+    const isZeroPlaceholder = existingDigits.length >= 10 && /^0+$/.test(lastTenDigits);
     const promptDefault = hasStoredNonZeroNumber ? lastTenDigits : '';
 
     const numericDigits = await promptPhoneNumber(promptDefault);
@@ -573,7 +590,7 @@ const Invoices: React.FC<InvoicesProps> = ({
       toast({
         title: 'Authentication required',
         description: 'Please log in again to send WhatsApp messages.',
-        variant: 'destructive'
+        variant: 'destructive',
       });
       return;
     }
@@ -583,7 +600,7 @@ const Invoices: React.FC<InvoicesProps> = ({
       invoiceNo: invoice.invoice_no ?? null,
       invoiceId: invoice.invoice_id ?? null,
       phoneNumber: formattedPhone,
-      originalCustomerPhone: originalPhoneRaw || null
+      originalCustomerPhone: originalPhoneRaw || null,
     };
 
     setSendingInvoiceId(rowKey);
@@ -594,10 +611,10 @@ const Invoices: React.FC<InvoicesProps> = ({
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(payload),
-        signal: controller.signal
+        signal: controller.signal,
       });
       window.clearTimeout(timeoutId);
 
@@ -609,7 +626,7 @@ const Invoices: React.FC<InvoicesProps> = ({
         toast({
           title: 'Unable to send e-bill',
           description: message,
-          variant: 'destructive'
+          variant: 'destructive',
         });
         return;
       }
@@ -617,7 +634,7 @@ const Invoices: React.FC<InvoicesProps> = ({
       toast({
         title: 'E-bill sent',
         description: `WhatsApp template dispatched to ${formattedPhone}.`,
-        variant: 'default'
+        variant: 'default',
       });
 
       if (isZeroPlaceholder) {
@@ -635,27 +652,31 @@ const Invoices: React.FC<InvoicesProps> = ({
         toast({
           title: 'Request timed out',
           description: 'The send request took too long. Please try again.',
-          variant: 'destructive'
+          variant: 'destructive',
         });
         return;
       }
       toast({
         title: 'Network error',
         description: 'We could not send the e-bill. Please check your connection and try again.',
-        variant: 'destructive'
+        variant: 'destructive',
       });
     } finally {
       setSendingInvoiceId(null);
     }
   };
 
-
-  const handleToggleExclusion = async (invoice: Invoice, shouldExclude: boolean, rowKey: string, options?: { skipConfirm?: boolean }) => {
+  const handleToggleExclusion = async (
+    invoice: Invoice,
+    shouldExclude: boolean,
+    rowKey: string,
+    options?: { skipConfirm?: boolean }
+  ) => {
     if (!selectedStore) {
       toast({
         title: 'Select a store first',
         description: 'Choose a store to manage invoice exclusions.',
-        variant: 'destructive'
+        variant: 'destructive',
       });
       return;
     }
@@ -664,12 +685,13 @@ const Invoices: React.FC<InvoicesProps> = ({
       toast({
         title: 'Authentication required',
         description: 'Please log in again to manage invoices.',
-        variant: 'destructive'
+        variant: 'destructive',
       });
       return;
     }
     const fingerprintKey = getInvoiceFingerprintKey(invoice, rowKey);
-    const action: 'exclude' | 'include' = invoiceView === 'daily' ? 'include' : shouldExclude ? 'exclude' : 'include';
+    const action: 'exclude' | 'include' =
+      invoiceView === 'daily' ? 'include' : shouldExclude ? 'exclude' : 'include';
 
     if (action === 'exclude' && !options?.skipConfirm) {
       setExclusionDialog({ invoice, rowKey, mode: 'regular' });
@@ -681,12 +703,11 @@ const Invoices: React.FC<InvoicesProps> = ({
       return;
     }
 
-    const endpoint = action === 'exclude'
-      ? '/api/analytics/invoices/exclude'
-      : '/api/analytics/invoices/include';
+    const endpoint =
+      action === 'exclude' ? '/api/analytics/invoices/exclude' : '/api/analytics/invoices/include';
     const payload = {
       storeId: selectedStore,
-      invoice: buildInvoiceRequestBody(invoice)
+      invoice: buildInvoiceRequestBody(invoice),
     };
     setUpdatingExclusionId(rowKey);
     try {
@@ -694,9 +715,9 @@ const Invoices: React.FC<InvoicesProps> = ({
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
       });
       const result = await response.json().catch(() => ({}));
       if (!response.ok) {
@@ -704,10 +725,11 @@ const Invoices: React.FC<InvoicesProps> = ({
       }
       toast({
         title: action === 'exclude' ? 'Invoice excluded' : 'Invoice restored',
-        description: action === 'exclude'
-          ? 'This invoice will no longer impact KPIs.'
-          : 'The invoice will be counted in analytics again.',
-        variant: 'default'
+        description:
+          action === 'exclude'
+            ? 'This invoice will no longer impact KPIs.'
+            : 'The invoice will be counted in analytics again.',
+        variant: 'default',
       });
       if (action === 'include' && fingerprintKey) {
         clearDailyEndMove(fingerprintKey);
@@ -722,7 +744,7 @@ const Invoices: React.FC<InvoicesProps> = ({
           error instanceof Error
             ? error.message
             : 'We could not update this invoice. Please try again.',
-        variant: 'destructive'
+        variant: 'destructive',
       });
     } finally {
       setUpdatingExclusionId(null);
@@ -740,7 +762,9 @@ const Invoices: React.FC<InvoicesProps> = ({
     if (!exclusionDialog) {
       return;
     }
-    await handleToggleExclusion(exclusionDialog.invoice, true, exclusionDialog.rowKey, { skipConfirm: true });
+    await handleToggleExclusion(exclusionDialog.invoice, true, exclusionDialog.rowKey, {
+      skipConfirm: true,
+    });
     setExclusionDialog(null);
   };
 
@@ -748,7 +772,9 @@ const Invoices: React.FC<InvoicesProps> = ({
     if (!exclusionDialog) {
       return;
     }
-    await handleToggleExclusion(exclusionDialog.invoice, false, exclusionDialog.rowKey, { skipConfirm: true });
+    await handleToggleExclusion(exclusionDialog.invoice, false, exclusionDialog.rowKey, {
+      skipConfirm: true,
+    });
     setExclusionDialog(null);
   };
 
@@ -760,7 +786,7 @@ const Invoices: React.FC<InvoicesProps> = ({
       toast({
         title: 'Select a store first',
         description: 'Choose a store to manage invoices.',
-        variant: 'destructive'
+        variant: 'destructive',
       });
       return;
     }
@@ -769,13 +795,13 @@ const Invoices: React.FC<InvoicesProps> = ({
       toast({
         title: 'Authentication required',
         description: 'Please log in again to manage invoices.',
-        variant: 'destructive'
+        variant: 'destructive',
       });
       return;
     }
     const payload = {
       storeId: selectedStore,
-      invoice: buildInvoiceRequestBody(exclusionDialog.invoice)
+      invoice: buildInvoiceRequestBody(exclusionDialog.invoice),
     };
     setDailyEndReportLoading(true);
     setUpdatingExclusionId(exclusionDialog.rowKey);
@@ -784,9 +810,9 @@ const Invoices: React.FC<InvoicesProps> = ({
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
       });
       const result = await response.json().catch(() => ({}));
       if (!response.ok) {
@@ -795,9 +821,12 @@ const Invoices: React.FC<InvoicesProps> = ({
       toast({
         title: 'Invoice moved to Daily End Reports',
         description: 'This invoice will now appear under the Daily End Reports tab.',
-        variant: 'default'
+        variant: 'default',
       });
-      const fingerprintKey = getInvoiceFingerprintKey(exclusionDialog.invoice, exclusionDialog.rowKey);
+      const fingerprintKey = getInvoiceFingerprintKey(
+        exclusionDialog.invoice,
+        exclusionDialog.rowKey
+      );
       recordDailyEndMove(fingerprintKey);
       setExclusionDialog(null);
       if (onLoadInvoices) {
@@ -810,7 +839,7 @@ const Invoices: React.FC<InvoicesProps> = ({
           error instanceof Error
             ? error.message
             : 'We could not update this invoice. Please try again.',
-        variant: 'destructive'
+        variant: 'destructive',
       });
     } finally {
       setDailyEndReportLoading(false);
@@ -827,10 +856,7 @@ const Invoices: React.FC<InvoicesProps> = ({
     }
 
     return searchFilteredInvoices.filter(invoice => {
-      const timestamp =
-        invoice.processed_timestamp_ist ||
-        invoice.invoice_date ||
-        '';
+      const timestamp = invoice.processed_timestamp_ist || invoice.invoice_date || '';
 
       if (!timestamp) return false;
       const parsed = parseInvoiceTimestamp(timestamp);
@@ -841,7 +867,10 @@ const Invoices: React.FC<InvoicesProps> = ({
     });
   }, [searchFilteredInvoices, dateRange]);
 
-  const activeInvoices = useMemo(() => dateFilteredInvoices.filter(inv => !inv.is_excluded), [dateFilteredInvoices]);
+  const activeInvoices = useMemo(
+    () => dateFilteredInvoices.filter(inv => !inv.is_excluded),
+    [dateFilteredInvoices]
+  );
   const excludedInvoiceCount = dateFilteredInvoices.length - activeInvoices.length;
 
   useEffect(() => {
@@ -875,12 +904,12 @@ const Invoices: React.FC<InvoicesProps> = ({
   );
 
   const ebillInvoiceCount = useMemo(() => {
-    return activeInvoices.filter(invoice => !isAnonymousInvoicePhone(invoice.customer_phone)).length;
+    return activeInvoices.filter(invoice => !isAnonymousInvoicePhone(invoice.customer_phone))
+      .length;
   }, [activeInvoices]);
 
   const averageOrder = useMemo(
-    () =>
-      activeInvoices.length > 0 ? Math.round(totalRevenue / activeInvoices.length) : 0,
+    () => (activeInvoices.length > 0 ? Math.round(totalRevenue / activeInvoices.length) : 0),
     [activeInvoices, totalRevenue]
   );
 
@@ -909,7 +938,9 @@ const Invoices: React.FC<InvoicesProps> = ({
     const getSortValue = (invoice: Invoice) => {
       switch (sortColumn) {
         case 'invoice_timestamp': {
-          const parsed = parseInvoiceTimestamp(invoice.processed_timestamp_ist || invoice.invoice_date || '');
+          const parsed = parseInvoiceTimestamp(
+            invoice.processed_timestamp_ist || invoice.invoice_date || ''
+          );
           return parsed ? parsed.getTime() : 0;
         }
         case 'bill_id':
@@ -932,7 +963,7 @@ const Invoices: React.FC<InvoicesProps> = ({
       } else {
         comparison = String(aValue ?? '').localeCompare(String(bValue ?? ''), undefined, {
           numeric: true,
-          sensitivity: 'base'
+          sensitivity: 'base',
         });
       }
 
@@ -944,7 +975,15 @@ const Invoices: React.FC<InvoicesProps> = ({
 
   useEffect(() => {
     setInvoicePage(0);
-  }, [filters.searchTerm, filters.searchColumn, dateRange.start, dateRange.end, selectedRangePreset, invoiceView, showExcludedOnly]);
+  }, [
+    filters.searchTerm,
+    filters.searchColumn,
+    dateRange.start,
+    dateRange.end,
+    selectedRangePreset,
+    invoiceView,
+    showExcludedOnly,
+  ]);
 
   useEffect(() => {
     const maxPage = Math.max(0, Math.ceil(sortedInvoices.length / INVOICE_PAGE_SIZE) - 1);
@@ -1007,7 +1046,9 @@ const Invoices: React.FC<InvoicesProps> = ({
       ? 'Enter amount…'
       : 'Enter search value…';
   const isRestoreDialog = exclusionDialog?.mode === 'dailyRestore';
-  const exclusionDialogBusy = Boolean(exclusionDialog && updatingExclusionId === exclusionDialog.rowKey);
+  const exclusionDialogBusy = Boolean(
+    exclusionDialog && updatingExclusionId === exclusionDialog.rowKey
+  );
 
   return (
     <div className="space-y-6">
@@ -1031,7 +1072,8 @@ const Invoices: React.FC<InvoicesProps> = ({
             ))}
           </div>
           <div className="text-xs text-gray-500">
-            Showing {showingCount.toLocaleString()} of {baseInvoices.length.toLocaleString()} {datasetLabel.toLowerCase()} ({rangeLabel})
+            Showing {showingCount.toLocaleString()} of {baseInvoices.length.toLocaleString()}{' '}
+            {datasetLabel.toLowerCase()} ({rangeLabel})
           </div>
         </div>
         <div className="flex flex-wrap items-end gap-4 w-full lg:w-auto">
@@ -1088,12 +1130,16 @@ const Invoices: React.FC<InvoicesProps> = ({
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             <div className="bg-white rounded-lg shadow p-6 border-t-4 border-blue-500">
               <h3 className="text-lg font-semibold text-gray-900 mb-2">Total Invoices</h3>
-              <p className="text-3xl font-bold text-blue-600">{activeInvoices.length.toLocaleString()}</p>
+              <p className="text-3xl font-bold text-blue-600">
+                {activeInvoices.length.toLocaleString()}
+              </p>
               <p className="text-sm text-gray-500 mt-1">{rangeLabel}</p>
             </div>
             <div className="bg-white rounded-lg shadow p-6 border-t-4 border-teal-500">
               <h3 className="text-lg font-semibold text-gray-900 mb-2">E-bill Invoices</h3>
-              <p className="text-3xl font-bold text-teal-600">{ebillInvoiceCount.toLocaleString()}</p>
+              <p className="text-3xl font-bold text-teal-600">
+                {ebillInvoiceCount.toLocaleString()}
+              </p>
               <p className="text-sm text-gray-500 mt-1">Captured customer numbers</p>
             </div>
             <div className="bg-white rounded-lg shadow p-6 border-t-4 border-green-500">
@@ -1122,7 +1168,10 @@ const Invoices: React.FC<InvoicesProps> = ({
               id="invoice-search-column"
               value={filters.searchColumn}
               onChange={event =>
-                handleFilterChange('searchColumn', event.target.value as FiltersState['searchColumn'])
+                handleFilterChange(
+                  'searchColumn',
+                  event.target.value as FiltersState['searchColumn']
+                )
               }
               className="px-3 py-2 border border-gray-300 rounded-md bg-white text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
             >
@@ -1172,7 +1221,11 @@ const Invoices: React.FC<InvoicesProps> = ({
                 type="button"
                 variant={showExcludedOnly ? 'default' : 'outline'}
                 onClick={() => setShowExcludedOnly(prev => !prev)}
-                className={`text-sm ${showExcludedOnly ? 'bg-slate-900 text-white hover:bg-slate-800 hover:text-white' : 'border border-gray-300 bg-slate-900 text-white hover:bg-slate-800 hover:text-white'}`}
+                className={`text-sm ${
+                  showExcludedOnly
+                    ? 'bg-slate-900 text-white hover:bg-slate-800 hover:text-white'
+                    : 'border border-gray-300 bg-slate-900 text-white hover:bg-slate-800 hover:text-white'
+                }`}
               >
                 {showExcludedOnly ? 'Show All' : 'Show Excluded'}
               </Button>
@@ -1184,8 +1237,8 @@ const Invoices: React.FC<InvoicesProps> = ({
       {excludedInvoiceCount > 0 && showExcludedNotice && (
         <div className="mb-4 flex items-start justify-between gap-3 rounded-md bg-amber-50 px-4 py-3 text-sm text-amber-800">
           <span>
-            {excludedInvoiceCount} invoice{excludedInvoiceCount === 1 ? '' : 's'} currently excluded.
-            {' '}Enable them to include these bills in KPIs.
+            {excludedInvoiceCount} invoice{excludedInvoiceCount === 1 ? '' : 's'} currently
+            excluded. Enable them to include these bills in KPIs.
           </span>
           <button
             type="button"
@@ -1247,10 +1300,13 @@ const Invoices: React.FC<InvoicesProps> = ({
                 const rowKey = invoice.fingerprint || invoiceNumber || billId || `invoice-${index}`;
                 const isExcluded = Boolean(invoice.is_excluded);
                 const fingerprintKey = getInvoiceFingerprintKey(invoice, rowKey);
-                const movedAt = invoiceView === 'daily' && fingerprintKey ? dailyEndHistory[fingerprintKey] : undefined;
+                const movedAt =
+                  invoiceView === 'daily' && fingerprintKey
+                    ? dailyEndHistory[fingerprintKey]
+                    : undefined;
                 const rowClasses = [
                   (invoicePage * INVOICE_PAGE_SIZE + index) % 2 === 0 ? 'bg-white' : 'bg-gray-50',
-                  isExcluded ? 'opacity-70' : ''
+                  isExcluded ? 'opacity-70' : '',
                 ]
                   .filter(Boolean)
                   .join(' ');
@@ -1279,7 +1335,9 @@ const Invoices: React.FC<InvoicesProps> = ({
                             ? 'border-green-500/40 bg-green-50 text-green-600 focus:ring-green-500'
                             : 'border-green-500/40 bg-green-50 text-green-600 hover:bg-green-100 hover:text-green-700 focus:ring-green-500'
                         } ${isExcluded ? 'opacity-40 cursor-not-allowed' : ''}`}
-                        title={isExcluded ? 'Enable invoice to send e-bills' : 'Send e-bill via WhatsApp'}
+                        title={
+                          isExcluded ? 'Enable invoice to send e-bills' : 'Send e-bill via WhatsApp'
+                        }
                         disabled={sendingInvoiceId === rowKey || isExcluded}
                         aria-disabled={false}
                       >
@@ -1293,31 +1351,57 @@ const Invoices: React.FC<InvoicesProps> = ({
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-900">
                       <div className="flex flex-col items-center gap-2">
-                        <span className={`text-xs font-semibold ${isExcluded ? 'text-rose-500' : 'text-emerald-500'}`}>
+                        <span
+                          className={`text-xs font-semibold ${
+                            isExcluded ? 'text-rose-500' : 'text-emerald-500'
+                          }`}
+                        >
                           {isExcluded ? 'Excluded' : 'Active'}
                         </span>
                         <button
                           type="button"
                           onClick={() => handleToggleExclusion(invoice, !isExcluded, rowKey)}
                           disabled={updatingExclusionId === rowKey}
-                          className={`relative inline-flex h-8 ${invoiceView === 'daily' ? 'w-16' : 'w-28'} items-center rounded-full border px-1 text-[10px] font-semibold transition focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+                          className={`relative inline-flex h-8 ${
+                            invoiceView === 'daily' ? 'w-16' : 'w-28'
+                          } items-center rounded-full border px-1 text-[10px] font-semibold transition focus:outline-none focus:ring-2 focus:ring-offset-2 ${
                             isExcluded
                               ? 'border-rose-200 bg-rose-50 text-rose-500 focus:ring-rose-200'
                               : 'border-emerald-200 bg-emerald-50 text-emerald-500 focus:ring-emerald-200'
                           }`}
-                          aria-label={isExcluded ? 'Include this invoice back in KPIs' : 'Exclude this invoice'}
+                          aria-label={
+                            isExcluded
+                              ? 'Include this invoice back in KPIs'
+                              : 'Exclude this invoice'
+                          }
                           aria-pressed={isExcluded}
                         >
                           {invoiceView === 'daily' ? (
-                            <span className="flex w-full items-center justify-center text-[11px] font-semibold text-rose-700">Ex</span>
+                            <span className="flex w-full items-center justify-center text-[11px] font-semibold text-rose-700">
+                              Ex
+                            </span>
                           ) : (
                             <div className="relative grid h-full w-full grid-cols-2 text-center text-[10px]">
-                              <span className={`z-10 flex items-center justify-center transition ${isExcluded ? 'text-rose-700' : 'text-gray-400'}`}>Ex</span>
-                              <span className={`z-10 flex items-center justify-center transition ${!isExcluded ? 'text-emerald-700' : 'text-gray-400'}`}>In</span>
+                              <span
+                                className={`z-10 flex items-center justify-center transition ${
+                                  isExcluded ? 'text-rose-700' : 'text-gray-400'
+                                }`}
+                              >
+                                Ex
+                              </span>
+                              <span
+                                className={`z-10 flex items-center justify-center transition ${
+                                  !isExcluded ? 'text-emerald-700' : 'text-gray-400'
+                                }`}
+                              >
+                                In
+                              </span>
                               <span
                                 aria-hidden="true"
                                 className={`pointer-events-none absolute inset-y-1 left-1 rounded-full shadow transition duration-200 transform ${
-                                  isExcluded ? 'bg-rose-100 translate-x-full' : 'bg-emerald-100 translate-x-0'
+                                  isExcluded
+                                    ? 'bg-rose-100 translate-x-full'
+                                    : 'bg-emerald-100 translate-x-0'
                                 }`}
                                 style={{ width: 'calc(50% - 0.35rem)' }}
                               />
@@ -1371,10 +1455,15 @@ const Invoices: React.FC<InvoicesProps> = ({
           </div>
         </div>
       </div>
-      <Dialog open={Boolean(exclusionDialog)} onOpenChange={open => (!open ? handleCloseExclusionDialog() : null)}>
+      <Dialog
+        open={Boolean(exclusionDialog)}
+        onOpenChange={open => (!open ? handleCloseExclusionDialog() : null)}
+      >
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>{isRestoreDialog ? 'Restore this invoice?' : 'Exclude this invoice?'}</DialogTitle>
+            <DialogTitle>
+              {isRestoreDialog ? 'Restore this invoice?' : 'Exclude this invoice?'}
+            </DialogTitle>
             <DialogDescription>
               {isRestoreDialog
                 ? 'Move this invoice back to the Invoices tab so it counts toward KPIs again.'
@@ -1427,7 +1516,12 @@ const Invoices: React.FC<InvoicesProps> = ({
               </>
             )}
             <DialogFooter className="flex flex-col gap-2">
-              <Button type="button" variant="ghost" onClick={handleCloseExclusionDialog} disabled={dailyEndReportLoading || exclusionDialogBusy}>
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={handleCloseExclusionDialog}
+                disabled={dailyEndReportLoading || exclusionDialogBusy}
+              >
                 Cancel
               </Button>
             </DialogFooter>

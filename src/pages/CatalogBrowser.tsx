@@ -21,7 +21,7 @@ const CatalogBrowser: React.FC = () => {
     'Content-Type': 'application/json',
     ...(typeof window !== 'undefined'
       ? { Authorization: `Bearer ${localStorage.getItem('bb_token') || ''}` }
-      : {})
+      : {}),
   });
 
   const loadCatalog = async () => {
@@ -29,7 +29,7 @@ const CatalogBrowser: React.FC = () => {
     setError('');
     try {
       const catalogResponse = await fetch('/api/whatsapp/catalog', {
-        headers: buildAuthHeaders()
+        headers: buildAuthHeaders(),
       });
       const catalogData = await catalogResponse.json().catch(() => ({}));
       if (!catalogResponse.ok) {
@@ -46,10 +46,10 @@ const CatalogBrowser: React.FC = () => {
 
       const query = new URLSearchParams({
         catalogId: resolvedCatalogId,
-        limit: '200'
+        limit: '200',
       });
       const productsResponse = await fetch(`/api/whatsapp/catalog/products?${query.toString()}`, {
-        headers: buildAuthHeaders()
+        headers: buildAuthHeaders(),
       });
       const productsData = await productsResponse.json().catch(() => ({}));
       if (!productsResponse.ok) {
@@ -80,7 +80,7 @@ const CatalogBrowser: React.FC = () => {
         product.name || '',
         product.product_retailer_id || '',
         product.price || '',
-        product.availability || ''
+        product.availability || '',
       ];
       return fields.some(field => field.toLowerCase().includes(term));
     });
