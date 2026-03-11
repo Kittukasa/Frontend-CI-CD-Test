@@ -172,25 +172,3 @@ jobs:
           name: production-build
           path: ./dist
           retention-days: ${{ env.ARTIFACT_RETENTION_DAYS }}
-```
-
----
-
-## How the Chain Works Visually
-
-On **every PR**, GitHub shows all 3 stages — but only the right one runs:
-```
-PR: feature → dev
-  Stage 1 · Prettier        ✅ RUNS
-  Stage 2 · ESLint          ⏭️ SKIPPED (base_ref != test)
-  Stage 3 · Deploy          ⏭️ SKIPPED (base_ref != main)
-
-PR: dev → test
-  Stage 1 · Prettier        ⏭️ SKIPPED (base_ref != dev)
-  Stage 2 · ESLint          ✅ RUNS
-  Stage 3 · Deploy          ⏭️ SKIPPED (base_ref != main)
-
-PR: test → main
-  Stage 1 · Prettier        ⏭️ SKIPPED (base_ref != dev)
-  Stage 2 · ESLint          ⏭️ SKIPPED (base_ref != test)
-  Stage 3 · Deploy          ✅ RUNS
