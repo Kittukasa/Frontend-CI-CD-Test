@@ -203,7 +203,7 @@ jobs:
       (needs.eslint-and-coverage.result == 'success' || needs.eslint-and-coverage.result == 'skipped')
     runs-on: ubuntu-latest
     environment:
-      name: production
+      name: prod
     steps:
       - name: Configure AWS
         uses: aws-actions/configure-aws-credentials@v4
