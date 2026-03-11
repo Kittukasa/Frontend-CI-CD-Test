@@ -1,0 +1,174 @@
+name: CI/CD Multi-Stage Pipeline
+
+on:
+  pull_request:
+    branches:
+      - dev
+      - test
+      - main
+
+env:
+  NODE_VERSION: "20"
+  ARTIFACT_RETENTION_DAYS: 7
+
+jobs:
+
+# ============================================================
+# STAGE 1 — PRETTIER (feature → dev)
+# ============================================================
+  prettier-check:
+    name: "Stage 1 · Prettier Check & Format"
+    if: github.base_ref == 'dev'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Prettier
+        run: npx prettier --write "**/*.{js,jsx,ts,tsx,css,scss,json,md}"
+
+      - name: Commit formatted code
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          if ! git diff --quiet; then
+            git add .
+            git commit -m "style: auto-format with Prettier"
+            git push
+          else
+            echo "No changes"
+          fi
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: prettier-formatted-code
+          path: .
+          retention-days: ${{ env.ARTIFACT_RETENTION_DAYS }}
+
+# ============================================================
+# STAGE 2 — ESLINT & COVERAGE (dev → test)
+# ============================================================
+  eslint-and-coverage:
+    name: "Stage 2 · ESLint & Code Coverage"
+    needs: prettier-check   # 🔗 Chained to Stage 1
+    # ✅ Run if Stage 1 passed OR was skipped (different PR target)
+    if: |
+      always() &&
+      github.base_ref == 'test' &&
+      (needs.prettier-check.result == 'success' || needs.prettier-check.result == 'skipped')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run ESLint
+        id: eslint
+        continue-on-error: true
+        run: |
+          npx eslint "**/*.{ts,tsx}" \
+            --format json --output-file eslint-report.json || true
+          if grep -q '"errorCount":[^0]' eslint-report.json; then
+            echo "eslint_passed=false" >> $GITHUB_OUTPUT
+          else
+            echo "eslint_passed=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Run tests with coverage
+        id: coverage
+        continue-on-error: true
+        run: npx vitest run --coverage
+
+      - name: Upload validated artifact (success)
+        if: steps.eslint.outputs.eslint_passed == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: eslint-validated-code
+          path: |
+            .
+            !node_modules
+          retention-days: ${{ env.ARTIFACT_RETENTION_DAYS }}
+
+      - name: Upload failure report (failure)
+        if: steps.eslint.outputs.eslint_passed == 'false'
+        uses: actions/upload-artifact@v4
+        with:
+          name: lint-coverage-failure-report
+          path: |
+            eslint-report.json
+            coverage/
+          retention-days: ${{ env.ARTIFACT_RETENTION_DAYS }}
+
+      - name: Fail if ESLint failed
+        if: steps.eslint.outputs.eslint_passed == 'false'
+        run: exit 1
+
+# ============================================================
+# STAGE 3 — DEPLOY TO S3 (test → main)
+# ============================================================
+  deploy-to-s3:
+    name: "Stage 3 · Deploy to AWS S3"
+    needs: eslint-and-coverage   # 🔗 Chained to Stage 2
+    # ✅ Run if Stage 2 passed OR was skipped (different PR target)
+    if: |
+      always() &&
+      github.base_ref == 'main' &&
+      (needs.eslint-and-coverage.result == 'success' || needs.eslint-and-coverage.result == 'skipped')
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build project
+        run: npm run build
+
+      - name: Configure AWS
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Deploy to S3
+        run: |
+          aws s3 sync ./dist s3://${{ vars.S3_BUCKET_NAME }} --delete
+
+      - name: Upload deployment artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: production-build
+          path: ./dist
+          retention-days: ${{ env.ARTIFACT_RETENTION_DAYS }}

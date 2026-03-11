@@ -1,0 +1,152 @@
+<svg width="300" height="200" viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="campaignGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#10B981;stop-opacity:0.8" />
+      <stop offset="50%" style="stop-color:#059669;stop-opacity:0.8" />
+      <stop offset="100%" style="stop-color:#047857;stop-opacity:0.8" />
+    </linearGradient>
+    <linearGradient id="engagementGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#F59E0B;stop-opacity:0.8" />
+      <stop offset="100%" style="stop-color:#D97706;stop-opacity:0.8" />
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="300" height="200" fill="url(#campaignGradient)" opacity="0.1"/>
+  
+  <!-- Modern Store Owner (Male, Gen-Z) -->
+  <g transform="translate(50, 60)">
+    <!-- Body -->
+    <ellipse cx="40" cy="80" rx="25" ry="50" fill="#2D3748"/>
+    <!-- Head -->
+    <circle cx="40" cy="40" r="22" fill="#F7FAFC"/>
+    <!-- Modern Hair (Trendy Cut) -->
+    <path d="M18 35 Q40 18 62 35 Q58 25 40 25 Q22 25 18 35" fill="#1A202C"/>
+    <path d="M25 40 Q32 35 40 40 Q48 35 55 40" fill="#1A202C"/>
+    <!-- Eyes -->
+    <circle cx="33" cy="37" r="2.5" fill="#2D3748"/>
+    <circle cx="47" cy="37" r="2.5" fill="#2D3748"/>
+    <!-- Smile -->
+    <path d="M33 45 Q40 50 47 45" stroke="#2D3748" stroke-width="2" fill="none"/>
+    <!-- Arms -->
+    <ellipse cx="18" cy="65" rx="10" ry="25" fill="#F7FAFC" transform="rotate(-20 18 65)"/>
+    <ellipse cx="62" cy="65" rx="10" ry="25" fill="#F7FAFC" transform="rotate(20 62 65)"/>
+  </g>
+  
+  <!-- Campaign Success Overlay -->
+  <g transform="translate(120, 50)">
+    <!-- WhatsApp Campaign Interface -->
+    <rect x="0" y="0" width="90" height="70" rx="10" fill="rgba(37, 211, 102, 0.2)" stroke="#25D366" stroke-width="2" filter="url(#glow)"/>
+    
+    <!-- Campaign Stats -->
+    <text x="45" y="15" text-anchor="middle" fill="#25D366" font-size="8" font-weight="bold">CAMPAIGN SENT</text>
+    <text x="45" y="28" text-anchor="middle" fill="white" font-size="12" font-weight="bold">2,450</text>
+    <text x="45" y="38" text-anchor="middle" fill="#34D399" font-size="6">customers reached</text>
+    
+    <!-- Success Rate -->
+    <rect x="10" y="45" width="70" height="8" rx="4" fill="#1F2937"/>
+    <rect x="10" y="45" width="56" height="8" rx="4" fill="#10B981"/>
+    <text x="45" y="60" text-anchor="middle" fill="#10B981" font-size="6" font-weight="bold">95% Success Rate</text>
+  </g>
+  
+  <!-- Customer Engagement Bubbles -->
+  <g transform="translate(160, 130)">
+    <!-- Engagement Card -->
+    <rect x="0" y="0" width="100" height="40" rx="8" fill="rgba(245, 158, 11, 0.2)" stroke="#F59E0B" stroke-width="1" filter="url(#glow)"/>
+    
+    <!-- Engagement Icons -->
+    <g transform="translate(10, 12)">
+      <!-- Heart (Likes) -->
+      <path d="M5 8 Q5 5 8 5 Q11 5 11 8 Q8 12 5 8" fill="#EF4444"/>
+      <text x="8" y="20" text-anchor="middle" fill="#EF4444" font-size="4">1.2K</text>
+      
+      <!-- Comment -->
+      <rect x="20" y="5" width="8" height="6" rx="2" fill="#3B82F6"/>
+      <path d="M22 11 L24 13 L26 11" fill="#3B82F6"/>
+      <text x="24" y="20" text-anchor="middle" fill="#3B82F6" font-size="4">850</text>
+      
+      <!-- Share -->
+      <path d="M36 8 L40 5 L44 8 M40 5 L40 12" stroke="#10B981" stroke-width="1.5" fill="none"/>
+      <text x="40" y="20" text-anchor="middle" fill="#10B981" font-size="4">420</text>
+      
+      <!-- Purchase -->
+      <rect x="52" y="5" width="8" height="8" rx="1" fill="#8B5CF6"/>
+      <path d="M54 7 L56 9 L60 5" stroke="white" stroke-width="1" fill="none"/>
+      <text x="56" y="20" text-anchor="middle" fill="#8B5CF6" font-size="4">320</text>
+    </g>
+    
+    <text x="50" y="32" text-anchor="middle" fill="#F59E0B" font-size="5" font-weight="bold">High Engagement</text>
+  </g>
+  
+  <!-- Tablet with Analytics -->
+  <g transform="translate(220, 70)">
+    <!-- Tablet -->
+    <rect x="0" y="0" width="60" height="80" rx="8" fill="#1F2937" stroke="url(#engagementGlow)" stroke-width="1" filter="url(#glow)"/>
+    <rect x="4" y="4" width="52" height="72" rx="6" fill="#111827"/>
+    
+    <!-- Analytics Dashboard -->
+    <rect x="6" y="8" width="48" height="12" rx="2" fill="url(#campaignGradient)"/>
+    <text x="30" y="16" text-anchor="middle" fill="white" font-size="5" font-weight="bold">Analytics</text>
+    
+    <!-- Metrics -->
+    <g transform="translate(8, 25)">
+      <!-- Repeat Customers -->
+      <rect x="0" y="0" width="20" height="15" rx="3" fill="#10B981" opacity="0.8"/>
+      <text x="10" y="8" text-anchor="middle" fill="white" font-size="4">+45%</text>
+      <text x="10" y="12" text-anchor="middle" fill="white" font-size="3">Repeat</text>
+      
+      <!-- Revenue -->
+      <rect x="24" y="0" width="20" height="15" rx="3" fill="#3B82F6" opacity="0.8"/>
+      <text x="34" y="8" text-anchor="middle" fill="white" font-size="4">+35%</text>
+      <text x="34" y="12" text-anchor="middle" fill="white" font-size="3">Revenue</text>
+      
+      <!-- Customer Satisfaction -->
+      <rect x="0" y="20" width="44" height="12" rx="3" fill="#F59E0B" opacity="0.8"/>
+      <text x="22" y="28" text-anchor="middle" fill="white" font-size="4">98% Satisfaction</text>
+      
+      <!-- Trend Chart -->
+      <g transform="translate(2, 38)">
+        <rect x="0" y="8" width="3" height="4" fill="#60A5FA"/>
+        <rect x="5" y="6" width="3" height="6" fill="#34D399"/>
+        <rect x="10" y="4" width="3" height="8" fill="#F59E0B"/>
+        <rect x="15" y="2" width="3" height="10" fill="#EF4444"/>
+        <rect x="20" y="0" width="3" height="12" fill="#8B5CF6"/>
+        <rect x="25" y="1" width="3" height="11" fill="#06B6D4"/>
+        <rect x="30" y="3" width="3" height="9" fill="#10B981"/>
+        <rect x="35" y="0" width="3" height="12" fill="#3B82F6"/>
+      </g>
+    </g>
+  </g>
+  
+  <!-- Success Indicators -->
+  <g transform="translate(260, 30)">
+    <!-- Trophy -->
+    <circle cx="15" cy="15" r="12" fill="#F59E0B" filter="url(#glow)"/>
+    <path d="M10 12 Q15 8 20 12 Q15 16 10 12" fill="white"/>
+    <rect x="13" y="16" width="4" height="6" fill="white"/>
+    <rect x="11" y="22" width="8" height="2" fill="white"/>
+    
+    <!-- Star Rating -->
+    <g transform="translate(5, 35)" fill="#F59E0B">
+      <path d="M5 0 L6 3 L10 3 L7 5 L8 9 L5 7 L2 9 L3 5 L0 3 L4 3 Z"/>
+      <path d="M15 0 L16 3 L20 3 L17 5 L18 9 L15 7 L12 9 L13 5 L10 3 L14 3 Z"/>
+    </g>
+  </g>
+  
+  <!-- Floating Success Elements -->
+  <g opacity="0.6">
+    <circle cx="30" cy="30" r="18" fill="#25D366" opacity="0.2" filter="url(#glow)"/>
+    <circle cx="270" cy="170" r="15" fill="#10B981" opacity="0.3" filter="url(#glow)"/>
+    <circle cx="150" cy="20" r="12" fill="#F59E0B" opacity="0.3" filter="url(#glow)"/>
+  </g>
+  
+  <!-- Success Text -->
+  <text x="150" y="190" text-anchor="middle" fill="#10B981" font-size="10" font-weight="bold">Customer Engagement Success</text>
+</svg>
