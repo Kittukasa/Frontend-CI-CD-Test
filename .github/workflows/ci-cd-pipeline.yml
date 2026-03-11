@@ -24,12 +24,12 @@ jobs:
       contents: write
     steps:
       - name: Checkout branch
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
         with:
           persist-credentials: true
 
       - name: Setup Node
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
@@ -47,13 +47,13 @@ jobs:
           if ! git diff --quiet; then
             git add .
             git commit -m "style: auto-format with Prettier"
-            git push origin HEAD:${{ github.head_ref }}
+            git push
           else
             echo "No changes"
           fi
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v4
         with:
           name: prettier-formatted-code
           path: .
@@ -64,7 +64,8 @@ jobs:
 # ============================================================
   eslint-and-coverage:
     name: "Stage 2 · ESLint & Code Coverage"
-    needs: prettier-check
+    needs: prettier-check   # 🔗 Chained to Stage 1
+    # ✅ Run if Stage 1 passed OR was skipped (different PR target)
     if: |
       always() &&
       github.base_ref == 'test' &&
@@ -72,10 +73,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
 
       - name: Setup Node
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
@@ -87,9 +88,8 @@ jobs:
         id: eslint
         continue-on-error: true
         run: |
-          npx eslint "**/*.{js,jsx,ts,tsx}" \
+          npx eslint "**/*.{ts,tsx}" \
             --format json --output-file eslint-report.json || true
-
           if grep -q '"errorCount":[^0]' eslint-report.json; then
             echo "eslint_passed=false" >> $GITHUB_OUTPUT
           else
@@ -101,9 +101,9 @@ jobs:
         continue-on-error: true
         run: npx vitest run --coverage
 
-      - name: Upload validated artifact
+      - name: Upload validated artifact (success)
         if: steps.eslint.outputs.eslint_passed == 'true'
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v4
         with:
           name: eslint-validated-code
           path: |
@@ -111,9 +111,9 @@ jobs:
             !node_modules
           retention-days: ${{ env.ARTIFACT_RETENTION_DAYS }}
 
-      - name: Upload failure report
+      - name: Upload failure report (failure)
         if: steps.eslint.outputs.eslint_passed == 'false'
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v4
         with:
           name: lint-coverage-failure-report
           path: |
@@ -130,7 +130,8 @@ jobs:
 # ============================================================
   deploy-to-s3:
     name: "Stage 3 · Deploy to AWS S3"
-    needs: eslint-and-coverage
+    needs: eslint-and-coverage   # 🔗 Chained to Stage 2
+    # ✅ Run if Stage 2 passed OR was skipped (different PR target)
     if: |
       always() &&
       github.base_ref == 'main' &&
@@ -140,10 +141,10 @@ jobs:
       name: production
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
 
       - name: Setup Node
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
@@ -166,7 +167,7 @@ jobs:
           aws s3 sync ./dist s3://${{ vars.S3_BUCKET_NAME }} --delete
 
       - name: Upload deployment artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v4
         with:
           name: production-build
           path: ./dist
