@@ -150,7 +150,7 @@ jobs:
         continue-on-error: true
         run: npx vitest run --coverage
 
-      # ── SUCCESS — upload eslint-coverage artifact ──────────
+      # ── SUCCESS — upload eslint-coverage artifact to S3 ───
       - name: Package & upload validated artifact to S3
         if: steps.eslint.outputs.eslint_passed == 'true'
         run: |
@@ -288,24 +288,6 @@ jobs:
           name: eslint-report-PR${{ github.event.pull_request.number }}
           path: eslint-html-report/
           retention-days: 7
-
-      - name: Upload failure report to S3
-        if: steps.eslint.outputs.eslint_passed == 'false'
-        run: |
-          ARTIFACT_NAME="failure-report-test.tar.gz"
-          echo "📦 Packaging failure report as $ARTIFACT_NAME..."
-
-          tar -czf /tmp/$ARTIFACT_NAME \
-            eslint-report.json \
-            eslint-html-report/ \
-            coverage/ || true
-
-          echo "⬆️  Uploading failure report to S3..."
-          aws s3 cp /tmp/$ARTIFACT_NAME \
-            s3://${{ vars.S3_ARTIFACT_BUCKET }}/${{ env.S3_ARTIFACT_PREFIX }}/$ARTIFACT_NAME
-
-          echo "❌ Failure report stored at:"
-          echo "   s3://${{ vars.S3_ARTIFACT_BUCKET }}/${{ env.S3_ARTIFACT_PREFIX }}/$ARTIFACT_NAME"
 
 # ============================================================
 # STAGE 3 — DEPLOY TO S3 (test → main)
