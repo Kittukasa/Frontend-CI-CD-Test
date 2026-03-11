@@ -169,7 +169,126 @@ jobs:
           echo "✅ Validated artifact stored at:"
           echo "   s3://${{ vars.S3_ARTIFACT_BUCKET }}/${{ env.S3_ARTIFACT_PREFIX }}/$ARTIFACT_NAME"
 
-      # ── FAILURE — upload failure-report artifact ───────────
+      # ── FAILURE — generate HTML report & upload to GitHub Artifacts ──
+      - name: Generate HTML ESLint Report
+        if: steps.eslint.outputs.eslint_passed == 'false'
+        run: |
+          node << 'SCRIPT'
+          const fs = require('fs');
+          const raw = fs.readFileSync('eslint-report.json', 'utf8');
+          const data = JSON.parse(raw);
+
+          const totalErrors   = data.reduce((s, f) => s + f.errorCount, 0);
+          const totalWarnings = data.reduce((s, f) => s + f.warningCount, 0);
+          const filesWithIssues = data.filter(f => f.messages.length > 0);
+          const generatedAt = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
+
+          const severityBadge = (sev) => sev === 2
+            ? '<span class="badge error">Error</span>'
+            : '<span class="badge warning">Warning</span>';
+
+          const fileBlocks = filesWithIssues.map(file => {
+            const shortPath = file.filePath.replace(/.*\/src\//, 'src/');
+            const rows = file.messages.map(m => `
+              <tr>
+                <td>${m.line}:${m.column}</td>
+                <td>${severityBadge(m.severity)}</td>
+                <td>${m.message.replace(/</g, '&lt;')}</td>
+                <td><code>${m.ruleId || 'N/A'}</code></td>
+              </tr>`).join('');
+
+            return `
+              <div class="file-block">
+                <div class="file-header">
+                  <span class="file-icon">📄</span>
+                  <span class="file-path">${shortPath}</span>
+                  <span class="file-counts">
+                    <span class="badge error">${file.errorCount} errors</span>
+                    <span class="badge warning">${file.warningCount} warnings</span>
+                  </span>
+                </div>
+                <table>
+                  <thead>
+                    <tr><th>Location</th><th>Severity</th><th>Message</th><th>Rule</th></tr>
+                  </thead>
+                  <tbody>${rows}</tbody>
+                </table>
+              </div>`;
+          }).join('');
+
+          const html = `<!DOCTYPE html>
+          <html lang="en">
+          <head>
+            <meta charset="UTF-8"/>
+            <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+            <title>ESLint Report</title>
+            <style>
+              * { box-sizing: border-box; margin: 0; padding: 0; }
+              body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0d1117; color: #e6edf3; min-height: 100vh; }
+              .header { background: linear-gradient(135deg, #161b22 0%, #1c2128 100%); border-bottom: 1px solid #30363d; padding: 32px 40px; }
+              .header h1 { font-size: 28px; font-weight: 700; display: flex; align-items: center; gap: 12px; }
+              .header p { color: #8b949e; margin-top: 8px; font-size: 14px; }
+              .summary { display: flex; gap: 20px; padding: 24px 40px; flex-wrap: wrap; }
+              .card { background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 20px 28px; flex: 1; min-width: 160px; }
+              .card .label { font-size: 12px; color: #8b949e; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+              .card .value { font-size: 36px; font-weight: 700; }
+              .card.red .value { color: #f85149; }
+              .card.yellow .value { color: #d29922; }
+              .card.blue .value { color: #388bfd; }
+              .card.purple .value { color: #bc8cff; }
+              .content { padding: 0 40px 40px; }
+              .section-title { font-size: 18px; font-weight: 600; margin: 24px 0 16px; color: #e6edf3; border-left: 3px solid #388bfd; padding-left: 12px; }
+              .file-block { background: #161b22; border: 1px solid #30363d; border-radius: 10px; margin-bottom: 16px; overflow: hidden; }
+              .file-header { display: flex; align-items: center; gap: 10px; padding: 14px 18px; background: #1c2128; border-bottom: 1px solid #30363d; flex-wrap: wrap; gap: 8px; }
+              .file-icon { font-size: 16px; }
+              .file-path { font-family: monospace; font-size: 13px; color: #79c0ff; flex: 1; word-break: break-all; }
+              .file-counts { display: flex; gap: 6px; }
+              table { width: 100%; border-collapse: collapse; font-size: 13px; }
+              th { background: #1c2128; color: #8b949e; font-weight: 600; text-align: left; padding: 10px 16px; border-bottom: 1px solid #30363d; }
+              td { padding: 10px 16px; border-bottom: 1px solid #21262d; vertical-align: top; }
+              tr:last-child td { border-bottom: none; }
+              tr:hover td { background: #1c2128; }
+              td:first-child { color: #8b949e; white-space: nowrap; font-family: monospace; }
+              td:last-child code { background: #1c2128; padding: 2px 8px; border-radius: 4px; font-size: 11px; color: #79c0ff; border: 1px solid #30363d; }
+              .badge { display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+              .badge.error { background: rgba(248,81,73,0.15); color: #f85149; border: 1px solid rgba(248,81,73,0.3); }
+              .badge.warning { background: rgba(210,153,34,0.15); color: #d29922; border: 1px solid rgba(210,153,34,0.3); }
+              .no-issues { text-align: center; padding: 60px; color: #8b949e; font-size: 16px; }
+              .footer { text-align: center; padding: 20px; color: #484f58; font-size: 12px; border-top: 1px solid #21262d; margin-top: 20px; }
+            </style>
+          </head>
+          <body>
+            <div class="header">
+              <h1>🔍 ESLint Report</h1>
+              <p>Generated at ${generatedAt} · PR #${{ github.event.pull_request.number }} · <code style="color:#79c0ff">${{ github.head_ref }}</code> → <code style="color:#79c0ff">${{ github.base_ref }}</code></p>
+            </div>
+            <div class="summary">
+              <div class="card red"><div class="label">Total Errors</div><div class="value">${totalErrors}</div></div>
+              <div class="card yellow"><div class="label">Total Warnings</div><div class="value">${totalWarnings}</div></div>
+              <div class="card blue"><div class="label">Files Scanned</div><div class="value">${data.length}</div></div>
+              <div class="card purple"><div class="label">Files with Issues</div><div class="value">${filesWithIssues.length}</div></div>
+            </div>
+            <div class="content">
+              <div class="section-title">Issues by File</div>
+              ${filesWithIssues.length > 0 ? fileBlocks : '<div class="no-issues">✅ No issues found!</div>'}
+            </div>
+            <div class="footer">Generated by CI/CD Pipeline · GitHub Actions</div>
+          </body>
+          </html>`;
+
+          fs.mkdirSync('eslint-html-report', { recursive: true });
+          fs.writeFileSync('eslint-html-report/index.html', html);
+          console.log('✅ HTML report generated: eslint-html-report/index.html');
+          SCRIPT
+
+      - name: Upload HTML report to GitHub Artifacts
+        if: steps.eslint.outputs.eslint_passed == 'false'
+        uses: actions/upload-artifact@v4
+        with:
+          name: eslint-report-PR${{ github.event.pull_request.number }}
+          path: eslint-html-report/
+          retention-days: 7
+
       - name: Upload failure report to S3
         if: steps.eslint.outputs.eslint_passed == 'false'
         run: |
@@ -178,6 +297,7 @@ jobs:
 
           tar -czf /tmp/$ARTIFACT_NAME \
             eslint-report.json \
+            eslint-html-report/ \
             coverage/ || true
 
           echo "⬆️  Uploading failure report to S3..."
@@ -262,4 +382,3 @@ jobs:
 
           echo "✅ Production build archived at:"
           echo "   s3://${{ vars.S3_ARTIFACT_BUCKET }}/${{ env.S3_ARTIFACT_PREFIX }}/$ARTIFACT_NAME"
-          
