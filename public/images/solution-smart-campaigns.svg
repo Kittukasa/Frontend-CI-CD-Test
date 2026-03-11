@@ -1,0 +1,154 @@
+<svg width="300" height="200" viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="campaignGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#10B981;stop-opacity:0.8" />
+      <stop offset="50%" style="stop-color:#059669;stop-opacity:0.8" />
+      <stop offset="100%" style="stop-color:#047857;stop-opacity:0.8" />
+    </linearGradient>
+    <linearGradient id="loyaltyGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#F59E0B;stop-opacity:0.8" />
+      <stop offset="100%" style="stop-color:#D97706;stop-opacity:0.8" />
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="pulse">
+      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="300" height="200" fill="url(#campaignGradient)" opacity="0.1"/>
+  
+  <!-- Chat Bubbles with Campaigns -->
+  <g transform="translate(30, 30)">
+    <!-- WhatsApp Chat Interface -->
+    <rect x="0" y="0" width="120" height="140" rx="15" fill="#128C7E" stroke="#25D366" stroke-width="2" filter="url(#glow)"/>
+    <rect x="5" y="5" width="110" height="130" rx="12" fill="#0D7377"/>
+    
+    <!-- Chat Header -->
+    <rect x="8" y="8" width="104" height="18" rx="3" fill="#075E54"/>
+    <circle cx="16" cy="17" r="5" fill="#25D366"/>
+    <path d="M14 17 Q16 15 18 17 Q16 19 14 17" fill="white"/>
+    <text x="25" y="20" fill="white" font-size="6" font-weight="bold">BillBox Campaigns</text>
+    
+    <!-- Campaign Messages -->
+    <g transform="translate(10, 30)">
+      <!-- Loyalty Offer -->
+      <rect x="5" y="0" width="90" height="25" rx="8" fill="#DCF8C6"/>
+      <text x="50" y="8" text-anchor="middle" fill="#075E54" font-size="5" font-weight="bold">🎉 Special Offer for You!</text>
+      <text x="50" y="15" text-anchor="middle" fill="#075E54" font-size="4">Get 20% OFF on your next purchase</text>
+      <text x="50" y="21" text-anchor="middle" fill="#075E54" font-size="4">Use code: LOYAL20 ⭐</text>
+      
+      <!-- Birthday Campaign -->
+      <rect x="10" y="30" width="85" height="20" rx="8" fill="#E1F5FE"/>
+      <text x="52" y="38" text-anchor="middle" fill="#0277BD" font-size="5" font-weight="bold">🎂 Happy Birthday!</text>
+      <text x="52" y="45" text-anchor="middle" fill="#0277BD" font-size="4">Enjoy a FREE dessert on us! 🍰</text>
+      
+      <!-- Restock Alert -->
+      <rect x="8" y="55" width="87" height="20" rx="8" fill="#FFF3E0"/>
+      <text x="51" y="63" text-anchor="middle" fill="#E65100" font-size="5" font-weight="bold">📦 Your Favorite is Back!</text>
+      <text x="51" y="70" text-anchor="middle" fill="#E65100" font-size="4">Product XYZ restocked. Order now!</text>
+      
+      <!-- Loyalty Points -->
+      <rect x="15" y="80" width="75" height="25" rx="8" fill="#F3E5F5"/>
+      <text x="52" y="88" text-anchor="middle" fill="#7B1FA2" font-size="5" font-weight="bold">⭐ Points Update</text>
+      <text x="52" y="95" text-anchor="middle" fill="#7B1FA2" font-size="4">You have 1,250 points!</text>
+      <text x="52" y="101" text-anchor="middle" fill="#7B1FA2" font-size="4">Redeem for rewards 🎁</text>
+    </g>
+  </g>
+  
+  <!-- Loyalty Points Overlay -->
+  <g transform="translate(160, 40)">
+    <!-- Points Card -->
+    <rect x="0" y="0" width="80" height="60" rx="10" fill="url(#loyaltyGlow)" filter="url(#glow)"/>
+    <rect x="3" y="3" width="74" height="54" rx="8" fill="#FFF7ED"/>
+    
+    <!-- Points Display -->
+    <text x="40" y="15" text-anchor="middle" fill="#D97706" font-size="8" font-weight="bold">LOYALTY POINTS</text>
+    <text x="40" y="30" text-anchor="middle" fill="#92400E" font-size="16" font-weight="bold">1,250</text>
+    <text x="40" y="42" text-anchor="middle" fill="#D97706" font-size="6">Available Points</text>
+    
+    <!-- Stars -->
+    <g fill="#F59E0B">
+      <path d="M15 48 L17 52 L21 52 L18 55 L19 59 L15 57 L11 59 L12 55 L9 52 L13 52 Z"/>
+      <path d="M40 48 L42 52 L46 52 L43 55 L44 59 L40 57 L36 59 L37 55 L34 52 L38 52 Z"/>
+      <path d="M65 48 L67 52 L71 52 L68 55 L69 59 L65 57 L61 59 L62 55 L59 52 L63 52 Z"/>
+    </g>
+  </g>
+  
+  <!-- Campaign Analytics -->
+  <g transform="translate(160, 110)">
+    <!-- Analytics Card -->
+    <rect x="0" y="0" width="100" height="50" rx="8" fill="#1F2937" stroke="#10B981" stroke-width="1" filter="url(#pulse)"/>
+    
+    <!-- Success Metrics -->
+    <text x="50" y="12" text-anchor="middle" fill="#10B981" font-size="6" font-weight="bold">CAMPAIGN RESULTS</text>
+    
+    <g transform="translate(10, 18)">
+      <!-- Open Rate -->
+      <text x="0" y="8" fill="#34D399" font-size="5">Open Rate: 95%</text>
+      <rect x="35" y="5" width="20" height="3" rx="1" fill="#1F2937"/>
+      <rect x="35" y="5" width="19" height="3" rx="1" fill="#34D399"/>
+      
+      <!-- Click Rate -->
+      <text x="0" y="18" fill="#60A5FA" font-size="5">Click Rate: 78%</text>
+      <rect x="35" y="15" width="20" height="3" rx="1" fill="#1F2937"/>
+      <rect x="35" y="15" width="15.6" height="3" rx="1" fill="#60A5FA"/>
+      
+      <!-- Conversion -->
+      <text x="0" y="28" fill="#F59E0B" font-size="5">Conversion: 45%</text>
+      <rect x="35" y="25" width="20" height="3" rx="1" fill="#1F2937"/>
+      <rect x="35" y="25" width="9" height="3" rx="1" fill="#F59E0B"/>
+    </g>
+  </g>
+  
+  <!-- Automation Flow -->
+  <g transform="translate(20, 170)">
+    <!-- Flow Steps -->
+    <circle cx="15" cy="10" r="8" fill="#3B82F6" filter="url(#glow)"/>
+    <text x="15" y="13" text-anchor="middle" fill="white" font-size="6">1</text>
+    <text x="15" y="25" text-anchor="middle" fill="#3B82F6" font-size="4">Trigger</text>
+    
+    <path d="M23 10 L37 10" stroke="#6B7280" stroke-width="2" marker-end="url(#arrow)"/>
+    
+    <circle cx="45" cy="10" r="8" fill="#8B5CF6" filter="url(#glow)"/>
+    <text x="45" y="13" text-anchor="middle" fill="white" font-size="6">2</text>
+    <text x="45" y="25" text-anchor="middle" fill="#8B5CF6" font-size="4">Segment</text>
+    
+    <path d="M53 10 L67 10" stroke="#6B7280" stroke-width="2"/>
+    
+    <circle cx="75" cy="10" r="8" fill="#10B981" filter="url(#glow)"/>
+    <text x="75" y="13" text-anchor="middle" fill="white" font-size="6">3</text>
+    <text x="75" y="25" text-anchor="middle" fill="#10B981" font-size="4">Send</text>
+    
+    <path d="M83 10 L97 10" stroke="#6B7280" stroke-width="2"/>
+    
+    <circle cx="105" cy="10" r="8" fill="#F59E0B" filter="url(#glow)"/>
+    <text x="105" y="13" text-anchor="middle" fill="white" font-size="6">4</text>
+    <text x="105" y="25" text-anchor="middle" fill="#F59E0B" font-size="4">Track</text>
+  </g>
+  
+  <!-- Success Badge -->
+  <g transform="translate(250, 20)">
+    <circle cx="20" cy="20" r="18" fill="#10B981" filter="url(#glow)"/>
+    <text x="20" y="15" text-anchor="middle" fill="white" font-size="8" font-weight="bold">+45%</text>
+    <text x="20" y="25" text-anchor="middle" fill="white" font-size="5">Repeat</text>
+    <text x="20" y="32" text-anchor="middle" fill="white" font-size="5">Customers</text>
+  </g>
+  
+  <!-- Floating Elements -->
+  <g opacity="0.6">
+    <circle cx="270" cy="80" r="15" fill="#25D366" opacity="0.3" filter="url(#glow)"/>
+    <circle cx="280" cy="140" r="12" fill="#F59E0B" opacity="0.4" filter="url(#glow)"/>
+    <circle cx="250" cy="160" r="10" fill="#3B82F6" opacity="0.3" filter="url(#glow)"/>
+  </g>
+</svg>

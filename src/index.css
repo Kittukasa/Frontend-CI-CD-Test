@@ -1,0 +1,241 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* BILLBOX Design System - Modern SaaS Landing */
+
+@layer base {
+  :root {
+    --background: 226 35% 8%; /* Base: #0B1020 */
+    --foreground: 0 0% 95%;
+
+    --card: 228 39% 11%; /* Card: #141A33 */
+    --card-foreground: 0 0% 95%;
+
+    --popover: 228 39% 11%;
+    --popover-foreground: 0 0% 95%;
+
+    /* Primary: Professional Blue */
+    --primary: 234 89% 74%;
+    --primary-foreground: 0 0% 0%;
+    --primary-dark: 234 89% 64%;
+
+    /* Secondary: Elegant Purple */
+    --secondary: 270 50% 70%;
+    --secondary-foreground: 0 0% 0%;
+    
+    /* Muted: Clean Grays */
+    --muted: 228 27% 14%; /* Section: #0E1328 */
+    --muted-foreground: 0 0% 70%;
+
+    /* Accent: Vibrant Blue */
+    --accent: 234 89% 74%;
+    --accent-foreground: 0 0% 0%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 0 0% 20%;
+    --input: 0 0% 15%;
+    --ring: 234 89% 74%;
+
+    --radius: 0.75rem;
+
+    /* Brand Gradients */
+    --gradient-hero: linear-gradient(135deg, hsl(234 89% 74%) 0%, hsl(270 50% 70%) 100%);
+    --gradient-card: linear-gradient(135deg, hsl(0 0% 8%) 0%, hsl(0 0% 12%) 100%);
+    --gradient-subtle: linear-gradient(180deg, hsl(0 0% 5%) 0%, hsl(0 0% 0%) 100%);
+    
+    /* Shadows */
+    --shadow-card: 0 4px 6px -1px hsl(0 0% 0% / 0.4), 0 2px 4px -1px hsl(0 0% 0% / 0.3);
+    --shadow-card-hover: 0 10px 15px -3px hsl(0 0% 0% / 0.4), 0 4px 6px -2px hsl(0 0% 0% / 0.3);
+    --shadow-hero: 0 25px 50px -12px hsl(234 89% 74% / 0.25);
+
+    /* Transitions */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+  }
+}
+
+/* Custom component styles */
+@layer components {
+  .hero-gradient {
+    background: var(--gradient-hero);
+  }
+  
+  .card-gradient {
+    background: var(--gradient-card);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+}
+
+/* Float animation for Maze Bank-style glowing orbs */
+@keyframes float {
+  0%, 100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translate(-48%, -52%) scale(1.1);
+    opacity: 1;
+  }
+}
+
+/* Maze Bank Slow Pulse - Breathing shimmer for background glows */
+@keyframes slowPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(1.08);
+    opacity: 1;
+  }
+}
+
+/* Grid Shimmer - Diagonal movement for living background feel */
+@keyframes gridShimmer {
+  0% {
+    background-position: 0 0, 0 0;
+  }
+  100% {
+    background-position: 100px 100px, 100px 100px;
+  }
+}
+
+/* Animation utility classes */
+.animate-slow-pulse {
+  animation: slowPulse 8s ease-in-out infinite;
+}
+
+.animate-grid-shimmer {
+  animation: gridShimmer 20s linear infinite;
+}
+
+.animate-aura-flow {
+  animation: auraFlow 30s ease-in-out infinite;
+}
+
+/* Breathing Glow - Soft light wave through fog effect */
+@keyframes breathGlow {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.25;
+    filter: blur(300px);
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.45;
+    filter: blur(320px);
+  }
+}
+
+/* Breathing Glow Slow - Secondary layer for depth */
+@keyframes breathGlowSlow {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.15;
+  }
+  50% {
+    transform: scale(1.08);
+    opacity: 0.35;
+  }
+}
+
+.animate-breath-glow {
+  animation: breathGlow 8s ease-in-out infinite;
+}
+
+.animate-breath-glow-slow {
+  animation: breathGlowSlow 14s ease-in-out infinite;
+}
+
+/* Trusted logos marquee */
+@keyframes hero-marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes trustedMarquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-trusted-marquee {
+  animation: trustedMarquee 32s linear infinite;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html,
+  body {
+    @apply bg-background text-foreground;
+    font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", "Helvetica Neue", Arial, sans-serif;
+    scrollbar-width: thin;
+    scrollbar-color: #111827 #9ca3af;
+  }
+
+  html::-webkit-scrollbar,
+  body::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  html::-webkit-scrollbar-track,
+  body::-webkit-scrollbar-track {
+    background: #9ca3af;
+  }
+
+  html::-webkit-scrollbar-thumb,
+  body::-webkit-scrollbar-thumb {
+    background-color: #111827;
+    border-radius: 9999px;
+    border: 2px solid #9ca3af;
+  }
+
+  input,
+  textarea,
+  select {
+    @apply text-gray-900 placeholder:text-gray-400;
+  }
+}
+
+.template-scroll-area {
+  scrollbar-width: thin;
+  scrollbar-color: #111827 #9ca3af;
+}
+
+.template-scroll-area::-webkit-scrollbar {
+  width: 10px;
+}
+
+.template-scroll-area::-webkit-scrollbar-track {
+  background: #9ca3af;
+}
+
+.template-scroll-area::-webkit-scrollbar-thumb {
+  background-color: #111827;
+  border-radius: 9999px;
+  border: 2px solid #9ca3af;
+}

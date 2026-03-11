@@ -1,0 +1,131 @@
+<svg width="300" height="200" viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="dashboardGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3B82F6;stop-opacity:0.8" />
+      <stop offset="50%" style="stop-color:#8B5CF6;stop-opacity:0.8" />
+      <stop offset="100%" style="stop-color:#06B6D4;stop-opacity:0.8" />
+    </linearGradient>
+    <linearGradient id="chartGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#60A5FA;stop-opacity:0.6" />
+      <stop offset="100%" style="stop-color:#A78BFA;stop-opacity:0.6" />
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="hologram">
+      <feGaussianBlur stdDeviation="1" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="300" height="200" fill="url(#dashboardGradient)" opacity="0.1"/>
+  
+  <!-- Main Dashboard Screen -->
+  <g transform="translate(20, 20)">
+    <!-- Monitor Frame -->
+    <rect x="0" y="0" width="200" height="140" rx="12" fill="#1F2937" stroke="url(#chartGlow)" stroke-width="2" filter="url(#glow)"/>
+    <rect x="8" y="8" width="184" height="124" rx="8" fill="#111827"/>
+    
+    <!-- Dashboard Header -->
+    <rect x="12" y="12" width="176" height="20" rx="4" fill="url(#dashboardGradient)"/>
+    <circle cx="20" cy="22" r="4" fill="white"/>
+    <text x="28" y="25" fill="white" font-size="8" font-weight="bold">BillBox Analytics</text>
+    <circle cx="180" cy="22" r="2" fill="white" opacity="0.8"/>
+    <circle cx="174" cy="22" r="2" fill="white" opacity="0.8"/>
+    <circle cx="168" cy="22" r="2" fill="white" opacity="0.8"/>
+    
+    <!-- KPI Cards -->
+    <g transform="translate(15, 40)">
+      <!-- Revenue Card -->
+      <rect x="0" y="0" width="50" height="30" rx="6" fill="#3B82F6" opacity="0.8" filter="url(#hologram)"/>
+      <text x="25" y="12" text-anchor="middle" fill="white" font-size="6" font-weight="bold">Revenue</text>
+      <text x="25" y="22" text-anchor="middle" fill="white" font-size="10" font-weight="bold">₹8.5L</text>
+      <path d="M35 8 L40 5 L45 8" stroke="white" stroke-width="1" fill="none"/>
+      
+      <!-- Customers Card -->
+      <rect x="60" y="0" width="50" height="30" rx="6" fill="#8B5CF6" opacity="0.8" filter="url(#hologram)"/>
+      <text x="85" y="12" text-anchor="middle" fill="white" font-size="6" font-weight="bold">Customers</text>
+      <text x="85" y="22" text-anchor="middle" fill="white" font-size="10" font-weight="bold">2,450</text>
+      <circle cx="95" cy="8" r="3" fill="white" opacity="0.8"/>
+      <circle cx="99" cy="6" r="2" fill="white" opacity="0.6"/>
+      <circle cx="91" cy="6" r="2" fill="white" opacity="0.6"/>
+      
+      <!-- Growth Card -->
+      <rect x="120" y="0" width="50" height="30" rx="6" fill="#10B981" opacity="0.8" filter="url(#hologram)"/>
+      <text x="145" y="12" text-anchor="middle" fill="white" font-size="6" font-weight="bold">Growth</text>
+      <text x="145" y="22" text-anchor="middle" fill="white" font-size="10" font-weight="bold">+35%</text>
+      <path d="M135 20 L140 15 L145 18 L150 12 L155 15" stroke="white" stroke-width="1.5" fill="none"/>
+    </g>
+    
+    <!-- Real-time Chart -->
+    <g transform="translate(15, 80)">
+      <rect x="0" y="0" width="170" height="45" rx="4" fill="#1F2937" stroke="#374151" stroke-width="1"/>
+      
+      <!-- Chart Bars (Animated) -->
+      <rect x="10" y="30" width="8" height="10" fill="#60A5FA" filter="url(#glow)"/>
+      <rect x="25" y="20" width="8" height="20" fill="#34D399" filter="url(#glow)"/>
+      <rect x="40" y="25" width="8" height="15" fill="#F59E0B" filter="url(#glow)"/>
+      <rect x="55" y="15" width="8" height="25" fill="#EF4444" filter="url(#glow)"/>
+      <rect x="70" y="18" width="8" height="22" fill="#8B5CF6" filter="url(#glow)"/>
+      <rect x="85" y="12" width="8" height="28" fill="#06B6D4" filter="url(#glow)"/>
+      <rect x="100" y="22" width="8" height="18" fill="#F97316" filter="url(#glow)"/>
+      <rect x="115" y="10" width="8" height="30" fill="#10B981" filter="url(#glow)"/>
+      <rect x="130" y="16" width="8" height="24" fill="#3B82F6" filter="url(#glow)"/>
+      <rect x="145" y="8" width="8" height="32" fill="#8B5CF6" filter="url(#glow)"/>
+      
+      <!-- Chart Labels -->
+      <text x="85" y="8" text-anchor="middle" fill="#9CA3AF" font-size="6">Real-time Sales</text>
+    </g>
+    
+    <!-- Monitor Stand -->
+    <rect x="85" y="140" width="30" height="20" fill="#374151"/>
+    <rect x="70" y="160" width="60" height="8" rx="4" fill="#374151"/>
+  </g>
+  
+  <!-- Floating Analytics Elements -->
+  <g transform="translate(230, 40)">
+    <!-- Pie Chart -->
+    <circle cx="25" cy="25" r="20" fill="none" stroke="#3B82F6" stroke-width="4" stroke-dasharray="31.4 31.4" filter="url(#glow)"/>
+    <circle cx="25" cy="25" r="20" fill="none" stroke="#8B5CF6" stroke-width="4" stroke-dasharray="15.7 47.1" stroke-dashoffset="-31.4" filter="url(#glow)"/>
+    <circle cx="25" cy="25" r="20" fill="none" stroke="#10B981" stroke-width="4" stroke-dasharray="7.85 55.55" stroke-dashoffset="-47.1" filter="url(#glow)"/>
+    <text x="25" y="28" text-anchor="middle" fill="white" font-size="6" font-weight="bold">85%</text>
+    
+    <!-- Trend Arrow -->
+    <g transform="translate(15, 60)">
+      <circle cx="10" cy="10" r="12" fill="#10B981" filter="url(#glow)"/>
+      <path d="M5 12 L10 7 L15 12 M10 7 L10 15" stroke="white" stroke-width="2" fill="none"/>
+    </g>
+    
+    <!-- Data Points -->
+    <g transform="translate(10, 100)">
+      <circle cx="5" cy="5" r="4" fill="#60A5FA" filter="url(#glow)"/>
+      <circle cx="20" cy="15" r="4" fill="#34D399" filter="url(#glow)"/>
+      <circle cx="35" cy="8" r="4" fill="#F59E0B" filter="url(#glow)"/>
+      <line x1="5" y1="5" x2="20" y2="15" stroke="#60A5FA" stroke-width="1" opacity="0.6"/>
+      <line x1="20" y1="15" x2="35" y2="8" stroke="#34D399" stroke-width="1" opacity="0.6"/>
+    </g>
+  </g>
+  
+  <!-- Holographic Data Streams -->
+  <g opacity="0.4" filter="url(#hologram)">
+    <path d="M50 170 Q100 160 150 170 Q200 180 250 170" stroke="#3B82F6" stroke-width="1" fill="none"/>
+    <path d="M30 180 Q80 170 130 180 Q180 190 230 180" stroke="#8B5CF6" stroke-width="1" fill="none"/>
+    <circle cx="80" cy="165" r="2" fill="#60A5FA"/>
+    <circle cx="150" cy="175" r="2" fill="#34D399"/>
+    <circle cx="200" cy="185" r="2" fill="#F59E0B"/>
+  </g>
+  
+  <!-- Success Metrics -->
+  <g transform="translate(20, 170)">
+    <text x="0" y="0" fill="#10B981" font-size="8" font-weight="bold">+300% Data Visibility</text>
+    <text x="120" y="0" fill="#3B82F6" font-size="8" font-weight="bold">Real-time Insights</text>
+  </g>
+</svg>

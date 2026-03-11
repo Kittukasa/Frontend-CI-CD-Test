@@ -1,0 +1,154 @@
+<svg width="400" height="300" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="futuristicGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3B82F6;stop-opacity:0.9" />
+      <stop offset="33%" style="stop-color:#8B5CF6;stop-opacity:0.9" />
+      <stop offset="66%" style="stop-color:#06B6D4;stop-opacity:0.9" />
+      <stop offset="100%" style="stop-color:#10B981;stop-opacity:0.9" />
+    </linearGradient>
+    <linearGradient id="glassGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:rgba(255,255,255,0.2)" />
+      <stop offset="100%" style="stop-color:rgba(255,255,255,0.05)" />
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="hologram">
+      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="400" height="300" fill="url(#futuristicGradient)" opacity="0.1"/>
+  
+  <!-- 3D Dashboard Base -->
+  <g transform="translate(50, 50)">
+    <!-- Main Dashboard Panel (3D Perspective) -->
+    <path d="M0 0 L280 0 L300 20 L300 180 L20 180 L0 160 Z" fill="url(#glassGradient)" stroke="rgba(59, 130, 246, 0.5)" stroke-width="2" filter="url(#glow)"/>
+    <path d="M0 0 L20 20 L300 20 L280 0 Z" fill="rgba(139, 92, 246, 0.3)" stroke="rgba(139, 92, 246, 0.5)" stroke-width="1"/>
+    <path d="M280 0 L300 20 L300 180 L280 160 Z" fill="rgba(6, 182, 212, 0.2)" stroke="rgba(6, 182, 212, 0.5)" stroke-width="1"/>
+    
+    <!-- Dashboard Header -->
+    <rect x="10" y="10" width="260" height="25" rx="5" fill="url(#futuristicGradient)" opacity="0.8"/>
+    <text x="140" y="25" text-anchor="middle" fill="white" font-size="12" font-weight="bold">BillBox Command Center</text>
+    
+    <!-- Analytics Tiles Grid -->
+    <g transform="translate(15, 45)">
+      <!-- Revenue Tile -->
+      <rect x="0" y="0" width="80" height="50" rx="8" fill="url(#glassGradient)" stroke="rgba(59, 130, 246, 0.6)" stroke-width="1" filter="url(#hologram)"/>
+      <text x="40" y="15" text-anchor="middle" fill="rgba(59, 130, 246, 0.9)" font-size="8" font-weight="bold">REVENUE</text>
+      <text x="40" y="30" text-anchor="middle" fill="white" font-size="16" font-weight="bold">₹8.5L</text>
+      <text x="40" y="42" text-anchor="middle" fill="rgba(16, 185, 129, 0.8)" font-size="6">+35% ↗</text>
+      
+      <!-- Customers Tile -->
+      <rect x="90" y="0" width="80" height="50" rx="8" fill="url(#glassGradient)" stroke="rgba(139, 92, 246, 0.6)" stroke-width="1" filter="url(#hologram)"/>
+      <text x="130" y="15" text-anchor="middle" fill="rgba(139, 92, 246, 0.9)" font-size="8" font-weight="bold">CUSTOMERS</text>
+      <text x="130" y="30" text-anchor="middle" fill="white" font-size="16" font-weight="bold">2,450</text>
+      <text x="130" y="42" text-anchor="middle" fill="rgba(16, 185, 129, 0.8)" font-size="6">+28% ↗</text>
+      
+      <!-- Orders Tile -->
+      <rect x="180" y="0" width="80" height="50" rx="8" fill="url(#glassGradient)" stroke="rgba(6, 182, 212, 0.6)" stroke-width="1" filter="url(#hologram)"/>
+      <text x="220" y="15" text-anchor="middle" fill="rgba(6, 182, 212, 0.9)" font-size="8" font-weight="bold">ORDERS</text>
+      <text x="220" y="30" text-anchor="middle" fill="white" font-size="16" font-weight="bold">1,847</text>
+      <text x="220" y="42" text-anchor="middle" fill="rgba(16, 185, 129, 0.8)" font-size="6">+42% ↗</text>
+      
+      <!-- Campaigns Tile -->
+      <rect x="0" y="60" width="80" height="50" rx="8" fill="url(#glassGradient)" stroke="rgba(16, 185, 129, 0.6)" stroke-width="1" filter="url(#hologram)"/>
+      <text x="40" y="75" text-anchor="middle" fill="rgba(16, 185, 129, 0.9)" font-size="8" font-weight="bold">CAMPAIGNS</text>
+      <text x="40" y="90" text-anchor="middle" fill="white" font-size="16" font-weight="bold">95%</text>
+      <text x="40" y="102" text-anchor="middle" fill="rgba(16, 185, 129, 0.8)" font-size="6">Success Rate</text>
+      
+      <!-- Real-time Chart -->
+      <rect x="90" y="60" width="170" height="50" rx="8" fill="url(#glassGradient)" stroke="rgba(245, 158, 11, 0.6)" stroke-width="1" filter="url(#hologram)"/>
+      <text x="175" y="75" text-anchor="middle" fill="rgba(245, 158, 11, 0.9)" font-size="8" font-weight="bold">REAL-TIME ANALYTICS</text>
+      
+      <!-- 3D Chart Bars -->
+      <g transform="translate(100, 85)">
+        <rect x="0" y="15" width="8" height="10" fill="rgba(59, 130, 246, 0.8)" filter="url(#glow)"/>
+        <path d="M0 15 L2 13 L10 13 L8 15 Z" fill="rgba(59, 130, 246, 0.6)"/>
+        <path d="M8 15 L10 13 L10 3 L8 5 Z" fill="rgba(59, 130, 246, 0.4)"/>
+        
+        <rect x="15" y="8" width="8" height="17" fill="rgba(16, 185, 129, 0.8)" filter="url(#glow)"/>
+        <path d="M15 8 L17 6 L25 6 L23 8 Z" fill="rgba(16, 185, 129, 0.6)"/>
+        <path d="M23 8 L25 6 L25 -4 L23 -2 Z" fill="rgba(16, 185, 129, 0.4)"/>
+        
+        <rect x="30" y="12" width="8" height="13" fill="rgba(245, 158, 11, 0.8)" filter="url(#glow)"/>
+        <path d="M30 12 L32 10 L40 10 L38 12 Z" fill="rgba(245, 158, 11, 0.6)"/>
+        <path d="M38 12 L40 10 L40 0 L38 2 Z" fill="rgba(245, 158, 11, 0.4)"/>
+        
+        <rect x="45" y="5" width="8" height="20" fill="rgba(239, 68, 68, 0.8)" filter="url(#glow)"/>
+        <path d="M45 5 L47 3 L55 3 L53 5 Z" fill="rgba(239, 68, 68, 0.6)"/>
+        <path d="M53 5 L55 3 L55 -7 L53 -5 Z" fill="rgba(239, 68, 68, 0.4)"/>
+        
+        <rect x="60" y="10" width="8" height="15" fill="rgba(139, 92, 246, 0.8)" filter="url(#glow)"/>
+        <path d="M60 10 L62 8 L70 8 L68 10 Z" fill="rgba(139, 92, 246, 0.6)"/>
+        <path d="M68 10 L70 8 L70 -2 L68 0 Z" fill="rgba(139, 92, 246, 0.4)"/>
+        
+        <rect x="75" y="7" width="8" height="18" fill="rgba(6, 182, 212, 0.8)" filter="url(#glow)"/>
+        <path d="M75 7 L77 5 L85 5 L83 7 Z" fill="rgba(6, 182, 212, 0.6)"/>
+        <path d="M83 7 L85 5 L85 -5 L83 -3 Z" fill="rgba(6, 182, 212, 0.4)"/>
+        
+        <rect x="90" y="13" width="8" height="12" fill="rgba(34, 197, 94, 0.8)" filter="url(#glow)"/>
+        <path d="M90 13 L92 11 L100 11 L98 13 Z" fill="rgba(34, 197, 94, 0.6)"/>
+        <path d="M98 13 L100 11 L100 1 L98 3 Z" fill="rgba(34, 197, 94, 0.4)"/>
+        
+        <rect x="105" y="9" width="8" height="16" fill="rgba(168, 85, 247, 0.8)" filter="url(#glow)"/>
+        <path d="M105 9 L107 7 L115 7 L113 9 Z" fill="rgba(168, 85, 247, 0.6)"/>
+        <path d="M113 9 L115 7 L115 -3 L113 -1 Z" fill="rgba(168, 85, 247, 0.4)"/>
+        
+        <rect x="120" y="6" width="8" height="19" fill="rgba(14, 165, 233, 0.8)" filter="url(#glow)"/>
+        <path d="M120 6 L122 4 L130 4 L128 6 Z" fill="rgba(14, 165, 233, 0.6)"/>
+        <path d="M128 6 L130 4 L130 -6 L128 -4 Z" fill="rgba(14, 165, 233, 0.4)"/>
+        
+        <rect x="135" y="11" width="8" height="14" fill="rgba(251, 146, 60, 0.8)" filter="url(#glow)"/>
+        <path d="M135 11 L137 9 L145 9 L143 11 Z" fill="rgba(251, 146, 60, 0.6)"/>
+        <path d="M143 11 L145 9 L145 -1 L143 1 Z" fill="rgba(251, 146, 60, 0.4)"/>
+      </g>
+    </g>
+  </g>
+  
+  <!-- Floating Holographic Elements -->
+  <g transform="translate(320, 80)" filter="url(#hologram)">
+    <!-- Circular Analytics -->
+    <circle cx="30" cy="30" r="25" fill="none" stroke="rgba(59, 130, 246, 0.6)" stroke-width="3" stroke-dasharray="47 31"/>
+    <circle cx="30" cy="30" r="25" fill="none" stroke="rgba(16, 185, 129, 0.6)" stroke-width="3" stroke-dasharray="31 47" stroke-dashoffset="-47"/>
+    <text x="30" y="33" text-anchor="middle" fill="white" font-size="8" font-weight="bold">85%</text>
+    <text x="30" y="42" text-anchor="middle" fill="rgba(156, 163, 175, 0.8)" font-size="5">Efficiency</text>
+    
+    <!-- Data Nodes -->
+    <circle cx="15" cy="80" r="6" fill="rgba(59, 130, 246, 0.8)" filter="url(#glow)"/>
+    <circle cx="45" cy="75" r="6" fill="rgba(16, 185, 129, 0.8)" filter="url(#glow)"/>
+    <circle cx="30" cy="95" r="6" fill="rgba(245, 158, 11, 0.8)" filter="url(#glow)"/>
+    
+    <!-- Connection Lines -->
+    <line x1="15" y1="80" x2="45" y2="75" stroke="rgba(59, 130, 246, 0.4)" stroke-width="1"/>
+    <line x1="45" y1="75" x2="30" y2="95" stroke="rgba(16, 185, 129, 0.4)" stroke-width="1"/>
+    <line x1="30" y1="95" x2="15" y2="80" stroke="rgba(245, 158, 11, 0.4)" stroke-width="1"/>
+  </g>
+  
+  <!-- Floating Data Streams -->
+  <g opacity="0.6" filter="url(#hologram)">
+    <path d="M50 220 Q150 200 250 220 Q300 230 350 220" stroke="rgba(59, 130, 246, 0.5)" stroke-width="2" fill="none"/>
+    <path d="M30 240 Q130 220 230 240 Q280 250 330 240" stroke="rgba(139, 92, 246, 0.5)" stroke-width="2" fill="none"/>
+    <path d="M70 260 Q170 240 270 260 Q320 270 370 260" stroke="rgba(6, 182, 212, 0.5)" stroke-width="2" fill="none"/>
+    
+    <!-- Data Points -->
+    <circle cx="100" cy="210" r="3" fill="rgba(59, 130, 246, 0.8)"/>
+    <circle cx="200" cy="225" r="3" fill="rgba(16, 185, 129, 0.8)"/>
+    <circle cx="300" cy="235" r="3" fill="rgba(245, 158, 11, 0.8)"/>
+  </g>
+  
+  <!-- Success Metrics -->
+  <g transform="translate(50, 270)">
+    <text x="0" y="0" fill="rgba(16, 185, 129, 0.9)" font-size="10" font-weight="bold">Real-time Intelligence</text>
+    <text x="180" y="0" fill="rgba(59, 130, 246, 0.9)" font-size="10" font-weight="bold">Predictive Analytics</text>
+  </g>
+</svg>
