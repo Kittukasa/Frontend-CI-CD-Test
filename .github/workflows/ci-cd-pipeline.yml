@@ -27,6 +27,7 @@ jobs:
       - name: Checkout branch
         uses: actions/checkout@v4
         with:
+          ref: ${{ github.head_ref }}
           persist-credentials: true
 
       - name: Setup Node
@@ -48,7 +49,7 @@ jobs:
           if ! git diff --quiet; then
             git add .
             git commit -m "style: auto-format with Prettier"
-            git push
+            git push origin HEAD:${{ github.head_ref }}
           else
             echo "No changes to commit"
           fi
@@ -265,4 +266,3 @@ jobs:
 
           echo "✅ Production build archived at:"
           echo "   s3://${{ vars.S3_ARTIFACT_BUCKET }}/${{ env.S3_ARTIFACT_PREFIX }}/$ARTIFACT_NAME"
-          
