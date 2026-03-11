@@ -1,4 +1,4 @@
-import '@testing-library/jest-dom'
+import '@testing-library/jest-dom';
 
 // ── Fix 1: mock window.matchMedia (used by sonner + Footer) ──
 Object.defineProperty(window, 'matchMedia', {
@@ -13,15 +13,17 @@ Object.defineProperty(window, 'matchMedia', {
     removeEventListener: () => {},
     dispatchEvent: () => false,
   }),
-})
+});
 
 // ── Fix 2: mock IntersectionObserver (used by scroll animations) ──
 global.IntersectionObserver = class IntersectionObserver {
-  root = null
-  rootMargin = ''
-  thresholds = []
+  root = null;
+  rootMargin = '';
+  thresholds = [];
   observe() {}
   unobserve() {}
   disconnect() {}
-  takeRecords() { return [] }
-}
+  takeRecords() {
+    return [];
+  }
+};
