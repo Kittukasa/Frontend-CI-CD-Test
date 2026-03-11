@@ -69,10 +69,10 @@ jobs:
           tar --exclude='.git' \
               --exclude='node_modules' \
               --exclude='coverage' \
-              -czf $ARTIFACT_NAME .
+              -czf /tmp/$ARTIFACT_NAME .
 
           echo "⬆️  Uploading to S3..."
-          aws s3 cp $ARTIFACT_NAME \
+          aws s3 cp /tmp/$ARTIFACT_NAME \
             s3://${{ vars.S3_ARTIFACT_BUCKET }}/${{ env.S3_ARTIFACT_PREFIX }}/$ARTIFACT_NAME
 
           echo "✅ Artifact stored at:"
@@ -106,8 +106,8 @@ jobs:
           if aws s3 ls s3://${{ vars.S3_ARTIFACT_BUCKET }}/${{ env.S3_ARTIFACT_PREFIX }}/$ARTIFACT_NAME 2>/dev/null; then
             aws s3 cp \
               s3://${{ vars.S3_ARTIFACT_BUCKET }}/${{ env.S3_ARTIFACT_PREFIX }}/$ARTIFACT_NAME \
-              $ARTIFACT_NAME
-            tar -xzf $ARTIFACT_NAME
+              /tmp/$ARTIFACT_NAME
+            tar -xzf /tmp/$ARTIFACT_NAME -C .
             echo "✅ Artifact restored: $ARTIFACT_NAME"
           else
             echo "⚠️  No Stage 1 artifact found — falling back to checkout"
@@ -160,10 +160,10 @@ jobs:
           tar --exclude='.git' \
               --exclude='node_modules' \
               --exclude='coverage' \
-              -czf $ARTIFACT_NAME .
+              -czf /tmp/$ARTIFACT_NAME .
 
           echo "⬆️  Uploading to S3..."
-          aws s3 cp $ARTIFACT_NAME \
+          aws s3 cp /tmp/$ARTIFACT_NAME \
             s3://${{ vars.S3_ARTIFACT_BUCKET }}/${{ env.S3_ARTIFACT_PREFIX }}/$ARTIFACT_NAME
 
           echo "✅ Validated artifact stored at:"
@@ -176,12 +176,12 @@ jobs:
           ARTIFACT_NAME="failure-report-${{ github.run_number }}.tar.gz"
           echo "📦 Packaging failure report as $ARTIFACT_NAME..."
 
-          tar -czf $ARTIFACT_NAME \
+          tar -czf /tmp/$ARTIFACT_NAME \
             eslint-report.json \
             coverage/ || true
 
           echo "⬆️  Uploading failure report to S3..."
-          aws s3 cp $ARTIFACT_NAME \
+          aws s3 cp /tmp/$ARTIFACT_NAME \
             s3://${{ vars.S3_ARTIFACT_BUCKET }}/${{ env.S3_ARTIFACT_PREFIX }}/$ARTIFACT_NAME
 
           echo "❌ Failure report stored at:"
@@ -221,8 +221,8 @@ jobs:
           if aws s3 ls s3://${{ vars.S3_ARTIFACT_BUCKET }}/${{ env.S3_ARTIFACT_PREFIX }}/$ARTIFACT_NAME 2>/dev/null; then
             aws s3 cp \
               s3://${{ vars.S3_ARTIFACT_BUCKET }}/${{ env.S3_ARTIFACT_PREFIX }}/$ARTIFACT_NAME \
-              $ARTIFACT_NAME
-            tar -xzf $ARTIFACT_NAME
+              /tmp/$ARTIFACT_NAME
+            tar -xzf /tmp/$ARTIFACT_NAME -C .
             echo "✅ Artifact restored: $ARTIFACT_NAME"
           else
             echo "⚠️  No Stage 2 artifact found — falling back to checkout"
@@ -259,9 +259,9 @@ jobs:
           ARTIFACT_NAME="production-build-${{ github.run_number }}.tar.gz"
           echo "📦 Archiving production build as $ARTIFACT_NAME..."
 
-          tar -czf $ARTIFACT_NAME ./dist
+          tar -czf /tmp/$ARTIFACT_NAME ./dist
 
-          aws s3 cp $ARTIFACT_NAME \
+          aws s3 cp /tmp/$ARTIFACT_NAME \
             s3://${{ vars.S3_ARTIFACT_BUCKET }}/${{ env.S3_ARTIFACT_PREFIX }}/$ARTIFACT_NAME
 
           echo "✅ Production build archived at:"
