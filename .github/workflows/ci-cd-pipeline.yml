@@ -67,50 +67,70 @@ jobs:
         continue-on-error: true
         run: npx vitest run --coverage
 
-      - name: Generate ESLint HTML Report
+      - name: Generate Reports
         if: always()
         run: |
-          node -e "
-          const fs = require('fs');
-          if (!fs.existsSync('eslint-report.json')) process.exit(0);
-          const data = JSON.parse(fs.readFileSync('eslint-report.json','utf8'));
-          const errors = data.reduce((s,f)=>s+f.errorCount,0);
-          const warnings = data.reduce((s,f)=>s+f.warningCount,0);
-          const files = data.filter(f=>f.messages.length>0);
-          const rows = files.map(f=>{
-            const path = f.filePath.replace(/.*src\//,'src/');
-            const msgs = f.messages.map(m=>
-              '<tr><td>'+path+'</td><td>'+m.line+':'+m.column+'</td><td>'+(m.severity===2?'Error':'Warning')+'</td><td>'+m.message.replace(/</g,'&lt;')+'</td><td>'+(m.ruleId||'N/A')+'</td></tr>'
-            ).join('');
-            return msgs;
-          }).join('');
-          const html = '<!DOCTYPE html><html><head><meta charset=UTF-8><title>ESLint Report - Stage 1</title>'
-            +'<style>body{font-family:sans-serif;padding:20px}h1{margin-bottom:10px}'
-            +'.summary{margin-bottom:20px;font-size:16px}'
-            +'table{border-collapse:collapse;width:100%}'
-            +'th,td{border:1px solid #ddd;padding:8px;text-align:left;font-size:13px}'
-            +'th{background:#f2f2f2}tr:nth-child(even){background:#fafafa}'
-            +'tr:hover{background:#f0f0f0}</style></head>'
-            +'<body><h1>ESLint Report — Stage 1</h1>'
-            +'<div class=summary>Total Errors: <b style=color:red>'+errors+'</b> &nbsp; Warnings: <b style=color:orange>'+warnings+'</b> &nbsp; Files with issues: <b>'+files.length+'</b></div>'
-            +(rows ? '<table><thead><tr><th>File</th><th>Location</th><th>Severity</th><th>Message</th><th>Rule</th></tr></thead><tbody>'+rows+'</tbody></table>'
-            : '<p style=color:green>✅ No ESLint issues found!</p>')
-            +'</body></html>';
-          fs.mkdirSync('reports',{recursive:true});
-          fs.writeFileSync('reports/eslint-report.html',html);
-          "
+          node << 'EOF'
+          var fs = require('fs');
+          var stage = 'Stage 1';
+          var pr = '${{ github.event.pull_request.number }}';
+          var head = '${{ github.head_ref }}';
+          var now = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
+          var meta = '<p><b>' + stage + '</b> | PR #' + pr + ' | Branch: ' + head + ' | Generated: ' + now + '</p><hr>';
+          var style = '<style>body{font-family:sans-serif;padding:20px}h2{margin-bottom:8px}.summary{margin-bottom:16px}table{border-collapse:collapse;width:100%}th,td{border:1px solid #ddd;padding:8px;font-size:13px;text-align:left}th{background:#f2f2f2}tr:nth-child(even){background:#fafafa}tr:hover{background:#f0f0f0}.total{font-weight:bold;background:#e8f4e8}</style>';
+
+          fs.mkdirSync('reports', { recursive: true });
+
+          if (fs.existsSync('eslint-report.json')) {
+            var data = JSON.parse(fs.readFileSync('eslint-report.json', 'utf8'));
+            var errors = data.reduce(function(s,f){ return s + f.errorCount; }, 0);
+            var warnings = data.reduce(function(s,f){ return s + f.warningCount; }, 0);
+            var files = data.filter(function(f){ return f.messages.length > 0; });
+            var rows = files.map(function(f) {
+              return f.messages.map(function(m) {
+                var sev = m.severity === 2 ? 'Error' : 'Warning';
+                var col = m.severity === 2 ? 'red' : 'orange';
+                var path = f.filePath.replace(/.*src\//, 'src/');
+                return '<tr><td>' + path + '</td><td>' + m.line + ':' + m.column + '</td><td style="color:' + col + '">' + sev + '</td><td>' + m.message.replace(/</g,'&lt;') + '</td><td>' + (m.ruleId||'N/A') + '</td></tr>';
+              }).join('');
+            }).join('');
+            var table = rows ? '<table><thead><tr><th>File</th><th>Location</th><th>Severity</th><th>Message</th><th>Rule</th></tr></thead><tbody>' + rows + '</tbody></table>' : '<p style="color:green">No ESLint issues found!</p>';
+            var html = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>ESLint - ' + stage + '</title>' + style + '</head><body><h2>ESLint Report - ' + stage + '</h2>' + meta + '<div class="summary">Errors: <b style="color:red">' + errors + '</b> &nbsp; Warnings: <b style="color:orange">' + warnings + '</b> &nbsp; Files with issues: <b>' + files.length + '</b></div>' + table + '</body></html>';
+            fs.writeFileSync('reports/eslint-report.html', html);
+          }
+
+          if (fs.existsSync('coverage/coverage-summary.json')) {
+            var cov = JSON.parse(fs.readFileSync('coverage/coverage-summary.json', 'utf8'));
+            var total = cov.total;
+            var covFiles = Object.entries(cov).filter(function(e){ return e[0] !== 'total'; });
+            var pct = function(m){ return m ? m.pct + '%' : 'N/A'; };
+            var color = function(p){ return p >= 80 ? 'green' : p >= 50 ? 'orange' : 'red'; };
+            var covRows = covFiles.map(function(e) {
+              var file = e[0]; var m = e[1];
+              var path = file.replace(/.*src\//, 'src/');
+              return '<tr><td>' + path + '</td><td style="color:' + color(m.statements.pct) + '">' + pct(m.statements) + '</td><td style="color:' + color(m.branches.pct) + '">' + pct(m.branches) + '</td><td style="color:' + color(m.functions.pct) + '">' + pct(m.functions) + '</td><td style="color:' + color(m.lines.pct) + '">' + pct(m.lines) + '</td></tr>';
+            }).join('');
+            var totalRow = '<tr class="total"><td>TOTAL</td><td style="color:' + color(total.statements.pct) + '">' + pct(total.statements) + '</td><td style="color:' + color(total.branches.pct) + '">' + pct(total.branches) + '</td><td style="color:' + color(total.functions.pct) + '">' + pct(total.functions) + '</td><td style="color:' + color(total.lines.pct) + '">' + pct(total.lines) + '</td></tr>';
+            var covHtml = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Coverage - ' + stage + '</title>' + style + '</head><body><h2>Coverage Report - ' + stage + '</h2>' + meta + '<table><thead><tr><th>File</th><th>Statements</th><th>Branches</th><th>Functions</th><th>Lines</th></tr></thead><tbody>' + totalRow + covRows + '</tbody></table></body></html>';
+            fs.writeFileSync('reports/coverage-report.html', covHtml);
+          }
+          EOF
 
       - name: Upload reports
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: stage-1-reports-PR${{ github.event.pull_request.number }}
-          path: |
-            reports/
-            coverage/
+          path: reports/
           retention-days: 7
 
-      - name: Package & upload code
+      - name: Fail if ESLint errors
+        if: steps.eslint.outputs.eslint_passed == 'false'
+        run: |
+          echo "ESLint errors detected — Stage 1 failed"
+          exit 1
+
+      - name: Package and upload code
         run: |
           tar --exclude='.git' --exclude='node_modules' --exclude='coverage' --exclude='reports' \
             -czf /tmp/stage-1-code.tar.gz .
@@ -177,57 +197,75 @@ jobs:
         continue-on-error: true
         run: npx vitest run --coverage
 
-      - name: Generate ESLint HTML Report
+      - name: Generate Reports
         if: always()
         run: |
-          node -e "
-          const fs = require('fs');
-          if (!fs.existsSync('eslint-report.json')) process.exit(0);
-          const data = JSON.parse(fs.readFileSync('eslint-report.json','utf8'));
-          const errors = data.reduce((s,f)=>s+f.errorCount,0);
-          const warnings = data.reduce((s,f)=>s+f.warningCount,0);
-          const files = data.filter(f=>f.messages.length>0);
-          const rows = files.map(f=>{
-            const path = f.filePath.replace(/.*src\//,'src/');
-            const msgs = f.messages.map(m=>
-              '<tr><td>'+path+'</td><td>'+m.line+':'+m.column+'</td><td>'+(m.severity===2?'Error':'Warning')+'</td><td>'+m.message.replace(/</g,'&lt;')+'</td><td>'+(m.ruleId||'N/A')+'</td></tr>'
-            ).join('');
-            return msgs;
-          }).join('');
-          const html = '<!DOCTYPE html><html><head><meta charset=UTF-8><title>ESLint Report - Stage 2</title>'
-            +'<style>body{font-family:sans-serif;padding:20px}h1{margin-bottom:10px}'
-            +'.summary{margin-bottom:20px;font-size:16px}'
-            +'table{border-collapse:collapse;width:100%}'
-            +'th,td{border:1px solid #ddd;padding:8px;text-align:left;font-size:13px}'
-            +'th{background:#f2f2f2}tr:nth-child(even){background:#fafafa}'
-            +'tr:hover{background:#f0f0f0}</style></head>'
-            +'<body><h1>ESLint Report — Stage 2</h1>'
-            +'<div class=summary>Total Errors: <b style=color:red>'+errors+'</b> &nbsp; Warnings: <b style=color:orange>'+warnings+'</b> &nbsp; Files with issues: <b>'+files.length+'</b></div>'
-            +(rows ? '<table><thead><tr><th>File</th><th>Location</th><th>Severity</th><th>Message</th><th>Rule</th></tr></thead><tbody>'+rows+'</tbody></table>'
-            : '<p style=color:green>✅ No ESLint issues found!</p>')
-            +'</body></html>';
-          fs.mkdirSync('reports',{recursive:true});
-          fs.writeFileSync('reports/eslint-report.html',html);
-          "
+          node << 'EOF'
+          var fs = require('fs');
+          var stage = 'Stage 2';
+          var pr = '${{ github.event.pull_request.number }}';
+          var head = '${{ github.head_ref }}';
+          var now = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
+          var meta = '<p><b>' + stage + '</b> | PR #' + pr + ' | Branch: ' + head + ' | Generated: ' + now + '</p><hr>';
+          var style = '<style>body{font-family:sans-serif;padding:20px}h2{margin-bottom:8px}.summary{margin-bottom:16px}table{border-collapse:collapse;width:100%}th,td{border:1px solid #ddd;padding:8px;font-size:13px;text-align:left}th{background:#f2f2f2}tr:nth-child(even){background:#fafafa}tr:hover{background:#f0f0f0}.total{font-weight:bold;background:#e8f4e8}</style>';
+
+          fs.mkdirSync('reports', { recursive: true });
+
+          if (fs.existsSync('eslint-report.json')) {
+            var data = JSON.parse(fs.readFileSync('eslint-report.json', 'utf8'));
+            var errors = data.reduce(function(s,f){ return s + f.errorCount; }, 0);
+            var warnings = data.reduce(function(s,f){ return s + f.warningCount; }, 0);
+            var files = data.filter(function(f){ return f.messages.length > 0; });
+            var rows = files.map(function(f) {
+              return f.messages.map(function(m) {
+                var sev = m.severity === 2 ? 'Error' : 'Warning';
+                var col = m.severity === 2 ? 'red' : 'orange';
+                var path = f.filePath.replace(/.*src\//, 'src/');
+                return '<tr><td>' + path + '</td><td>' + m.line + ':' + m.column + '</td><td style="color:' + col + '">' + sev + '</td><td>' + m.message.replace(/</g,'&lt;') + '</td><td>' + (m.ruleId||'N/A') + '</td></tr>';
+              }).join('');
+            }).join('');
+            var table = rows ? '<table><thead><tr><th>File</th><th>Location</th><th>Severity</th><th>Message</th><th>Rule</th></tr></thead><tbody>' + rows + '</tbody></table>' : '<p style="color:green">No ESLint issues found!</p>';
+            var html = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>ESLint - ' + stage + '</title>' + style + '</head><body><h2>ESLint Report - ' + stage + '</h2>' + meta + '<div class="summary">Errors: <b style="color:red">' + errors + '</b> &nbsp; Warnings: <b style="color:orange">' + warnings + '</b> &nbsp; Files with issues: <b>' + files.length + '</b></div>' + table + '</body></html>';
+            fs.writeFileSync('reports/eslint-report.html', html);
+          }
+
+          if (fs.existsSync('coverage/coverage-summary.json')) {
+            var cov = JSON.parse(fs.readFileSync('coverage/coverage-summary.json', 'utf8'));
+            var total = cov.total;
+            var covFiles = Object.entries(cov).filter(function(e){ return e[0] !== 'total'; });
+            var pct = function(m){ return m ? m.pct + '%' : 'N/A'; };
+            var color = function(p){ return p >= 80 ? 'green' : p >= 50 ? 'orange' : 'red'; };
+            var covRows = covFiles.map(function(e) {
+              var file = e[0]; var m = e[1];
+              var path = file.replace(/.*src\//, 'src/');
+              return '<tr><td>' + path + '</td><td style="color:' + color(m.statements.pct) + '">' + pct(m.statements) + '</td><td style="color:' + color(m.branches.pct) + '">' + pct(m.branches) + '</td><td style="color:' + color(m.functions.pct) + '">' + pct(m.functions) + '</td><td style="color:' + color(m.lines.pct) + '">' + pct(m.lines) + '</td></tr>';
+            }).join('');
+            var totalRow = '<tr class="total"><td>TOTAL</td><td style="color:' + color(total.statements.pct) + '">' + pct(total.statements) + '</td><td style="color:' + color(total.branches.pct) + '">' + pct(total.branches) + '</td><td style="color:' + color(total.functions.pct) + '">' + pct(total.functions) + '</td><td style="color:' + color(total.lines.pct) + '">' + pct(total.lines) + '</td></tr>';
+            var covHtml = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Coverage - ' + stage + '</title>' + style + '</head><body><h2>Coverage Report - ' + stage + '</h2>' + meta + '<table><thead><tr><th>File</th><th>Statements</th><th>Branches</th><th>Functions</th><th>Lines</th></tr></thead><tbody>' + totalRow + covRows + '</tbody></table></body></html>';
+            fs.writeFileSync('reports/coverage-report.html', covHtml);
+          }
+          EOF
 
       - name: Upload reports
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: stage-2-reports-PR${{ github.event.pull_request.number }}
-          path: |
-            reports/
-            coverage/
+          path: reports/
           retention-days: 7
 
-      - name: Package & upload code
-        if: steps.eslint.outputs.eslint_passed == 'true'
+      - name: Fail if ESLint errors
+        if: steps.eslint.outputs.eslint_passed == 'false'
+        run: |
+          echo "ESLint errors detected — Stage 2 failed"
+          exit 1
+
+      - name: Package and upload code
         run: |
           tar --exclude='.git' --exclude='node_modules' --exclude='coverage' --exclude='reports' \
             -czf /tmp/stage-2-code.tar.gz .
 
       - name: Upload code artifact
-        if: steps.eslint.outputs.eslint_passed == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: stage-2-code-PR${{ github.event.pull_request.number }}
@@ -291,48 +329,68 @@ jobs:
         continue-on-error: true
         run: npx vitest run --coverage
 
-      - name: Generate ESLint HTML Report
+      - name: Generate Reports
         if: always()
         run: |
-          node -e "
-          const fs = require('fs');
-          if (!fs.existsSync('eslint-report.json')) process.exit(0);
-          const data = JSON.parse(fs.readFileSync('eslint-report.json','utf8'));
-          const errors = data.reduce((s,f)=>s+f.errorCount,0);
-          const warnings = data.reduce((s,f)=>s+f.warningCount,0);
-          const files = data.filter(f=>f.messages.length>0);
-          const rows = files.map(f=>{
-            const path = f.filePath.replace(/.*src\//,'src/');
-            const msgs = f.messages.map(m=>
-              '<tr><td>'+path+'</td><td>'+m.line+':'+m.column+'</td><td>'+(m.severity===2?'Error':'Warning')+'</td><td>'+m.message.replace(/</g,'&lt;')+'</td><td>'+(m.ruleId||'N/A')+'</td></tr>'
-            ).join('');
-            return msgs;
-          }).join('');
-          const html = '<!DOCTYPE html><html><head><meta charset=UTF-8><title>ESLint Report - Stage 3</title>'
-            +'<style>body{font-family:sans-serif;padding:20px}h1{margin-bottom:10px}'
-            +'.summary{margin-bottom:20px;font-size:16px}'
-            +'table{border-collapse:collapse;width:100%}'
-            +'th,td{border:1px solid #ddd;padding:8px;text-align:left;font-size:13px}'
-            +'th{background:#f2f2f2}tr:nth-child(even){background:#fafafa}'
-            +'tr:hover{background:#f0f0f0}</style></head>'
-            +'<body><h1>ESLint Report — Stage 3</h1>'
-            +'<div class=summary>Total Errors: <b style=color:red>'+errors+'</b> &nbsp; Warnings: <b style=color:orange>'+warnings+'</b> &nbsp; Files with issues: <b>'+files.length+'</b></div>'
-            +(rows ? '<table><thead><tr><th>File</th><th>Location</th><th>Severity</th><th>Message</th><th>Rule</th></tr></thead><tbody>'+rows+'</tbody></table>'
-            : '<p style=color:green>✅ No ESLint issues found!</p>')
-            +'</body></html>';
-          fs.mkdirSync('reports',{recursive:true});
-          fs.writeFileSync('reports/eslint-report.html',html);
-          "
+          node << 'EOF'
+          var fs = require('fs');
+          var stage = 'Stage 3';
+          var pr = '${{ github.event.pull_request.number }}';
+          var head = '${{ github.head_ref }}';
+          var now = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
+          var meta = '<p><b>' + stage + '</b> | PR #' + pr + ' | Branch: ' + head + ' | Generated: ' + now + '</p><hr>';
+          var style = '<style>body{font-family:sans-serif;padding:20px}h2{margin-bottom:8px}.summary{margin-bottom:16px}table{border-collapse:collapse;width:100%}th,td{border:1px solid #ddd;padding:8px;font-size:13px;text-align:left}th{background:#f2f2f2}tr:nth-child(even){background:#fafafa}tr:hover{background:#f0f0f0}.total{font-weight:bold;background:#e8f4e8}</style>';
+
+          fs.mkdirSync('reports', { recursive: true });
+
+          if (fs.existsSync('eslint-report.json')) {
+            var data = JSON.parse(fs.readFileSync('eslint-report.json', 'utf8'));
+            var errors = data.reduce(function(s,f){ return s + f.errorCount; }, 0);
+            var warnings = data.reduce(function(s,f){ return s + f.warningCount; }, 0);
+            var files = data.filter(function(f){ return f.messages.length > 0; });
+            var rows = files.map(function(f) {
+              return f.messages.map(function(m) {
+                var sev = m.severity === 2 ? 'Error' : 'Warning';
+                var col = m.severity === 2 ? 'red' : 'orange';
+                var path = f.filePath.replace(/.*src\//, 'src/');
+                return '<tr><td>' + path + '</td><td>' + m.line + ':' + m.column + '</td><td style="color:' + col + '">' + sev + '</td><td>' + m.message.replace(/</g,'&lt;') + '</td><td>' + (m.ruleId||'N/A') + '</td></tr>';
+              }).join('');
+            }).join('');
+            var table = rows ? '<table><thead><tr><th>File</th><th>Location</th><th>Severity</th><th>Message</th><th>Rule</th></tr></thead><tbody>' + rows + '</tbody></table>' : '<p style="color:green">No ESLint issues found!</p>';
+            var html = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>ESLint - ' + stage + '</title>' + style + '</head><body><h2>ESLint Report - ' + stage + '</h2>' + meta + '<div class="summary">Errors: <b style="color:red">' + errors + '</b> &nbsp; Warnings: <b style="color:orange">' + warnings + '</b> &nbsp; Files with issues: <b>' + files.length + '</b></div>' + table + '</body></html>';
+            fs.writeFileSync('reports/eslint-report.html', html);
+          }
+
+          if (fs.existsSync('coverage/coverage-summary.json')) {
+            var cov = JSON.parse(fs.readFileSync('coverage/coverage-summary.json', 'utf8'));
+            var total = cov.total;
+            var covFiles = Object.entries(cov).filter(function(e){ return e[0] !== 'total'; });
+            var pct = function(m){ return m ? m.pct + '%' : 'N/A'; };
+            var color = function(p){ return p >= 80 ? 'green' : p >= 50 ? 'orange' : 'red'; };
+            var covRows = covFiles.map(function(e) {
+              var file = e[0]; var m = e[1];
+              var path = file.replace(/.*src\//, 'src/');
+              return '<tr><td>' + path + '</td><td style="color:' + color(m.statements.pct) + '">' + pct(m.statements) + '</td><td style="color:' + color(m.branches.pct) + '">' + pct(m.branches) + '</td><td style="color:' + color(m.functions.pct) + '">' + pct(m.functions) + '</td><td style="color:' + color(m.lines.pct) + '">' + pct(m.lines) + '</td></tr>';
+            }).join('');
+            var totalRow = '<tr class="total"><td>TOTAL</td><td style="color:' + color(total.statements.pct) + '">' + pct(total.statements) + '</td><td style="color:' + color(total.branches.pct) + '">' + pct(total.branches) + '</td><td style="color:' + color(total.functions.pct) + '">' + pct(total.functions) + '</td><td style="color:' + color(total.lines.pct) + '">' + pct(total.lines) + '</td></tr>';
+            var covHtml = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Coverage - ' + stage + '</title>' + style + '</head><body><h2>Coverage Report - ' + stage + '</h2>' + meta + '<table><thead><tr><th>File</th><th>Statements</th><th>Branches</th><th>Functions</th><th>Lines</th></tr></thead><tbody>' + totalRow + covRows + '</tbody></table></body></html>';
+            fs.writeFileSync('reports/coverage-report.html', covHtml);
+          }
+          EOF
 
       - name: Upload reports
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: stage-3-reports-PR${{ github.event.pull_request.number }}
-          path: |
-            reports/
-            coverage/
+          path: reports/
           retention-days: 7
+
+      - name: Fail if ESLint errors
+        if: steps.eslint.outputs.eslint_passed == 'false'
+        run: |
+          echo "ESLint errors detected — Stage 3 failed"
+          exit 1
 
       - name: Configure AWS
         uses: aws-actions/configure-aws-credentials@v4
@@ -347,4 +405,4 @@ jobs:
       - name: Deploy to S3
         run: |
           aws s3 sync ./dist s3://${{ vars.S3_BUCKET_NAME }} --delete
-          echo "✅ Deployed to s3://${{ vars.S3_BUCKET_NAME }}"
+          echo "Deployed to s3://${{ vars.S3_BUCKET_NAME }}"
