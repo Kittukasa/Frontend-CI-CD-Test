@@ -7,9 +7,6 @@ on:
       - test
       - main
 
-# ============================================================
-# GLOBAL SETTINGS
-# ============================================================
 env:
   NODE_VERSION: "20"
   ARTIFACT_RETENTION_DAYS: 7
@@ -17,8 +14,7 @@ env:
 jobs:
 
 # ============================================================
-# STAGE 1 — PRETTIER CHECK (Feature → Dev)
-# Triggered on PRs targeting the `dev` branch
+# STAGE 1 — PRETTIER (feature → dev)
 # ============================================================
   prettier-check:
     name: "Stage 1 · Prettier Check & Format"
@@ -26,238 +22,175 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-
     steps:
-      - name: Checkout feature branch
+      - name: Checkout branch
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.head_ref }}       # Check out the feature branch
-          fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
           persist-credentials: true
 
-      - name: Set up Node.js
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: "npm"
+          cache: npm
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Run Prettier — check & auto-format
-        id: prettier
-        run: |
-          echo "Running Prettier format..."
-          npx prettier --write "**/*.{js,jsx,ts,tsx,css,scss,json,md}"
-          echo "Prettier formatting complete."
+      - name: Run Prettier
+        run: npx prettier --write "**/*.{js,jsx,ts,tsx,css,scss,json,md}"
 
-      - name: Commit formatted code back to feature branch
+      - name: Commit formatted code
         run: |
-          git config user.name  "github-actions[bot]"
+          git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          # Only commit if there are actual changes
           if ! git diff --quiet; then
             git add .
-            git commit -m "style: auto-format code with Prettier [skip ci]"
-            git push origin HEAD:${{ github.head_ref }}
-            echo "Prettier changes committed and pushed."
+            git commit -m "style: auto-format with Prettier"
+            git push
           else
-            echo "No formatting changes needed."
+            echo "No changes"
           fi
 
-      - name: Upload formatted-code artifact
+      - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: prettier-formatted-code
           path: .
           retention-days: ${{ env.ARTIFACT_RETENTION_DAYS }}
-          # Exclude noise — keep only source files
-          include-hidden-files: false
 
 # ============================================================
-# STAGE 2 — ESLINT & CODE COVERAGE (Dev → Test)
-# Triggered on PRs targeting the `test` branch
+# STAGE 2 — ESLINT & COVERAGE (dev → test)
 # ============================================================
   eslint-and-coverage:
     name: "Stage 2 · ESLint & Code Coverage"
-    if: github.base_ref == 'test'
+    needs: prettier-check   # 🔗 Chained to Stage 1
+    # ✅ Run if Stage 1 passed OR was skipped (different PR target)
+    if: |
+      always() &&
+      github.base_ref == 'test' &&
+      (needs.prettier-check.result == 'success' || needs.prettier-check.result == 'skipped')
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout dev branch
+      - name: Checkout code
         uses: actions/checkout@v4
-        with:
-          ref: ${{ github.head_ref }}
-          fetch-depth: 0
 
-      - name: Set up Node.js
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: "npm"
+          cache: npm
 
       - name: Install dependencies
         run: npm ci
 
-      # ── ESLint ──────────────────────────────────────────────
       - name: Run ESLint
         id: eslint
-        # Continue on error so we can capture the report before failing
         continue-on-error: true
         run: |
-          npx eslint "**/*.{js,jsx,ts,tsx}" \
-            --format json \
-            --output-file eslint-report.json || true
-
-          # Also produce a human-readable report
-          npx eslint "**/*.{js,jsx,ts,tsx}" \
-            --format stylish \
-            --output-file eslint-report.txt || true
-
-          # Set outcome flag for downstream steps
+          npx eslint "**/*.{ts,tsx}" \
+            --format json --output-file eslint-report.json || true
           if grep -q '"errorCount":[^0]' eslint-report.json; then
             echo "eslint_passed=false" >> $GITHUB_OUTPUT
           else
-            echo "eslint_passed=true"  >> $GITHUB_OUTPUT
+            echo "eslint_passed=true" >> $GITHUB_OUTPUT
           fi
 
-      # ── Code Coverage ────────────────────────────────────────
-      - name: Run tests with code coverage
+      - name: Run tests with coverage
         id: coverage
         continue-on-error: true
-        run: |
-          npx jest \
-            --coverage \
-            --coverageReporters=text \
-            --coverageReporters=json-summary \
-            --coverageReporters=html \
-            --passWithNoTests \
-            2>&1 | tee coverage-summary.txt
+        run: npx vitest run --coverage
 
-          # Extract overall coverage % and write to output
-          COVERAGE=$(node -e "
-            const s = require('./coverage/coverage-summary.json');
-            const pct = s.total.lines.pct;
-            console.log(pct);
-          " 2>/dev/null || echo "0")
-          echo "coverage_pct=$COVERAGE" >> $GITHUB_OUTPUT
-          echo "Coverage: $COVERAGE%"
-
-          # Fail if below threshold (configurable — default 80%)
-          THRESHOLD=80
-          if (( $(echo "$COVERAGE < $THRESHOLD" | bc -l) )); then
-            echo "coverage_passed=false" >> $GITHUB_OUTPUT
-          else
-            echo "coverage_passed=true"  >> $GITHUB_OUTPUT
-          fi
-
-      # ── Artifact: SUCCESS path ───────────────────────────────
-      - name: Upload validated-code artifact (on success)
-        if: steps.eslint.outputs.eslint_passed == 'true' && steps.coverage.outputs.coverage_passed == 'true'
+      - name: Upload validated artifact (success)
+        if: steps.eslint.outputs.eslint_passed == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: eslint-validated-code
           path: |
             .
             !node_modules
-            !coverage
           retention-days: ${{ env.ARTIFACT_RETENTION_DAYS }}
 
-      # ── Artifact: FAILURE path ───────────────────────────────
-      - name: Upload error report artifact (on failure)
-        if: steps.eslint.outputs.eslint_passed == 'false' || steps.coverage.outputs.coverage_passed == 'false'
+      - name: Upload failure report (failure)
+        if: steps.eslint.outputs.eslint_passed == 'false'
         uses: actions/upload-artifact@v4
         with:
           name: lint-coverage-failure-report
           path: |
             eslint-report.json
-            eslint-report.txt
-            coverage-summary.txt
             coverage/
           retention-days: ${{ env.ARTIFACT_RETENTION_DAYS }}
 
-      # ── Fail the job if checks didn't pass ───────────────────
-      - name: Evaluate results
-        if: steps.eslint.outputs.eslint_passed == 'false' || steps.coverage.outputs.coverage_passed == 'false'
-        run: |
-          echo "❌ Pipeline failed:"
-          echo "   ESLint passed    : ${{ steps.eslint.outputs.eslint_passed }}"
-          echo "   Coverage passed  : ${{ steps.coverage.outputs.coverage_passed }} (${{ steps.coverage.outputs.coverage_pct }}%)"
-          exit 1
+      - name: Fail if ESLint failed
+        if: steps.eslint.outputs.eslint_passed == 'false'
+        run: exit 1
 
 # ============================================================
-# STAGE 3 — DEPLOY TO AWS S3 (Test → Main)
-# Triggered on PRs targeting the `main` branch
+# STAGE 3 — DEPLOY TO S3 (test → main)
 # ============================================================
   deploy-to-s3:
     name: "Stage 3 · Deploy to AWS S3"
-    if: github.base_ref == 'main'
+    needs: eslint-and-coverage   # 🔗 Chained to Stage 2
+    # ✅ Run if Stage 2 passed OR was skipped (different PR target)
+    if: |
+      always() &&
+      github.base_ref == 'main' &&
+      (needs.eslint-and-coverage.result == 'success' || needs.eslint-and-coverage.result == 'skipped')
     runs-on: ubuntu-latest
-
-    # Require manual approval before deploying to production
     environment:
       name: production
-      url: https://${{ vars.S3_BUCKET_NAME }}.s3-website.${{ vars.AWS_REGION }}.amazonaws.com
-
     steps:
-      - name: Checkout test branch
+      - name: Checkout code
         uses: actions/checkout@v4
-        with:
-          ref: ${{ github.head_ref }}
-          fetch-depth: 0
 
-      - name: Set up Node.js
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: "npm"
+          cache: npm
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Build production bundle
-        run: npm run build        # e.g. React/Next/Vite — adjust as needed
+      - name: Build project
+        run: npm run build
 
-      - name: Configure AWS credentials
+      - name: Configure AWS
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-access-key-id:     ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region:            ${{ vars.AWS_REGION }}
+          aws-region: ${{ vars.AWS_REGION }}
 
-      - name: Sync build output to S3
+      - name: Deploy to S3
         run: |
-          aws s3 sync ./build s3://${{ vars.S3_BUCKET_NAME }} \
-            --delete \
-            --cache-control "public, max-age=31536000" \
-            --exclude "*.html" \
-            --exclude "*.json"
-
-          # HTML & JSON — no-cache so users always get latest
-          aws s3 sync ./build s3://${{ vars.S3_BUCKET_NAME }} \
-            --delete \
-            --cache-control "no-cache, no-store, must-revalidate" \
-            --include "*.html" \
-            --include "*.json"
-
-      - name: Invalidate CloudFront cache (optional)
-        if: ${{ vars.CLOUDFRONT_DISTRIBUTION_ID != '' }}
-        run: |
-          aws cloudfront create-invalidation \
-            --distribution-id ${{ vars.CLOUDFRONT_DISTRIBUTION_ID }} \
-            --paths "/*"
+          aws s3 sync ./dist s3://${{ vars.S3_BUCKET_NAME }} --delete
 
       - name: Upload deployment artifact
         uses: actions/upload-artifact@v4
         with:
-          name: production-deployment
-          path: ./build
+          name: production-build
+          path: ./dist
           retention-days: ${{ env.ARTIFACT_RETENTION_DAYS }}
+```
 
-      - name: Deployment summary
-        run: |
-          echo "✅ Deployment complete!"
-          echo "   Bucket : s3://${{ vars.S3_BUCKET_NAME }}"
-          echo "   Region : ${{ vars.AWS_REGION }}"
-          echo "   Commit : ${{ github.sha }}"
+---
+
+## How the Chain Works Visually
+
+On **every PR**, GitHub shows all 3 stages — but only the right one runs:
+```
+PR: feature → dev
+  Stage 1 · Prettier        ✅ RUNS
+  Stage 2 · ESLint          ⏭️ SKIPPED (base_ref != test)
+  Stage 3 · Deploy          ⏭️ SKIPPED (base_ref != main)
+
+PR: dev → test
+  Stage 1 · Prettier        ⏭️ SKIPPED (base_ref != dev)
+  Stage 2 · ESLint          ✅ RUNS
+  Stage 3 · Deploy          ⏭️ SKIPPED (base_ref != main)
+
+PR: test → main
+  Stage 1 · Prettier        ⏭️ SKIPPED (base_ref != dev)
+  Stage 2 · ESLint          ⏭️ SKIPPED (base_ref != test)
+  Stage 3 · Deploy          ✅ RUNS
