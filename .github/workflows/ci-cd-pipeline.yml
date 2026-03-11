@@ -9,7 +9,7 @@ on:
 
 env:
   NODE_VERSION: "20"
-  S3_ARTIFACT_PREFIX: "ci-artifacts/${{ github.repository }}/${{ github.sha }}"
+  S3_ARTIFACT_PREFIX: "ci-artifacts/${{ github.repository }}"
 
 jobs:
 
@@ -63,7 +63,7 @@ jobs:
 
       - name: Package & upload artifact to S3
         run: |
-          ARTIFACT_NAME="prettier-${{ github.sha }}.tar.gz"
+          ARTIFACT_NAME="prettier-dev.tar.gz"
           echo "📦 Packaging formatted code as $ARTIFACT_NAME..."
 
           tar --exclude='.git' \
@@ -100,7 +100,7 @@ jobs:
 
       - name: Download artifact from S3
         run: |
-          ARTIFACT_NAME="prettier-${{ github.sha }}.tar.gz"
+          ARTIFACT_NAME="prettier-dev.tar.gz"
           echo "⬇️  Downloading $ARTIFACT_NAME from S3..."
 
           if aws s3 ls s3://${{ vars.S3_ARTIFACT_BUCKET }}/${{ env.S3_ARTIFACT_PREFIX }}/$ARTIFACT_NAME 2>/dev/null; then
@@ -154,7 +154,7 @@ jobs:
       - name: Package & upload validated artifact to S3
         if: steps.eslint.outputs.eslint_passed == 'true'
         run: |
-          ARTIFACT_NAME="eslint-coverage-${{ github.sha }}.tar.gz"
+          ARTIFACT_NAME="eslint-coverage-test.tar.gz"
           echo "📦 Packaging validated code as $ARTIFACT_NAME..."
 
           tar --exclude='.git' \
@@ -173,7 +173,7 @@ jobs:
       - name: Upload failure report to S3
         if: steps.eslint.outputs.eslint_passed == 'false'
         run: |
-          ARTIFACT_NAME="failure-report-${{ github.sha }}.tar.gz"
+          ARTIFACT_NAME="failure-report-test.tar.gz"
           echo "📦 Packaging failure report as $ARTIFACT_NAME..."
 
           tar -czf /tmp/$ARTIFACT_NAME \
@@ -215,7 +215,7 @@ jobs:
 
       - name: Download validated artifact from S3
         run: |
-          ARTIFACT_NAME="eslint-coverage-${{ github.sha }}.tar.gz"
+          ARTIFACT_NAME="eslint-coverage-test.tar.gz"
           echo "⬇️  Downloading $ARTIFACT_NAME from S3..."
 
           if aws s3 ls s3://${{ vars.S3_ARTIFACT_BUCKET }}/${{ env.S3_ARTIFACT_PREFIX }}/$ARTIFACT_NAME 2>/dev/null; then
@@ -256,7 +256,7 @@ jobs:
 
       - name: Upload production build artifact to S3
         run: |
-          ARTIFACT_NAME="production-build-${{ github.sha }}.tar.gz"
+          ARTIFACT_NAME="production-build-main.tar.gz"
           echo "📦 Archiving production build as $ARTIFACT_NAME..."
 
           tar -czf /tmp/$ARTIFACT_NAME ./dist
@@ -266,3 +266,4 @@ jobs:
 
           echo "✅ Production build archived at:"
           echo "   s3://${{ vars.S3_ARTIFACT_BUCKET }}/${{ env.S3_ARTIFACT_PREFIX }}/$ARTIFACT_NAME"
+          
