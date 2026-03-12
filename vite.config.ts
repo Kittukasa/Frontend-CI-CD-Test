@@ -54,8 +54,6 @@ export default defineConfig(({ mode }) => {
           'src/pages/TermsAndConditions.tsx',
           'src/pages/DemoAccess.tsx',
           'src/pages/Index.tsx',
-        ],
-        exclude: [
           // Pages
           'src/pages/AdminPanel/**',
           'src/pages/Login.tsx',
