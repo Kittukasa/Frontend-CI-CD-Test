@@ -75,8 +75,10 @@ jobs:
           var stage = 'Stage 1';
           var pr = '${{ github.event.pull_request.number }}';
           var head = '${{ github.head_ref }}';
+          var repo = '${{ github.repository }}';
+          var author = '${{ github.event.pull_request.user.login }}';
           var now = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
-          var meta = '<p><b>' + stage + '</b> | PR #' + pr + ' | Branch: ' + head + ' | Generated: ' + now + '</p><hr>';
+          var meta = '<p><b>BILLBOX</b> | Repo: ' + repo + ' | PR #' + pr + ' | Branch: ' + head + ' | Author: ' + author + ' | Generated: ' + now + '</p><hr>';
           var style = '<style>body{font-family:sans-serif;padding:20px}h2{margin-bottom:8px}.summary{margin-bottom:16px}table{border-collapse:collapse;width:100%}th,td{border:1px solid #ddd;padding:8px;font-size:13px;text-align:left}th{background:#f2f2f2}tr:nth-child(even){background:#fafafa}tr:hover{background:#f0f0f0}.total{font-weight:bold;background:#e8f4e8}</style>';
 
           fs.mkdirSync('reports', { recursive: true });
@@ -95,7 +97,7 @@ jobs:
               }).join('');
             }).join('');
             var table = rows ? '<table><thead><tr><th>File</th><th>Location</th><th>Severity</th><th>Message</th><th>Rule</th></tr></thead><tbody>' + rows + '</tbody></table>' : '<p style="color:green">No ESLint issues found!</p>';
-            var html = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>ESLint - ' + stage + '</title>' + style + '</head><body><h2>ESLint Report - ' + stage + '</h2>' + meta + '<div class="summary">Errors: <b style="color:red">' + errors + '</b> &nbsp; Warnings: <b style="color:orange">' + warnings + '</b> &nbsp; Files with issues: <b>' + files.length + '</b></div>' + table + '</body></html>';
+            var html = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>BILLBOX ESLint Report - ' + stage + '</title>' + style + '</head><body><h2>BILLBOX ESLint Report - ' + stage + '</h2>' + meta + '<div class="summary">Errors: <b style="color:red">' + errors + '</b> &nbsp; Warnings: <b style="color:orange">' + warnings + '</b> &nbsp; Files with issues: <b>' + files.length + '</b></div>' + table + '</body></html>';
             fs.writeFileSync('reports/eslint-report.html', html);
           }
 
@@ -111,7 +113,7 @@ jobs:
               return '<tr><td>' + path + '</td><td style="color:' + color(m.statements.pct) + '">' + pct(m.statements) + '</td><td style="color:' + color(m.branches.pct) + '">' + pct(m.branches) + '</td><td style="color:' + color(m.functions.pct) + '">' + pct(m.functions) + '</td><td style="color:' + color(m.lines.pct) + '">' + pct(m.lines) + '</td></tr>';
             }).join('');
             var totalRow = '<tr class="total"><td>TOTAL</td><td style="color:' + color(total.statements.pct) + '">' + pct(total.statements) + '</td><td style="color:' + color(total.branches.pct) + '">' + pct(total.branches) + '</td><td style="color:' + color(total.functions.pct) + '">' + pct(total.functions) + '</td><td style="color:' + color(total.lines.pct) + '">' + pct(total.lines) + '</td></tr>';
-            var covHtml = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Coverage - ' + stage + '</title>' + style + '</head><body><h2>Coverage Report - ' + stage + '</h2>' + meta + '<table><thead><tr><th>File</th><th>Statements</th><th>Branches</th><th>Functions</th><th>Lines</th></tr></thead><tbody>' + totalRow + covRows + '</tbody></table></body></html>';
+            var covHtml = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>BILLBOX Coverage Report - ' + stage + '</title>' + style + '</head><body><h2>BILLBOX Coverage Report - ' + stage + '</h2>' + meta + '<table><thead><tr><th>File</th><th>Statements</th><th>Branches</th><th>Functions</th><th>Lines</th></tr></thead><tbody>' + totalRow + covRows + '</tbody></table></body></html>';
             fs.writeFileSync('reports/coverage-report.html', covHtml);
           }
           EOF
@@ -205,8 +207,10 @@ jobs:
           var stage = 'Stage 2';
           var pr = '${{ github.event.pull_request.number }}';
           var head = '${{ github.head_ref }}';
+          var repo = '${{ github.repository }}';
+          var author = '${{ github.event.pull_request.user.login }}';
           var now = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
-          var meta = '<p><b>' + stage + '</b> | PR #' + pr + ' | Branch: ' + head + ' | Generated: ' + now + '</p><hr>';
+          var meta = '<p><b>BILLBOX</b> | Repo: ' + repo + ' | PR #' + pr + ' | Branch: ' + head + ' | Author: ' + author + ' | Generated: ' + now + '</p><hr>';
           var style = '<style>body{font-family:sans-serif;padding:20px}h2{margin-bottom:8px}.summary{margin-bottom:16px}table{border-collapse:collapse;width:100%}th,td{border:1px solid #ddd;padding:8px;font-size:13px;text-align:left}th{background:#f2f2f2}tr:nth-child(even){background:#fafafa}tr:hover{background:#f0f0f0}.total{font-weight:bold;background:#e8f4e8}</style>';
 
           fs.mkdirSync('reports', { recursive: true });
@@ -225,7 +229,7 @@ jobs:
               }).join('');
             }).join('');
             var table = rows ? '<table><thead><tr><th>File</th><th>Location</th><th>Severity</th><th>Message</th><th>Rule</th></tr></thead><tbody>' + rows + '</tbody></table>' : '<p style="color:green">No ESLint issues found!</p>';
-            var html = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>ESLint - ' + stage + '</title>' + style + '</head><body><h2>ESLint Report - ' + stage + '</h2>' + meta + '<div class="summary">Errors: <b style="color:red">' + errors + '</b> &nbsp; Warnings: <b style="color:orange">' + warnings + '</b> &nbsp; Files with issues: <b>' + files.length + '</b></div>' + table + '</body></html>';
+            var html = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>BILLBOX ESLint Report - ' + stage + '</title>' + style + '</head><body><h2>BILLBOX ESLint Report - ' + stage + '</h2>' + meta + '<div class="summary">Errors: <b style="color:red">' + errors + '</b> &nbsp; Warnings: <b style="color:orange">' + warnings + '</b> &nbsp; Files with issues: <b>' + files.length + '</b></div>' + table + '</body></html>';
             fs.writeFileSync('reports/eslint-report.html', html);
           }
 
@@ -241,7 +245,7 @@ jobs:
               return '<tr><td>' + path + '</td><td style="color:' + color(m.statements.pct) + '">' + pct(m.statements) + '</td><td style="color:' + color(m.branches.pct) + '">' + pct(m.branches) + '</td><td style="color:' + color(m.functions.pct) + '">' + pct(m.functions) + '</td><td style="color:' + color(m.lines.pct) + '">' + pct(m.lines) + '</td></tr>';
             }).join('');
             var totalRow = '<tr class="total"><td>TOTAL</td><td style="color:' + color(total.statements.pct) + '">' + pct(total.statements) + '</td><td style="color:' + color(total.branches.pct) + '">' + pct(total.branches) + '</td><td style="color:' + color(total.functions.pct) + '">' + pct(total.functions) + '</td><td style="color:' + color(total.lines.pct) + '">' + pct(total.lines) + '</td></tr>';
-            var covHtml = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Coverage - ' + stage + '</title>' + style + '</head><body><h2>Coverage Report - ' + stage + '</h2>' + meta + '<table><thead><tr><th>File</th><th>Statements</th><th>Branches</th><th>Functions</th><th>Lines</th></tr></thead><tbody>' + totalRow + covRows + '</tbody></table></body></html>';
+            var covHtml = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>BILLBOX Coverage Report - ' + stage + '</title>' + style + '</head><body><h2>BILLBOX Coverage Report - ' + stage + '</h2>' + meta + '<table><thead><tr><th>File</th><th>Statements</th><th>Branches</th><th>Functions</th><th>Lines</th></tr></thead><tbody>' + totalRow + covRows + '</tbody></table></body></html>';
             fs.writeFileSync('reports/coverage-report.html', covHtml);
           }
           EOF
@@ -337,8 +341,10 @@ jobs:
           var stage = 'Stage 3';
           var pr = '${{ github.event.pull_request.number }}';
           var head = '${{ github.head_ref }}';
+          var repo = '${{ github.repository }}';
+          var author = '${{ github.event.pull_request.user.login }}';
           var now = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
-          var meta = '<p><b>' + stage + '</b> | PR #' + pr + ' | Branch: ' + head + ' | Generated: ' + now + '</p><hr>';
+          var meta = '<p><b>BILLBOX</b> | Repo: ' + repo + ' | PR #' + pr + ' | Branch: ' + head + ' | Author: ' + author + ' | Generated: ' + now + '</p><hr>';
           var style = '<style>body{font-family:sans-serif;padding:20px}h2{margin-bottom:8px}.summary{margin-bottom:16px}table{border-collapse:collapse;width:100%}th,td{border:1px solid #ddd;padding:8px;font-size:13px;text-align:left}th{background:#f2f2f2}tr:nth-child(even){background:#fafafa}tr:hover{background:#f0f0f0}.total{font-weight:bold;background:#e8f4e8}</style>';
 
           fs.mkdirSync('reports', { recursive: true });
@@ -357,7 +363,7 @@ jobs:
               }).join('');
             }).join('');
             var table = rows ? '<table><thead><tr><th>File</th><th>Location</th><th>Severity</th><th>Message</th><th>Rule</th></tr></thead><tbody>' + rows + '</tbody></table>' : '<p style="color:green">No ESLint issues found!</p>';
-            var html = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>ESLint - ' + stage + '</title>' + style + '</head><body><h2>ESLint Report - ' + stage + '</h2>' + meta + '<div class="summary">Errors: <b style="color:red">' + errors + '</b> &nbsp; Warnings: <b style="color:orange">' + warnings + '</b> &nbsp; Files with issues: <b>' + files.length + '</b></div>' + table + '</body></html>';
+            var html = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>BILLBOX ESLint Report - ' + stage + '</title>' + style + '</head><body><h2>BILLBOX ESLint Report - ' + stage + '</h2>' + meta + '<div class="summary">Errors: <b style="color:red">' + errors + '</b> &nbsp; Warnings: <b style="color:orange">' + warnings + '</b> &nbsp; Files with issues: <b>' + files.length + '</b></div>' + table + '</body></html>';
             fs.writeFileSync('reports/eslint-report.html', html);
           }
 
@@ -373,7 +379,7 @@ jobs:
               return '<tr><td>' + path + '</td><td style="color:' + color(m.statements.pct) + '">' + pct(m.statements) + '</td><td style="color:' + color(m.branches.pct) + '">' + pct(m.branches) + '</td><td style="color:' + color(m.functions.pct) + '">' + pct(m.functions) + '</td><td style="color:' + color(m.lines.pct) + '">' + pct(m.lines) + '</td></tr>';
             }).join('');
             var totalRow = '<tr class="total"><td>TOTAL</td><td style="color:' + color(total.statements.pct) + '">' + pct(total.statements) + '</td><td style="color:' + color(total.branches.pct) + '">' + pct(total.branches) + '</td><td style="color:' + color(total.functions.pct) + '">' + pct(total.functions) + '</td><td style="color:' + color(total.lines.pct) + '">' + pct(total.lines) + '</td></tr>';
-            var covHtml = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Coverage - ' + stage + '</title>' + style + '</head><body><h2>Coverage Report - ' + stage + '</h2>' + meta + '<table><thead><tr><th>File</th><th>Statements</th><th>Branches</th><th>Functions</th><th>Lines</th></tr></thead><tbody>' + totalRow + covRows + '</tbody></table></body></html>';
+            var covHtml = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>BILLBOX Coverage Report - ' + stage + '</title>' + style + '</head><body><h2>BILLBOX Coverage Report - ' + stage + '</h2>' + meta + '<table><thead><tr><th>File</th><th>Statements</th><th>Branches</th><th>Functions</th><th>Lines</th></tr></thead><tbody>' + totalRow + covRows + '</tbody></table></body></html>';
             fs.writeFileSync('reports/coverage-report.html', covHtml);
           }
           EOF
